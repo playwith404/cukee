@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>cukee App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="glass-container">
+        <header>
+            <h1 class="logo">cukee</h1>
+            <div class="user-profile">Guest 님</div>
+        </header>
+
+        <main id="main-content">
+            <div id="view-home" class="view active">
+                <h2>오늘의 기분은 어떠신가요?</h2>
+                <p class="subtitle">AI 큐레이터가 당신을 위한 전시회를 준비합니다.</p>
+                
+                <div class="persona-grid">
+                    <button class="persona-card" data-type="mz">
+                        <span class="emoji">📱</span>
+                        <h3>MZ 숏폼 러버</h3>
+                        <p>#하이틴 #1시간컷</p>
+                    </button>
+                    <button class="persona-card" data-type="depress">
+                        <span class="emoji">🌧️</span>
+                        <h3>우울한 명작</h3>
+                        <p>#디스토피아 #여운</p>
+                    </button>
+                    <button class="persona-card" data-type="action">
+                        <span class="emoji">🔥</span>
+                        <h3>심장 터지는 액션</h3>
+                        <p>#범죄 #느와르</p>
+                    </button>
+                    <button class="persona-card" data-type="sf">
+                        <span class="emoji">🚀</span>
+                        <h3>SF 과몰입</h3>
+                        <p>#우주 #판타지</p>
+                    </button>
+                </div>
+            </div>
+
+            <div id="view-gallery" class="view">
+                <div class="gallery-header">
+                    <h2 id="gallery-title">나만의 전시회</h2>
+                    <button id="btn-back">← 다시 고르기</button>
+                </div>
+                
+                <div class="gallery-track" id="gallery-track">
+                    </div>
+
+                <div class="curator-note">
+                    <h4>🧑‍🎨 큐레이터의 노트</h4>
+                    <p id="curator-text">당신의 취향을 분석 중입니다...</p>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" />
+</head>
+<body>
+    <div class="glass-wrapper">
+        <header>
+            <div class="logo">Qooky</div>
+            <div class="auth-nav">로그인 | 회원가입</div>
+        </header>
+
+        <section id="page-ticket" class="page active">
+            <h1 class="main-title">어떤 영화를 보고 싶나요?</h1>
+            <p class="sub-title">당신을 위한 다양한 주제의 큐레이터들이 대기중이에요.</p>
+
+            <div class="ticket-container">
+                <div class="ticket" id="ticket-healing" data-theme="healing">
+                    <div class="ticket-top t-healing">
+                        <div class="emoji">🌿</div>
+                        <h3>HEALING<br>& RELAX</h3>
+                    </div>
+                    <div class="ticket-bottom">
+                        <p>#성장 #힐링 #일상</p>
+                        <div class="barcode">||| || |||| |</div>
+                    </div>
+                </div>
+
+                <div class="ticket center" id="ticket-comedy" data-theme="comedy">
+                    <div class="ticket-top t-comedy">
+                        <div class="emoji">🤣</div>
+                        <h3>LEGEND<br>COMEDY</h3>
+                    </div>
+                    <div class="ticket-bottom">
+                        <p>#코미디 #레전드</p>
+                        <div class="barcode">|| ||||| || |||</div>
+                    </div>
+                </div>
+
+                <div class="ticket" id="ticket-depress" data-theme="depress">
+                    <div class="ticket-top t-depress">
+                        <div class="emoji">☔</div>
+                        <h3>DEPRESSIVE<br>MASTERPIECE</h3>
+                    </div>
+                    <div class="ticket-bottom">
+                        <p>#우울 #명작 #여운</p>
+                        <div class="barcode">|||| | || ||||</div>
+                    </div>
+                </div>
+            </div>
+            <div class="instruction">Choose Your Ticket</div>
+        </section>
+
+        <section id="page-gallery" class="page">
+            <div class="gallery-header">
+                <button class="btn-back" id="btn-back">← Ticket</button>
+                <h2 id="gallery-title">전시회 제목</h2>
+                <button class="btn-edit" id="btn-edit-toggle">🎨 꾸미기</button>
+            </div>
+
+            <div class="curator-area">
+                <div class="curator-avatar" id="curator-emoji">🤖</div>
+                <div class="bubble"><span id="curator-msg">어서오세요!</span></div>
+            </div>
+
+            <div class="movie-scroll-area" id="movie-list"></div>
+
+            <div id="edit-panel" class="edit-panel hidden">
+                <div class="edit-group">
+                    <span>배경 무드:</span>
+                    <button class="color-btn midnight" data-bg="midnight"></button>
+                    <button class="color-btn sunset" data-bg="sunset"></button>
+                    <button class="color-btn ocean" data-bg="ocean"></button>
+                </div>
+                <div class="edit-group">
+                    <span>액자 스타일:</span>
+                    <button class="style-btn" data-frame="basic">기본</button>
+                    <button class="style-btn" data-frame="neon">네온</button>
+                    <button class="style-btn" data-frame="gold">클래식</button>
+                </div>
+            </div>
+
+            <div class="prompt-bar">
+                <input type="text" id="user-prompt" placeholder="ex) 더 신나고 박진감 넘치는 거 없어? (엔터)">
+                <button id="btn-submit-prompt">입력</button>
+            </div>
+        </section>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>

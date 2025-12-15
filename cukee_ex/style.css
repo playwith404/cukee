@@ -1,0 +1,110 @@
+/* style.css */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    background: transparent; /* iframe 배경 투명 */
+    color: #fff;
+    overflow: hidden;
+}
+
+/* 글래스모피즘 컨테이너 */
+.glass-container {
+    width: 100%;
+    height: 100vh;
+    background: rgba(20, 20, 20, 0.85); /* 어두운 반투명 배경 */
+    backdrop-filter: blur(15px); /* 블러 효과 핵심 */
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    padding: 30px;
+}
+
+/* 헤더 */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+.logo { font-size: 24px; font-weight: bold; color: #FF3366; margin: 0; }
+.user-profile { font-size: 14px; color: #aaa; }
+
+/* 뷰 전환 로직 */
+.view { display: none; height: 100%; flex-direction: column; animation: fadeIn 0.5s ease; }
+.view.active { display: flex; }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* 페르소나 선택 화면 */
+.subtitle { color: #888; margin-top: -10px; margin-bottom: 30px; }
+.persona-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    flex-grow: 1;
+}
+.persona-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    color: white;
+    padding: 20px;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+.persona-card:hover { background: rgba(255, 255, 255, 0.15); transform: scale(1.02); }
+.persona-card h3 { margin: 10px 0 5px 0; font-size: 18px; }
+.persona-card p { font-size: 12px; color: #aaa; margin: 0; }
+.emoji { font-size: 24px; }
+
+/* 갤러리 화면 */
+.gallery-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+#btn-back { background: none; border: 1px solid #555; color: #ddd; padding: 5px 12px; border-radius: 20px; cursor: pointer; }
+
+.gallery-track {
+    display: flex;
+    overflow-x: auto;
+    gap: 20px;
+    padding-bottom: 20px;
+    scroll-snap-type: x mandatory;
+    height: 320px;
+    align-items: center;
+}
+/* 스크롤바 숨기기 */
+.gallery-track::-webkit-scrollbar { height: 6px; }
+.gallery-track::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+
+/* 영화 포스터 카드 (액자 느낌) */
+.movie-frame {
+    min-width: 200px;
+    height: 280px;
+    background: #000;
+    border: 8px solid #fff; /* 액자 프레임 */
+    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+    scroll-snap-align: center;
+    position: relative;
+    transition: transform 0.3s;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #555;
+    flex-direction: column;
+}
+.movie-frame:hover { transform: translateY(-10px); }
+.movie-title { font-weight: bold; margin-top: 10px; color: white; text-align: center; padding: 0 5px;}
+
+.curator-note {
+    background: rgba(255, 51, 102, 0.1);
+    border-left: 4px solid #FF3366;
+    padding: 15px;
+    margin-top: 20px;
+    border-radius: 0 8px 8px 0;
+}
+.curator-note h4 { margin: 0 0 5px 0; color: #FF3366; }
+.curator-note p { margin: 0; font-size: 14px; line-height: 1.4; color: #ddd; }
