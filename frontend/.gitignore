@@ -4,6 +4,10 @@
 node_modules
 .pnp
 .pnp.js
+# 추가: pnpm 외 다른 Lock 파일 무시
+package-lock.json
+npm-shrinkwrap.json
+yarn.lock
 
 # Local env files
 .env
@@ -11,6 +15,8 @@ node_modules
 .env.development.local
 .env.test.local
 .env.production.local
+# 추가: 각 앱 폴더 내의 env 파일 무시
+apps/*/.env*
 
 # Testing
 coverage
@@ -26,12 +32,18 @@ coverage
 out/
 build
 dist
+# 추가: 모든 앱 폴더의 빌드 출력 무시
+apps/*/build
+apps/*/dist
+apps/*/dist-ssr 
 
 
 # Debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+# 추가: pnpm debug log 무시
+pnpm-debug.log*
 
 # Misc
 .DS_Store

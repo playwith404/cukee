@@ -1,0 +1,160 @@
+/* apps/web/app/styles/home.css */
+
+/* =========================================
+   4. 상단 메인 콘텐츠
+   ========================================= */
+.cukee-main-content {
+    width: 100%;
+    margin-top: 32px;
+    display: flex;
+    flex-direction: column;
+}
+
+.inner-container {
+    /* layout-center-wrapper 속성을 그대로 사용 (1500px, 중앙정렬, 180px 패딩) */
+    width: 1500px;
+    margin: 0 auto;
+    padding-left: 80px; 
+    
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+/* [장식] 왼쪽 세로선 */
+.cukee-deco-box {
+    position: absolute;
+    top: -120px;
+    bottom: 0;
+    left: 0; 
+    bottom: 0;  
+    width: 0px;
+    border-right: 1px solid #373431;
+    pointer-events: none;
+}
+
+.home-upper-split {
+    display: flex;
+    position: relative;
+    width: 100%;
+}
+
+/* [좌측] 텍스트 영역 */
+.home-text-section {
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex-shrink: 0; 
+}
+
+/* 제목 H1 */
+.home-text-section h1 {
+    font-size: 96px;
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: -0.05em;
+    margin: 10px 0 14px 0;
+    
+    border: 1px solid #000000;
+    width: 1200px;
+    
+    padding: 20px;
+    padding-left: 80px; 
+}
+
+.home-text-section p.fixed-text {
+    font-size: 30px;
+    color: #000000;
+    border-bottom: 1px solid #000000;
+    padding: 5px;
+    padding-left: 80px;
+    width: fit-content; 
+    margin: 0;
+    letter-spacing: -0.03em;
+}
+
+/* 티켓 카운터 */
+.ticket-counter {
+    display: flex;
+    align-items: baseline;
+    font-weight: 500;
+    color: #373431;
+    letter-spacing: -0.05em;
+}
+.counter-current {
+    font-size: 64px;
+    font-weight: 600;
+    letter-spacing: -0.04em;
+    margin-left: 80px; 
+}
+.counter-total {
+    font-size: 36px;
+    margin-left: 8px;
+    color: #373431;
+}
+
+/* =========================================
+   5. 하단 갈색 박스
+   ========================================= */
+
+.curator-info-box {
+    width: 100%;
+    height: 258px;
+    bottom: 0;
+    background-color: #373431;
+    
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    
+    padding-top: 10px;
+}
+
+.curator-content-wrapper {
+    width: 1500px;
+    padding-left: 165px;
+    
+    box-sizing: border-box;
+    color: #EDE6DD;
+}
+
+.curator-name-display {
+    font-size: 40px;
+    font-weight: 500;
+    transform: scaleY(1.05);
+    transform-origin: left bottom;
+    color: #EDE6DD;
+    margin: 0 0 4px 0;
+}
+
+.curator-likes-info {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #ffffff;
+}
+
+.curator-speech-bubble {
+  position: relative;  
+  background-color: #ffffff;     
+  color: #373431;                 
+  padding: 16px 24px;             
+  border-radius: 30px 30px 0px 30px; 
+  font-size: 20px;
+  line-height: 1.5;
+  font-weight: 500;
+  width: fit-content;            
+  margin-top: 20px;
+}
+
+.curator-speech-bubble::after {
+  content: "";
+  position: absolute; 
+  width: 100%;
+  height: 100%;
+  border: 1px solid #ffffff; 
+  border-radius: 30px 30px 0 30px; 
+  top: -6px;
+  left: 8px;
+}
