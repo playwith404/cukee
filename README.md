@@ -1,135 +1,83 @@
-# Turborepo starter
+# tool name: 모노레포 (Turborepo + pnpm)
 
-This Turborepo starter is maintained by the Turborepo core team.
+이 저장소는 웹 애플리케이션과 브라우저 익스텐션을 효율적으로 관리하기 위해 Turborepo & pnpm을 사용하여 구성된 모노레포입니다.
 
-## Using this example
+### 시작하기
 
-Run the following command:
+프로젝트를 로컬 환경에 설치하고 실행하는 방법
 
-```sh
-npx create-turbo@latest
-```
+### 1. 의존성 설치
 
-## What's inside?
+루트 폴더에서 다음 명령어를 실행하여 모든 패키지의 의존성을 설치합니다.
 
-This Turborepo includes the following packages/apps:
+pnpm install
 
-### Apps and Packages
+### 2. 개발 서버 실행
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+모든 앱(웹 + 익스텐션)을 동시에 개발 모드로 실행합니다.
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+pnpm dev
 
-### Utilities
+### 3. 특정 앱 개발 모드 실행 (필터링)
 
-This Turborepo has some additional tools already setup for you:
+특정 애플리케이션만 실행하여 자원을 절약할수 있습니다.
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+웹 앱 (web) 실행:
 
-### Build
+Bash
+pnpm run dev --filter=web 
+http://localhost:3000 에서 실행됩니다.
 
-To build all apps and packages, run the following command:
+익스텐션 앱 (extension) 실행:
 
-```
-cd my-turborepo
+Bash
+pnpm run dev --filter=extension
+이 명령은 익스텐션의 빌드를 감시(watch)하고 코드가 변경될 때마다 자동 빌드합니다.
+(익스텐션을 브라우저에 로드하는 방법은 브라우저 확장 로드 섹션 참고)
 
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build
+## Apps 및 Packages 구조 📂
+이 모노레포에는 다음과 같은 주요 구성 요소가 포함되어 있습니다.
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
-```
+앱 (Applications)
 
-You can build a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
+apps/web	
+메인 웹 애플리케이션입니다.	
+기술스택: Next.js, React, TypeScript
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build --filter=docs
+apps/extension	
+브라우저 익스텐션 애플리케이션입니다.	
+기술스택: Vite, React, TypeScript
+패키지 (Packages/Shared Libraries)
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-```
+폴더 & 설명
+@repo/ui	웹 앱과 익스텐션에서 공유하는 공통 React 컴포넌트 라이브러리
+@repo/eslint-config	모노레포 전반에 사용되는 공통 ESLint 설정
+@repo/typescript-config	모노레포 전반에 사용되는 공통 TypeScript 설정
 
-### Develop
 
-To develop all apps and packages, run the following command:
+특정 앱만 빌드하려면 필터를 사용합니다. (예: 익스텐션만 빌드)
 
-```
-cd my-turborepo
+Bash
+pnpm run build --filter=extension
+# 빌드 결과는 apps/extension/dist 폴더에 생성됩니다.
+브라우저 확장 로드
+apps/extension 폴더를 개발자 모드로 브라우저에 로드하는 방법입니다.
 
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev
+Chrome/Edge:
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
-```
+주소창에 chrome://extensions 또는 edge://extensions 입력.
+개발자 모드에서, 압축 해제된 확장 로드를 클릭합니다.
 
-You can develop a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
+apps/extension/dist 폴더를 선택합니다. (개발 모드 실행 중에는 apps/extension 폴더를 직접 선택할 수도 있습니다.)
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev --filter=web
+## 유틸리티 및 도구 🛠️ 
+이 프로젝트에는 다음 도구가 미리 설정되어 있습니다.
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-```
+TypeScript (정적 타입 검사)
 
-### Remote Caching
+ESLint (코드 린팅)
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+Prettier (코드 포맷팅)
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+Vite (익스텐션 번들링)
 
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo login
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo link
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.com/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.com/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.com/docs/reference/configuration)
-- [CLI Usage](https://turborepo.com/docs/reference/command-line-reference)
