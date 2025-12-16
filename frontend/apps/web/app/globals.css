@@ -1,50 +1,50 @@
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* apps/web/app/globals.css */
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
-}
-
-body {
-  color: var(--foreground);
-  background: var(--background);
-}
+/* 1. 초기화 및 기본 설정 */
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
+@import './styles/header.css'; /* Header 및 Dropdown 스타일 임포트 */
+@import './styles/home.css';   /* HomePage 전용 스타일 임포트 */
 
 * {
   box-sizing: border-box;
-  padding: 0;
+}
+
+html, body {
   margin: 0;
+  padding: 0;
+  height: 100%;
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
+body {
+  font-family: 'Pretendard', sans-serif;
+  background-color: #EDE6DD;
+  
+  /* 화면이 작을 땐 스크롤 생김, 크면 안 생김 */
+  overflow: auto; 
+  
+  /* [중요] 내부 콘텐츠(1500px)보다 작아지지 않게 하여 레이아웃 깨짐 방지 */
+  min-width: 1500px; 
 }
 
-.imgDark {
-  display: none;
+/* =========================================
+   2. 레이아웃 공통 구조
+   ========================================= */
+
+.cukee-layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    width: 100%;
+    position: relative;
+    align-items: center;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
-
-  .imgLight {
-    display: none;
-  }
-  .imgDark {
-    display: unset;
-  }
+/* [공통] 중앙 정렬 컨테이너 (모든 섹션의 기준) */
+/* 이 클래스는 상단 영역에도 쓰이고, 하단 갈색 박스 내부 정렬에도 쓰입니다. */
+.layout-center-wrapper {
+    width: 1500px;      /* 고정 너비 */
+    margin: 0 auto;     /* 화면 중앙 정렬 */
+    padding-left: 180px; /* [핵심] 모든 콘텐츠의 왼쪽 시작점 통일 */
+    position: relative;
 }
+
