@@ -22,7 +22,7 @@ CURATOR_NAME = args.curator_name
 # ==========================================
 MODEL_ID = "sh2orc/Llama-3.1-Korean-8B-Instruct"
 DATA_DIR = "./training_datasets"   # 셔플된 데이터 폴더 권장
-OUTPUT_DIR = "./lora_adapters"
+OUTPUT_DIR = "./lora_adapters-korean"
 
 MAX_SEQ_LENGTH = 1024
 LOAD_IN_4BIT = True
@@ -31,7 +31,7 @@ LORA_ALPHA = 128
 LORA_DROPOUT = 0  # Unsloth 최적화
 
 # 실전용 학습 설정
-EPOCHS = 2             # 스타일 확실히 입히기 위해 2바퀴
+EPOCHS = 1            
 LEARNING_RATE = 2e-4
 BATCH_SIZE = 2
 GRAD_ACCUM = 8
@@ -83,8 +83,7 @@ print(f"👉 학습 데이터: {len(train_dataset)}개 / 검증 데이터: {len(
 from unsloth.chat_templates import get_chat_template
 tokenizer = get_chat_template(
     tokenizer,
-    chat_template = "llama-3",
-    mapping = {"role": "from", "content": "value", "user": "human", "assistant": "gpt"},
+    chat_template = "llama-3"
 )
 
 def formatting_prompts_func(examples):
@@ -100,7 +99,7 @@ eval_dataset = eval_dataset.map(formatting_prompts_func, batched=True)
 # 4. WandB 및 Trainer 설정 (Best Model 저장)
 # ==========================================
 # WandB 프로젝트 설정
-wandb.init(project="Movie-Curator-Production", name=f"Run-{CURATOR_NAME}", reinit=True)
+wandb.init(project="Movie-Curator-Production-Korean", name=f"Run-{CURATOR_NAME}", reinit=True)
 
 trainer = SFTTrainer(
     model = model,
@@ -124,7 +123,7 @@ trainer = SFTTrainer(
         weight_decay = 0.01,
         lr_scheduler_type = "linear",
         seed = 3407,
-        output_dir = os.path.join("checkpoints", CURATOR_NAME), # 중간 체크포인트 저장소
+        output_dir = os.path.join("checkpoints_korean", CURATOR_NAME), # 중간 체크포인트 저장소
         
         # [핵심] 평가 및 Best Model 저장 설정
         eval_strategy = "steps",      # 스텝마다 평가
