@@ -40,14 +40,32 @@
 }
 
 /* 2. 갤러리 영역 (3D 액자) */
+
+/* 화살표 네비게이션 */
+.nav-arrow {
+    position: absolute;
+    background: none;
+    border: none;
+    font-size: 96px;
+    font-weight: 100;
+    color: #373431;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    pointer-events: auto;
+}
+.nav-arrow.prev { left: 15%; }
+.nav-arrow.next { right: 15%; }
+
 .exh-gallery-area {
     position: relative;
     width: 100%;
     min-height: 350px; 
-    flex: 1; /* 남는 공간을 모두 차지하여 하단 바를 아래로 밀어냄 */
+    flex: 1; 
+    /* 남는 공간을 모두 차지하여 하단 바를 아래로 밀어냄 */
     display: flex;
     justify-content: center;
     align-items: center;
+    pointer-events: none;
 }
 
 /* 개별 액자 프레임 */
@@ -73,6 +91,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    pointer-events: auto;
 }
 
 /* 포스터 내부 (데이터 로딩 전 비워둠) */
@@ -105,7 +124,6 @@
 .poster-frame.center {
     width: 300px;
     height: 425px;
-    z-index: 20;
     transform: translateX(0) scale(1);
     filter: brightness(1);
 }
@@ -128,6 +146,7 @@
     filter: brightness(0.9);
 }
 
+
 /* [상태 클래스] 좌우 2단계 */
 .poster-frame.left-2 {
     width: 220px;
@@ -142,6 +161,7 @@
     opacity: 0.6;
 }
 
+
 /* 나머지 숨김 */
 .poster-frame.hidden {
     transform: scale(0);
@@ -149,32 +169,8 @@
     z-index: -1;
 }
 
-/* 화살표 네비게이션 */
-.nav-arrow {
-    position: absolute;
-    background: none;
-    border: none;
-    font-size: 96px;
-    font-weight: 100;
-    color: #373431;
-    cursor: pointer;
-    z-index: 100;
-    transition: opacity 0.2s;
-}
-.nav-arrow.prev { left: 15%; }
-.nav-arrow.next { right: 15%; }
 
 
-/* 3. 중간 영역: 캐릭터 & 말풍선 & 티켓 */
-/* 1120*100 */
-/* .middle-interaction-area {
-    width: 1400px;
-    height: 200px;
-    margin: 0 auto;
-    position: relative; 
-    display: flex;
-    align-items: flex-end;
-} */
 .middle-interaction-area {
     /* [수정] 여기도 똑같이 적용 */
     width: 100%;
@@ -213,7 +209,7 @@
     font-size: 15px;
     color: #373431;
     font-weight: 600;
-    margin-bottom: -5px;
+    margin-bottom: 5px;
     margin-left: 10px;
     letter-spacing: -0.03em;
 }
@@ -244,15 +240,6 @@
   left: 8px;
 }
 
-/* 티켓 점선 */
-.ticket-deco::before {
-    content: '';
-    position: absolute;
-    top: 75%;
-    left: 0;
-    width: 100%;
-    border-top: 2px dashed rgba(255,255,255,0.7);
-}
 
 
 /* 4. 하단 검은색 바 (Prompt & Actions) */
@@ -266,7 +253,6 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    z-index: 1; /* 캐릭터보다는 뒤, 배경보다는 앞 : 구조 잡히면 지우기*/
 }
 
 /* 프롬프트 입력창 */
@@ -293,6 +279,7 @@
 
     /* 부모와 동일한 둥근 모양 */
     border-radius: 9999px;
+    pointer-events: none;
 }
 
 
@@ -319,6 +306,7 @@
     justify-content: center;
     align-items: center;
     transition: background 0.2s;
+    z-index: 100;
 }
 .prompt-submit-btn:hover { background-color: #7a726f; }
 
@@ -374,7 +362,12 @@
     .exh-bottom-bar {
         height: 130px; /* 170px -> 130px */
     }
-    
+    /* .exh-gallery-area {
+        width: 100%;
+        min-height: 250px; 
+        flex: 1; 
+    } */
+
     /* 입력창 마진 축소 */
     .prompt-input-wrapper {
         margin-bottom: 15px;

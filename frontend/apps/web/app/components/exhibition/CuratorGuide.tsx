@@ -13,7 +13,6 @@ export const CuratorGuide = ({
   return (
     <div className="middle-interaction-area">
       <div className="character-wrapper">
-        {/* 이미지 경로는 props로 받아도 되고 고정해도 됨 */}
         <img src="/cara/c1.png" alt="MZ Curator" className="character-img" />
       </div>
 

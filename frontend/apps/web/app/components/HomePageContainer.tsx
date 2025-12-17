@@ -73,13 +73,13 @@ export const HomePageContainer: React.FC = () => {
                   bottom: '-120px',
                   zIndex: 20,
                 }}>
-                  {/* <MainCarousel
+                  <MainCarousel
                     tickets={TICKET_DATA}
                     currentIndex={currentIndex}
                     onNext={handleNext}
                     onPrev={handlePrev}
                     onTicketClick={handleTicketClick}
-                  /> */}
+                  />
                 </div>
             </div>
           </main>

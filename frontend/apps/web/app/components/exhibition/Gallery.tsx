@@ -41,9 +41,7 @@ export const Gallery3D = ({
 
   return (
     <div className="exh-gallery-area">
-      <button className="nav-arrow prev" onClick={onPrev} disabled={activeIndex === 0}>
-        &lt;
-      </button>
+
 
       {frames.map((frame, index) => {
         const frameClass = getFrameClass(index);
@@ -74,7 +72,9 @@ export const Gallery3D = ({
           </div>
         );
       })}
-
+      <button className="nav-arrow prev" onClick={onPrev} disabled={activeIndex === 0}>
+        &lt;
+      </button>
       <button 
         className="nav-arrow next" 
         onClick={onNext} 

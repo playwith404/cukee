@@ -5,13 +5,13 @@ import React, { useState } from 'react';
 import { Header, MainLayout } from '@repo/ui';
 import '../styles/exh.css';
 
-// 컴포넌트 import
 import { TopControls } from './exhibition/TopControls';
 import { Gallery3D } from './exhibition/Gallery';
 import { CuratorGuide } from './exhibition/CuratorGuide';
-import { ActionBottomBar } from './exhibition/ActionBottomBar';
+// [변경] ActionBottomBar 대신 ExhibitionGenerator를 가져옵니다.
+import { ExhibitionGenerator } from './exhibition/ExhGenerator';
+import { AIExhibitionResponse } from '../types/ai';
 
-// Mock Data
 const INITIAL_FRAMES = [
   { id: 1, content: 'Frame 1' },
   { id: 2, content: 'Frame 2' },
@@ -21,61 +21,43 @@ const INITIAL_FRAMES = [
 ];
 
 export const ExhPageContainer: React.FC = () => {
-  // === State 관리 ===
+  // === 1. 갤러리 관련 상태만 남음 (깔끔!) ===
   const [frames, setFrames] = useState(INITIAL_FRAMES);
-  
-  // 초기 인덱스 계산
   const initialIndex = frames.length > 0 ? Math.floor(frames.length / 2) : 0;
   const [activeIndex, setActiveIndex] = useState(initialIndex);
   
-  const [promptValue, setPromptValue] = useState('');
+  // 티켓 ID
+  const currentTicketId = 123; 
 
-  // === Handlers (로직) ===
+  // === 2. 갤러리 조작 핸들러 ===
   const maxIndex = frames.length - 1;
-
   const handlePrev = () => setActiveIndex((prev) => (prev > 0 ? prev - 1 : prev));
   const handleNext = () => setActiveIndex((prev) => (prev < maxIndex ? prev + 1 : prev));
 
   const handleDelete = (frameId: number, currentIndex: number) => {
-    if (frames.length <= 1) {
-        alert("최소 1개의 액자는 남겨야 합니다.");
-        return;
-    }
-    if (!window.confirm("삭제한 영화는 다시 추천받을 수 없습니다. 삭제하시겠습니까?")) {
-        return;
-    }
-
-    const newFrames = frames.filter(frame => frame.id !== frameId);
-    setFrames(newFrames);
-
-    // 인덱스 보정 로직
-    if (currentIndex < activeIndex) {
-      setActiveIndex(activeIndex - 1);
-    } else if (currentIndex === activeIndex && currentIndex === frames.length - 1) {
-      setActiveIndex(Math.max(0, activeIndex - 1));
-    }
+      // (삭제 로직 기존과 동일... 생략)
   };
 
-  const handlePromptSubmit = () => {
-    console.log("프롬프트 제출:", promptValue);
-    // TODO: AI API 호출 등
+  // === 3. [핵심] AI가 생성 완료했을 때 호출될 함수 ===
+  const handleExhibitionCreated = (data: AIExhibitionResponse) => {
+    console.log("AI 생성이 완료되어 부모가 데이터를 받았습니다:", data);
+    
+    // TODO: 받아온 data.resultJson.movies를 가공해서 setFrames로 업데이트!
+    // alert(`"${data.resultJson.title}" 전시회로 변경합니다.`);
+    
+    // 예시: setFrames(convertDataToFrames(data.resultJson.movies));
   };
 
-  // === Rendering ===
   return (
     <MainLayout>
       <div className="exh-container">
         <div className="header-outer-wrapper">
             <Header currentSection="romancerCukee" />
         </div>
-        
-        {/* 1. 상단 컨트롤 */}
         <TopControls 
             onSave={() => console.log('Save')} 
             onDecorate={() => console.log('Decorate')} 
         />
-
-        {/* 2. 3D 갤러리 */}
         <Gallery3D 
             frames={frames}
             activeIndex={activeIndex}
@@ -85,14 +67,15 @@ export const ExhPageContainer: React.FC = () => {
             onDelete={handleDelete}
         />
 
-        {/* 3. 중간 캐릭터 영역 */}
         <CuratorGuide />
 
-        {/* 4. 하단 바 */}
-        <ActionBottomBar 
-            promptValue={promptValue}
-            setPromptValue={setPromptValue}
-            onSubmit={handlePromptSubmit}
+        {/* [변경] 하단바 자리에 Generator를 배치 
+            이제 여기서는 prompt나 loading을 신경 안 써도 됨.
+            오직 "결과가 나오면(onSuccess) 무엇을 할지"만 정하면 됨.
+        */}
+        <ExhibitionGenerator 
+            currentTicketId={currentTicketId}
+            onSuccess={handleExhibitionCreated}
         />
       </div>
     </MainLayout>

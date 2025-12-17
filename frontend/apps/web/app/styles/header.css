@@ -1,7 +1,7 @@
 /* apps/web/app/styles/header.css */
 
 /* =========================================
-   3. Header 영역
+   Header 영역
    ========================================= */
 .header-outer-wrapper {
     position: sticky;
@@ -70,133 +70,136 @@
 }
 
 /* -----------------------------------------
-   [추가] 드롭다운 메뉴 스타일 (글래스모피즘)
+   드롭다운 메뉴 스타일 (글래스모피즘)
    ----------------------------------------- */
 .cukee-dropdown-outer {
     position: absolute;
     top: 100%; 
     width: 1300px;  
-    z-index: 200; 
-    /* 드롭다운 중앙 정렬을 위해 Header 패딩 값만큼 조정 */
-    left: -20px; 
+    z-index: 100; 
 }
+
 
 .cukee-dropdown-glass {
     backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    background-color: rgba(237, 230, 221, 0.75); 
-    border: 1px solid rgba(255, 255, 255, 0.2); 
-    box-shadow: 0 8px 10px rgba(94, 86, 86, 0.3);
-    border-radius: 16px; 
-    padding: 20px;
+    background-color: rgba(237, 230, 221, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    position: relative;
+    height: 350px; 
+    box-sizing: border-box;
 }
-.dropdown-content-split {
+
+/* 1. 좌우 50:50 분할 */
+.drop-split {
     display: flex;
-    justify-content: space-between;
-    padding-bottom: 30px; 
+    min-height: 100%; /* 최소 높이 확보 */
 }
 
-.dropdown-left-section {
-    width: 35%; 
-    flex-shrink: 0;
-    padding-right: 20px;
-    border-right: 1px solid rgba(143, 135, 132, 0.2); 
+.drop-section {
+    flex: 1; /* 정확히 반반 차지 */
+    display: flex;
+    flex-direction: column;
 }
 
-.dropdown-right-section {
-    width: 60%; 
-    padding-left: 20px;
+/* === Left Section (Menu) === */
+.drop-left {
+    /* [수정 2] 중앙 정렬(center)을 풀고 상단 정렬(flex-start)로 변경 */
+    /* 이렇게 해야 '더보기'가 열려도 위쪽 메뉴들 위치가 안 바뀜 */
+    justify-content: flex-start; 
+    align-items: center;
+    border-right: 1px solid rgba(143, 135, 132, 0.3);
 }
 
-.dropdown-list-title {
-    font-size: 20px;
-    color: #6b6b6b;
-    margin: 0 0 10px 0;
+.menu-container {
+    width: 200px; /* 메뉴들 줄 맞춤을 위한 고정 폭 */
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* 메뉴 간 간격 */
 }
 
-.dropdown-scroll-list {
-    max-height: 250px; 
-    overflow-y: auto; 
-    scrollbar-width: thin;
-    scrollbar-color: #8F8784 #EDE6DD;
-}
-
-.dropdown-scroll-list::-webkit-scrollbar {
-    width: 6px;
-}
-.dropdown-scroll-list::-webkit-scrollbar-thumb {
-    background-color: #8F8784;
-    border-radius: 3px;
-}
-.dropdown-scroll-list::-webkit-scrollbar-track {
-    background-color: rgba(0, 0, 0, 0.05);
-}
-
-.dropdown-exhibition-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.dropdown-list-item {
-    font-size: 15px;
-    padding: 6px 0;
+/* 3. 메뉴 버튼 스타일 통일 */
+.menu-group {
     color: #373431;
-    cursor: pointer;
-    transition: color 0.2s;
+    width: 100%;
+    text-align: center; /* 버튼 텍스트는 중앙 */
+    padding: 5px 0;
 }
-
-.dropdown-list-item:hover {
-    color: #7b4d4d;
-}
-
-.dropdown-more-section {
-    margin-top: 15px;
-}
-
-.dropdown-more-button {
+.menu-btn {
+    font-size: 24px;
+    font-weight: 300;
     background: none;
     border: none;
-    color: #7b4d4d;
     cursor: pointer;
-    padding: 5px 0;
-    font-size: 14px;
+}
+/* 더보기버튼 */
+.menu-btn-more {
+    margin-top: 20px;
+    font-size: 20px;
+    font-weight: 300;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+.menu-btn:hover { color: #373431; font-weight: 500; }
+
+/* 4. 하위 기능 왼쪽 정렬 */
+.sub-menu {
+    background: none;
+    text-align: center;
+    font-size: 16px;
+    font-weight: 300;
+    color: #555;
 }
 
-.dropdown-more-items {
-    padding-left: 10px;
-    border-left: 1px solid rgba(143, 135, 132, 0.2);
-    margin-top: 5px;
+.sub-item-bug:hover { text-decoration: underline; }
+.sub-item-wd:hover { text-decoration: underline; }
+
+/* === Right Section (List) === */
+.drop-right {
+    justify-content: flex-start;
+    padding-left: 40px; /* 구분선과의 간격 */
+    align-items: center;
 }
 
-.dropdown-footer {
+.list-title {
+    font-size: 24px;
+    font-weight: 300;
+    color: #373431;
+    margin-top: 0;
+    margin-bottom: 30px;
+}
+
+.scroll-list {
+    flex: 1;
+    overflow-y: auto;
+    width: 45%;
+    max-height: 200px;
+    scrollbar-width: thin;
+    scrollbar-color: #8F8784 transparent;
+}
+.scroll-list::-webkit-scrollbar { width: 2px; }
+.scroll-list::-webkit-scrollbar-thumb { background: #8F8784; border-radius: 4px; }
+
+.scroll-list ul { padding: 0; margin: 0; list-style: none; }
+.scroll-list li {
+    padding: 10px 30px;
+    font-size: 16px;
+    color: #373431;
+    cursor: pointer;
+}
+.scroll-list li:hover { color: #8F8784; }
+
+/* === Footer(로그아웃) === */
+.drop-footer {
     position: absolute;
-    bottom: 10px;
-    right: 20px;
-    font-size: 12px;
-}
-
-.dropdown-logout-text {
-    color: #7b4d4d;
+    bottom: 20px;
+    right: 50px;
+    font-size: 16px;
+    color: #8F8784;
     cursor: pointer;
     text-decoration: underline;
 }
 
-.dropdown-logout {
-    display: none; 
-}
-
-/* 추가적인 드롭다운 내부 아이템 스타일 (재활용성 위해) */
-.dropdown-user-info, .dropdown-item-group, .dropdown-logout {
-    padding: 10px 0;
-    color: #373431; 
-}
-.dropdown-item {
-    padding: 8px 10px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-.dropdown-item:hover {
-    background-color: rgba(143, 135, 132, 0.2); 
-}
