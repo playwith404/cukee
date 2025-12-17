@@ -1,0 +1,335 @@
+/* apps/web/app/styles/exh.css */
+
+/* 전체 컨테이너: 헤더 제외한 모든 영역 */
+.exh-container {
+    width: 100%;
+    min-height: 900px; 
+    
+    /* [수정] 화면이 클 때는 꽉 차게 */
+    height: 100vh;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background-color: #EDE6DD; /* 전체 배경색 유지 */
+    /* 나중에 노이즈 넣는것도 고려... */
+}
+
+/* 1. 상단 컨트롤 버튼 (저장하기 / 꾸미기) */
+/* 버튼 영역 */
+.exh-top-controls {
+    position: relative;
+    width: 1500px; 
+    margin: 30px auto 10px auto;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 80px; /* inner-container 패딩과 맞춤 */
+}
+/* 버튼 */
+.control-btn {
+    background-color: #EDE6DD;
+    border: 1px solid #8F8784;
+    border-radius: 30px;
+    padding: 10px 30px;
+    font-size: 24px;
+    font-weight: 300;
+    color: #373431;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.control-btn:hover {
+    background-color: #373431;
+    color: #EDE6DD;
+}
+
+/* 2. 갤러리 영역 (3D 액자) */
+.exh-gallery-area {
+    position: relative;
+    width: 100%;
+    min-height: 350px; 
+    flex: 1; /* 남는 공간을 모두 차지하여 하단 바를 아래로 밀어냄 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 개별 액자 프레임 */
+.poster-frame {
+    position: absolute;
+    transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+    
+    /* [변경] 기존 CSS Border/Outline 제거 */
+    border: none; 
+    outline: none;
+    background-color: transparent; /* 액자 바깥 투명 영역 처리를 위해 투명화 */
+    
+    background-image: url('/frame.png'); 
+    background-size: 100% 100%; /* 액자 이미지를 div 크기에 꽉 채움 */
+    background-position: center;
+
+    /* [중요] 액자 두께만큼 내부 콘텐츠를 안쪽으로 밀어넣기 */
+    /* 사용하는 액자 이미지의 두께에 따라 이 값을 조절해야 합니다. */
+    padding: 40px; 
+    box-sizing: border-box; 
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 포스터 내부 (데이터 로딩 전 비워둠) */
+.poster-content {
+    width: 100%;
+    height: 100%;
+    background-color: #e8e2dc; /* 빈 종이 색상 */
+    /* 포스터가 액자 안쪽 영역에 꽉 차게 됨 */
+
+    /* box-shadow: inset 0 0 10px rgba(0,0,0,0.2);  */
+    /* 안쪽 그림자 효과 */
+}
+
+/* 액자 하단 텍스트 (고정하기 | 삭제하기) */
+.poster-actions {
+    position: absolute;
+    bottom: -25px;
+    width: 100%;
+    text-align: center;
+    font-size: 20px;
+    font-weight: 400;
+    color: #373431;
+    /* 가려두었다가 앞에 오면 보이게 */
+    opacity: 0; 
+    transition: opacity 0.3s;
+    pointer-events: none; /* 안 보일 땐 클릭 불가 */
+}
+
+/* [상태 클래스] 중앙 (Active) */
+.poster-frame.center {
+    width: 300px;
+    height: 425px;
+    z-index: 20;
+    transform: translateX(0) scale(1);
+    filter: brightness(1);
+}
+.poster-frame.center .poster-actions {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* [상태 클래스] 좌우 1단계 */
+.poster-frame.left-1 {
+    width: 275px;
+    height: 390px;
+    transform: translateX(-300px) scale(0.9) rotateY(20deg);
+    filter: brightness(0.9);
+}
+.poster-frame.right-1 {
+    width: 275px;
+    height: 390px;
+    transform: translateX(300px) scale(0.9) rotateY(-20deg);
+    filter: brightness(0.9);
+}
+
+/* [상태 클래스] 좌우 2단계 */
+.poster-frame.left-2 {
+    width: 220px;
+    height: 310px;
+    transform: translateX(-510px) scale(0.8) rotateY(30deg);
+    opacity: 0.6;
+}
+.poster-frame.right-2 {
+    width: 220px;
+    height: 310px;
+    transform: translateX(510px) scale(0.8) rotateY(-30deg);
+    opacity: 0.6;
+}
+
+/* 나머지 숨김 */
+.poster-frame.hidden {
+    transform: scale(0);
+    opacity: 0;
+    z-index: -1;
+}
+
+/* 화살표 네비게이션 */
+.nav-arrow {
+    position: absolute;
+    background: none;
+    border: none;
+    font-size: 96px;
+    font-weight: 100;
+    color: #373431;
+    cursor: pointer;
+    z-index: 100;
+    transition: opacity 0.2s;
+}
+.nav-arrow.prev { left: 15%; }
+.nav-arrow.next { right: 15%; }
+
+
+/* 3. 중간 영역: 캐릭터 & 말풍선 & 티켓 */
+/* 1120*100 */
+.middle-interaction-area {
+    width: 1400px;
+    height: 200px;
+    margin: 0 auto;
+    position: relative; 
+    display: flex;
+    align-items: flex-end;
+}
+
+/* 캐릭터 위치 */
+.character-wrapper {
+    position: relative;
+    height: auto;
+    margin-right: 10px;
+}
+.character-img {
+    width: 250px; 
+    display: block;
+}
+
+/* 말풍선 래퍼 (캐릭터 옆/위) */
+.bubble-wrapper {
+    height: 200px;
+    display: flex;
+    flex-direction: column; /* 세로 방향 정렬 */
+    justify-content: center; /* 내부 요소들을 세로 중앙에 배치 */
+}
+
+.like-info {
+    font-size: 15px;
+    color: #373431;
+    font-weight: 600;
+    margin-bottom: -5px;
+    margin-left: 10px;
+    letter-spacing: -0.03em;
+}
+
+/* [요청하신 말풍선 CSS 그대로 적용] */
+.curator-speech-bubble {
+  position: relative;  
+  background-color: #ffffff;     
+  color: #373431;                 
+  padding: 16px 40px;             
+  border-radius: 30px 30px 30px 0px; 
+  font-size: 18px; /* 크기 약간 조정 */
+  letter-spacing: -0.03em;
+  line-height: 1.5;
+  font-weight: 500;
+  width: fit-content;            
+  box-shadow: 2px 4px 12px rgba(0,0,0,0.08);
+}
+
+.curator-speech-bubble::after {
+  content: "";
+  position: absolute; 
+  width: 100%;
+  height: 100%;
+  border: 1px solid #000000; 
+  border-radius: 30px 30px 30px 0px; 
+  top: -6px;
+  left: 8px;
+}
+
+/* 티켓 점선 */
+.ticket-deco::before {
+    content: '';
+    position: absolute;
+    top: 75%;
+    left: 0;
+    width: 100%;
+    border-top: 2px dashed rgba(255,255,255,0.7);
+}
+
+
+/* 4. 하단 검은색 바 (Prompt & Actions) */
+.exh-bottom-bar {
+    position: relative;
+    left: 0;
+    width: 100%;
+    height: 170px;
+    background-color: #373431;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 1; /* 캐릭터보다는 뒤, 배경보다는 앞 : 구조 잡히면 지우기*/
+}
+
+/* 프롬프트 입력창 */
+.prompt-input-wrapper {
+    position: relative;
+    width: 1000px;
+    height: 64px;
+    background-color: #FEF8F2;
+    border-radius: 9999px;
+    display: flex;
+    align-items: center;
+    padding: 0 12px 0 32px;
+    margin-bottom: 24px;
+}
+.prompt-input-wrapper::after {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 3px; 
+    /* [핵심 3: 테두리 및 배경] 배경은 투명, 테두리만 남김 */
+    background-color: transparent; /* 배경색은 투명 */
+    border: 2px solid #FEF8F2; /* 원하는 두께와 색상의 테두리 설정 */
+
+    /* 부모와 동일한 둥근 모양 */
+    border-radius: 9999px;
+}
+
+
+.prompt-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 18px;
+    color: #373431;
+    background: transparent;
+}
+.prompt-input::placeholder { color: #ccc; }
+
+.prompt-submit-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: #8F8784;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background 0.2s;
+}
+.prompt-submit-btn:hover { background-color: #7a726f; }
+
+/* 하단 액션 버튼들 */
+.bottom-actions {
+    display: flex;
+    gap: 50px;
+}
+
+.action-chip {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.6);
+    color: rgba(255,255,255,0.9);
+    padding: 10px 100px;
+    border-radius: 9999px;
+    font-size: 20px;
+    font-weight: 300;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.action-chip:hover {
+    background-color: #EDE6DD;
+    border-color: #fff;
+    color: #373431;
+}
