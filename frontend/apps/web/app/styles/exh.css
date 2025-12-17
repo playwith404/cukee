@@ -3,10 +3,7 @@
 /* 전체 컨테이너: 헤더 제외한 모든 영역 */
 .exh-container {
     width: 100%;
-    min-height: 900px; 
-    
-    /* [수정] 화면이 클 때는 꽉 차게 */
-    height: 100vh;
+    min-height: 100vh; 
     position: relative;
     display: flex;
     flex-direction: column;
@@ -18,7 +15,8 @@
 /* 버튼 영역 */
 .exh-top-controls {
     position: relative;
-    width: 1500px; 
+    width: 100%;
+    max-width: 1500px; 
     margin: 30px auto 10px auto;
     display: flex;
     justify-content: space-between;
@@ -169,15 +167,29 @@
 
 /* 3. 중간 영역: 캐릭터 & 말풍선 & 티켓 */
 /* 1120*100 */
-.middle-interaction-area {
+/* .middle-interaction-area {
     width: 1400px;
     height: 200px;
     margin: 0 auto;
     position: relative; 
     display: flex;
     align-items: flex-end;
+} */
+.middle-interaction-area {
+    /* [수정] 여기도 똑같이 적용 */
+    width: 100%;
+    max-width: 1400px;
+    
+    height: 200px;
+    margin: 0 auto; /* 중앙 정렬 */
+    position: relative; 
+    display: flex;
+    align-items: flex-end;
+    
+    /* [추가] 안전장치 */
+    padding: 0 20px; /* 모바일에서 좌우 여백 확보 */
+    box-sizing: border-box;
 }
-
 /* 캐릭터 위치 */
 .character-wrapper {
     position: relative;
@@ -332,4 +344,40 @@
     background-color: #EDE6DD;
     border-color: #fff;
     color: #373431;
+}
+
+/* 반응형 코드 추가 */
+@media (max-height: 900px) {
+
+    /* 상단 버튼 여백 줄이기 */
+    .exh-top-controls {
+        margin: 25 px auto 5px auto; /* 위아래 여백 축소 */
+    }
+
+    /* 중간 캐릭터 영역 높이 줄이기 */
+    .middle-interaction-area {
+        height: 140px; /* 200px -> 140px로 축소 */
+    }
+    
+    /* 캐릭터 이미지도 같이 작아져야 함 */
+    .character-img {
+        width: 180px; /* 250px -> 180px */
+    }
+    
+    /* 말풍선 폰트 살짝 축소 */
+    .curator-speech-bubble {
+        padding: 12px 25px;
+        font-size: 15px;
+    }
+
+    /* 하단 바 높이 줄이기 */
+    .exh-bottom-bar {
+        height: 130px; /* 170px -> 130px */
+    }
+    
+    /* 입력창 마진 축소 */
+    .prompt-input-wrapper {
+        margin-bottom: 15px;
+        height: 50px; /* 입력창 높이도 살짝 */
+    }
 }

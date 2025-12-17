@@ -11,8 +11,8 @@
 }
 
 .inner-container {
-    /* layout-center-wrapper 속성을 그대로 사용 (1500px, 중앙정렬, 180px 패딩) */
-    width: 1500px;
+    width: 100%;
+    max-width: 1500px;
     margin: 0 auto;
     padding-left: 80px; 
     
@@ -100,7 +100,8 @@
 
 .curator-info-box {
     width: 100%;
-    height: 258px;
+    /* height: 258px; */
+    flex: 1;
     bottom: 0;
     background-color: #373431;
     
@@ -113,7 +114,8 @@
 }
 
 .curator-content-wrapper {
-    width: 1500px;
+    width: 100%;
+    max-width: 1500px;
     padding-left: 165px;
     
     box-sizing: border-box;
@@ -157,4 +159,26 @@
   border-radius: 30px 30px 0 30px; 
   top: -6px;
   left: 8px;
+}
+
+/* 반응형: 화면 높이가 900 미만 */
+@media (max-height: 900px) {
+
+    /* 2. 메인 타이틀(H1) 크기 대폭 축소 */
+    .home-text-section h1 {
+        padding: 20px 80px; /* 패딩 축소 */
+        margin-bottom: 5px;
+    }
+    
+    /* 3. 작은 텍스트들 축소 */
+    .home-text-section p.fixed-text {
+        font-size: 20px; /* 30px -> 20px */
+    }
+    
+
+    /* 말풍선 크기 및 위치 */
+    .curator-speech-bubble {
+        margin-top: 10px;
+        padding: 10px 20px;
+    }
 }
