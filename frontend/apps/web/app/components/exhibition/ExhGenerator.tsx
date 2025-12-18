@@ -10,8 +10,9 @@ interface ExhibitionGeneratorProps {
   currentTicketId: number;
   onSuccess: (data: AIExhibitionResponse) => void; // 부모에게 결과를 전달할 콜백
 }
-
+// 전시생성) 통신 & 에러처리 & 로딩관리
 export const ExhibitionGenerator = ({ currentTicketId, onSuccess }: ExhibitionGeneratorProps) => {
+  
   // 사용자의 입력을 저장할 상태
   const [prompt, setPrompt] = useState('');
   // 로딩 상태 (버튼 비활성화용)

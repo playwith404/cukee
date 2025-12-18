@@ -9,7 +9,6 @@ import styles from './ExhPageContainer.module.css';
 import { TopControls } from './exhibition/TopControls';
 import { Gallery3D } from './exhibition/Gallery';
 import { CuratorGuide } from './exhibition/CuratorGuide';
-// [변경] ActionBottomBar 대신 ExhibitionGenerator를 가져옵니다.
 import { ExhibitionGenerator } from './exhibition/ExhGenerator';
 import { AIExhibitionResponse } from '../types/ai';
 
@@ -40,6 +39,7 @@ export const ExhPageContainer: React.FC = () => {
   };
 
   // === 3. [핵심] AI가 생성 완료했을 때 호출될 함수 ===
+  // 나중에 커스텀 훅으로 분리하기!!!!!!!!
   const handleExhibitionCreated = (data: AIExhibitionResponse) => {
     console.log("AI 생성이 완료되어 부모가 데이터를 받았습니다:", data);
     

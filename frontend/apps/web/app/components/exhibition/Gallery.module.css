@@ -64,7 +64,6 @@
   opacity: 0;
   transition: opacity 0.3s;
   pointer-events: none;
-  z-index: 10;
 }
 /* 상태 클래스들 */
 .center {
@@ -73,7 +72,7 @@
   transform: translateX(0) scale(1);
   filter: brightness(1);
   pointer-events: auto; /* 중앙만 클릭 가능 */
-  z-index: 100;
+
 }
 .center .actions {
   opacity: 1;
@@ -90,10 +89,8 @@
   color: #373431;
   cursor: pointer;
   padding: 5px 10px; /* [핵심] 텍스트 주변에 클릭 가능한 투명 영역 추가 */
-  
-  /* z-index 안전장치 */
   position: relative;
-  z-index: 201; 
+  z-index: 101; 
 }
 .deleteBtn {
   font-weight: 600;

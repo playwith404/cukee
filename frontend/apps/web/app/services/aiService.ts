@@ -1,7 +1,7 @@
 // apps/web/app/services/aiService.ts
 import { AIExhibitionRequest, AIExhibitionResponse } from "../types/ai";
 
-// 백엔드 기본 주소 (일단 하드코딩)
+// 백엔드 기본 주소 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 
 export const generateExhibition = async (
@@ -22,17 +22,17 @@ export const generateExhibition = async (
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        // 토큰이 필요하다면?? 아래 주석 해제 후 로직 추가
-        // 'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
       },
+      //브라우저가 'session' 쿠키를 백엔드로 같이 보냅니다.
+      credentials: 'include',
       body: JSON.stringify(requestBody),
     });
 
     // 에러 핸들링 (명세서 기준)
     if (!response.ok) {
-      if (response.status === 400) throw new Error("프롬프트가 누락되었습니다.");
-      if (response.status === 401) throw new Error("로그인이 필요합니다.");
-      if (response.status === 500) throw new Error("AI 생성에 실패했습니다.");
+      if (response.status === 400) throw new Error("프롬프트를 입력해주세요.");
+      if (response.status === 401) throw new Error("로그인이 만료되었습니다.");
+      if (response.status === 500) throw new Error("큐레이터 생성에 실패했습니다.");
       throw new Error(`알 수 없는 에러 발생: ${response.status}`);
     }
 
