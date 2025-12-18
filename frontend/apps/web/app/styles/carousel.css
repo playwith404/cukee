@@ -3,9 +3,10 @@
 
 /* 1. 컴포넌트 전체 컨테이너 */
 .mc-container {
+    bottom: -50px;
     position: relative;
-    min-width: 400px; /* 최소 너비만 확보 */
-    height: 300px;
+    min-width: 500px;
+    height: auto;
     display: flex;
     align-items: flex-end;
 }
@@ -14,9 +15,8 @@
 .mc-character-area {
     position: absolute;
     left: -250px;
-    bottom: -70px;
     width: 150px;
-    z-index: 20;
+    /* z-index: 100; */
     pointer-events: none;
 }
 .mc-character-img {
@@ -29,7 +29,7 @@
 .mc-ticket-cluster {
     position: relative;
     width: 400px;
-    height: 650px;
+    height: 850px;
     margin: 0 auto; 
     /* 이미지들만 깔끔하게 보이도록 다른 스타일 제거 */
 }
@@ -64,25 +64,21 @@
 
 /* [Layer 3] 3번째 티켓 (가장 뒤) */
 .mc-layer-third {
-    z-index: 10; /* 맨 뒤 */
+    z-index: 0; /* 맨 뒤: 나중에 뭐 막히면 그때쓰기.. */
     opacity: 0.7; /* 투명도 70% */
-    
-    /* 1번보다 오른쪽으로 100px 이동, 크기는 절반(0.5) */
-    transform: translateX(160px) scale(0.5); 
+    transform: translateX(250px) scale(0.5); 
 }
 
 /* [Layer 2] 2번째 티켓 (중간) */
 .mc-layer-second {
-    z-index: 20; /* 중간 */
+    z-index: 0; /* 중간 */
     opacity: 0.7; /* 투명도 70% */
-    
-    /* 1번보다 오른쪽으로 50px 이동, 크기는 절반(0.5) */
-    transform: translateX(150px) scale(0.5); 
+    transform: translateX(200px) scale(0.5); 
 }
 
 /* [Layer 1] Main 티켓 (가장 앞) */
 .mc-layer-main {
-    z-index: 30; /* 맨 앞 */
+    z-index: 0; /* 맨 앞 */
     opacity: 1;
     
     /* 정위치, 크기 100% */
@@ -105,7 +101,7 @@
     
     background: none;
     border: none;
-    font-size: 40px;
+    font-size: 70px;
     color: #3e3e3e;
     cursor: pointer;
     z-index: 40; /* 티켓보다 위에 오도록 */
@@ -117,12 +113,12 @@
 
 .mc-next-btn {
     position: absolute;
-    right: -20px;
+    right: 0px;
     top: 50%;
     transform: translateY(-50%);
     background: none;
     border: none;
-    font-size: 40px;
+    font-size: 70px;
     color: #3e3e3e;
     cursor: pointer;
     z-index: 30;
@@ -137,4 +133,48 @@
     color: #EDE6DD;
     cursor: pointer;
     white-space: nowrap;
+}
+
+/* apps/web/app/styles/carousel.css 맨 아래에 추가 */
+
+/* 반응형: 화면 높이가 900 미만 */
+@media (max-height: 900px) {
+
+    /* 1. 티켓 뭉치 영역 크기 축소 */
+    .mc-ticket-cluster {
+        width: 260px;  /* 400px -> 260px */
+        height: 550px; /* 850px -> 550px */
+    }
+
+    /* 2. 뒤쪽 티켓들의 이동 거리(gap) 조정 */
+    /* 컨테이너가 줄었으므로 이동 거리도 줄여야 비율이 맞음 */
+    /* .mc-layer-main {
+        transform: translateX(130px) scale(1); 
+    } */
+    .mc-layer-main {
+        transform: scale(0.9); /* 1.0 -> 0.9로 10% 더 축소 */
+    }
+    .mc-layer-second {
+        transform: translateX(130px) scale(0.5); /* 200px -> 130px */
+    }
+    
+    .mc-layer-third {
+        transform: translateX(165px) scale(0.5); /* 250px -> 165px */
+    }
+
+    /* 3. 캐릭터 크기 및 위치 조정 */
+    .mc-character-area {
+        width: 130px; /* 150px -> 100px */
+        left: -100px; /* -250px -> -160px (티켓쪽으로 당김) */
+    }
+    
+    /* 버튼 위치 미세 조정 */
+    .mc-prev-btn {
+        left: 0px; 
+    }
+
+    /* 5. 텍스트 링크 크기 및 위치 조정 */
+    .mc-link-text {
+        bottom: -50px;   /* -60px -> -40px */
+    }
 }

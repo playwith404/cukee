@@ -4,7 +4,7 @@
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
 @import './styles/header.css'; /* Header 및 Dropdown 스타일 임포트 */
 @import './styles/home.css';   /* HomePage 전용 스타일 임포트 */
-
+@import './styles/carousel.css';
 * {
   box-sizing: border-box;
 }

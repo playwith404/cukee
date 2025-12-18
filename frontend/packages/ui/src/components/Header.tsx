@@ -20,73 +20,76 @@ const TICKET_LIST = [
 
 const DropdownMenu = () => {
   const nickname = '마길초';
+  const [showInfo, setShowInfo] = useState(false);
   const [showMore, setShowMore] = useState(false);
 
   return (
     <div className="cukee-dropdown-outer"> 
         <div className="cukee-dropdown-glass">
             
-            {/* 좌우 분할 컨테이너 */}
-            <div className="dropdown-content-split">
+            <div className="drop-split">
                 
-                {/* 1. [좌측 영역] 내 정보, 새 전시회 생성하기, 더보기 */}
-                <div className="dropdown-left-section">
-                    <div className="dropdown-user-info">
-                        <span>내 정보<br /></span>
-                        <span>{nickname} 님 ✏️</span> 
-                    </div>
-                    
-                    <div className="dropdown-item-group">
-                        <div className="dropdown-item">내 전시회 검색</div>
-                        <div className="dropdown-item">새 전시회 생성하기</div>
-                    </div>
-
-                    {/* 더보기 버튼 및 추가 메뉴 */}
-                    <div className="dropdown-more-section">
-                        <button 
-                            className="dropdown-more-button"
-                            onClick={() => setShowMore(prev => !prev)}
-                        >
-                            더보기 {showMore ? '▲' : '▼'}
-                        </button>
+                {/* 1. [좌측] 50% 영역: 메뉴 모음 */}
+                <div className="drop-section drop-left">
+                    <div className="menu-container">
                         
-                        {showMore && (
-                            <div className="dropdown-more-items">
-                                <div className="dropdown-item">버그 제보</div>
-                                <div className="dropdown-item">탈퇴하기</div>
-                            </div>
-                        )}
+                        {/* [수정 2] 내 정보 영역 */}
+                        <div className="menu-group">
+                            <button 
+                                className="menu-btn" 
+                                onClick={() => setShowInfo(!showInfo)}
+                            >
+                                내 정보 {showInfo ? '' : ''}
+                            </button>
+                            
+                            {/* 버튼 누르면 닉네임 등장 */}
+                            {showInfo && (
+                                <div className="sub-menu">
+                                    <p>✏️ {nickname} 님</p>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* 새 전시회 (단일 버튼) */}
+                        <div className="menu-group">
+                            <button className="menu-btn">새 전시회 생성하기</button>
+                            <button className="menu-btn-more" onClick={() => setShowMore(!showMore)}>
+                                더보기 {showMore ? '▲' : '▼'}
+                            </button>
+                            {showMore && (
+                                <div className="sub-menu">
+                                    <p className="sub-item-bug">버그 제보</p>
+                                    <p className="sub-item-wd">탈퇴하기</p>
+                                </div>
+                            )}
+                        </div>
+
                     </div>
                 </div>
 
-                {/* 2. [우측 영역] 전시회 목록 (스크롤 영역) */}
-                <div className="dropdown-right-section">
-                    <p className="dropdown-list-title">최근 큐레이션 전시회 목록</p>
-                    
-                    {/* 스크롤을 구현할 컨테이너 */}
-                    <div className="dropdown-scroll-list">
-                        <ul className="dropdown-exhibition-list">
+                {/* 2. [우측] 50% 영역: 리스트 */}
+                <div className="drop-section drop-right">
+                    <p className="list-title">나의 전시회 목록</p>
+                    <div className="scroll-list">
+                        <ul>
                             {TICKET_LIST.map((name, index) => (
-                                <li key={index} className="dropdown-list-item">
-                                    {name}
-                                </li>
+                                <li key={index}>{name}</li>
                             ))}
                         </ul>
                     </div>
                 </div>
 
-            </div> {/* end of dropdown-content-split */}
+            </div>
             
-            {/* 3. [우측 하단] 로그아웃 텍스트 */}
-            <div className="dropdown-footer">
-                <span className="dropdown-logout-text">로그아웃</span>
+            {/* 로그아웃 (우측 하단) */}
+            <div className="drop-footer">
+                <span>로그아웃</span>
             </div>
             
         </div>
     </div>
   );
 };
-
 interface HeaderProps {
   currentSection: string; 
   onBack?: () => void; 
