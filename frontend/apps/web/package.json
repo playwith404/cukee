@@ -12,6 +12,8 @@
   },
   "dependencies": {
     "@repo/ui": "workspace:*",
+    "@tanstack/react-query": "^5.17.19",
+    "axios": "^1.6.5",
     "next": "16.0.10",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
