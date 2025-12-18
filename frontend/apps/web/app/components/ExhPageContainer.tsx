@@ -3,7 +3,8 @@
 
 import React, { useState } from 'react';
 import { Header, MainLayout } from '@repo/ui';
-import '../styles/exh.css';
+// import '../styles/exh.css';
+import styles from './ExhPageContainer.module.css';
 
 import { TopControls } from './exhibition/TopControls';
 import { Gallery3D } from './exhibition/Gallery';
@@ -50,10 +51,20 @@ export const ExhPageContainer: React.FC = () => {
 
   return (
     <MainLayout>
-      <div className="exh-container">
+      {/* ✅ [변경] 문자열 "exh-container" 대신 
+         모듈 객체 styles.container를 사용합니다. 
+      */}
+      <div className={styles.container}>
+        
+        {/* 헤더 위치 잡는 CSS도 모듈화했다면 styles.headerWrapper 등으로 변경 필요 */}
         <div className="header-outer-wrapper">
             <Header currentSection="romancerCukee" />
         </div>
+
+        {/* 👇 자식 컴포넌트들 (TopControls, Gallery3D 등)은
+          각자의 파일 안에서 자신의 module.css를 import하고 있을 것이므로
+          여기서는 아무것도 건드릴 필요가 없습니다! (이게 모듈화의 장점)
+        */}
         <TopControls 
             onSave={() => console.log('Save')} 
             onDecorate={() => console.log('Decorate')} 
@@ -69,10 +80,6 @@ export const ExhPageContainer: React.FC = () => {
 
         <CuratorGuide />
 
-        {/* [변경] 하단바 자리에 Generator를 배치 
-            이제 여기서는 prompt나 loading을 신경 안 써도 됨.
-            오직 "결과가 나오면(onSuccess) 무엇을 할지"만 정하면 됨.
-        */}
         <ExhibitionGenerator 
             currentTicketId={currentTicketId}
             onSuccess={handleExhibitionCreated}

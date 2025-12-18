@@ -2,8 +2,9 @@
 'use client';
 
 import React from 'react';
+// 👇 CSS 모듈 import 확인
+import styles from './Gallery.module.css';
 
-// Frame 타입 정의 (필요하면 types 폴더로 이동)
 export interface Frame {
   id: number;
   content: string;
@@ -15,7 +16,7 @@ interface Gallery3DProps {
   onPrev: () => void;
   onNext: () => void;
   onDelete: (id: number, index: number) => void;
-  onSelect: (index: number) => void; // 액자 클릭 시 중앙 이동
+  onSelect: (index: number) => void;
 }
 
 export const Gallery3D = ({ 
@@ -28,55 +29,78 @@ export const Gallery3D = ({
 }: Gallery3DProps) => {
   const maxIndex = frames.length - 1;
 
-  // UI 로직: 인덱스에 따른 클래스 계산 (순수 시각적 로직이므로 여기 둠)
-  const getFrameClass = (index: number) => {
+  // 👇 현재 인덱스에 맞는 스타일 객체(클래스명)를 반환하는 함수
+  const getFrameStyle = (index: number) => {
     const diff = index - activeIndex;
-    if (diff === 0) return 'center';
-    if (diff === -1) return 'left-1';
-    if (diff === 1) return 'right-1';
-    if (diff === -2) return 'left-2';
-    if (diff === 2) return 'right-2';
-    return 'hidden';
+    
+    if (diff === 0) return styles.center;
+    if (diff === -1) return styles.left1;
+    if (diff === 1) return styles.right1;
+    if (diff === -2) return styles.left2;
+    if (diff === 2) return styles.right2;
+    
+    return styles.hidden;
   };
 
   return (
-    <div className="exh-gallery-area">
-
+    // 👇 .exh-gallery-area 대신 styles.container 사용
+    <div className={styles.container}>
 
       {frames.map((frame, index) => {
-        const frameClass = getFrameClass(index);
-        const isCenter = frameClass === 'center';
+        // 1. 현재 액자의 위치 클래스 가져오기
+        const positionClass = getFrameStyle(index);
+        
+        // 2. 중앙인지 확인 (객체 비교)
+        const isCenter = positionClass === styles.center;
 
         return (
           <div 
             key={frame.id} 
-            className={`poster-frame ${frameClass}`}
+            // 3. 템플릿 리터럴로 클래스 합치기
+            className={`${styles.frame} ${positionClass}`}
             onClick={() => onSelect(index)}
           >
-            <div className="poster-content" />
+            {/* 내부 콘텐츠 */}
+            <div className={styles.content} />
 
-            {/* 중앙일 때만 보이는 액션 */}
+            {/* 하단 액션 버튼 (고정하기/삭제하기) */}
             <div 
-                className="poster-actions" 
-                style={{ opacity: isCenter ? 1 : 0, pointerEvents: isCenter ? 'auto' : 'none' }}
+                className={styles.actions} 
             >
-              <span style={{ cursor: 'pointer' }}>고정하기 </span>| 
-              <span 
-                style={{ cursor: 'pointer' }} 
+              <button 
+                type="button"
+                className={styles.actionBtn}
+              >
+                고정하기
+              </button>
+              <span className={styles.divider}>|</span>
+              <button 
+                type="button"
+                className={`${styles.actionBtn} ${styles.deleteBtn}`}
                 onClick={(e) => { 
-                    e.stopPropagation(); 
+                    e.stopPropagation(); // 부모(액자 선택) 클릭 방지
+                    console.log('삭제 클릭됨'); // 디버깅용 로그
                     onDelete(frame.id, index);
                 }}
-              > 삭제하기</span>
+              >
+                 삭제하기
+              </button>
             </div>
           </div>
         );
       })}
-      <button className="nav-arrow prev" onClick={onPrev} disabled={activeIndex === 0}>
+      
+      {/* 네비게이션 화살표 */}
+      <button 
+        className={`${styles.arrow} ${styles.prev}`} 
+        onClick={onPrev} 
+        disabled={activeIndex === 0}
+      >
         &lt;
       </button>
+
       <button 
-        className="nav-arrow next" 
+        className={`${styles.arrow} ${styles.next}`} 
         onClick={onNext} 
         disabled={activeIndex === maxIndex || frames.length === 0}
       >

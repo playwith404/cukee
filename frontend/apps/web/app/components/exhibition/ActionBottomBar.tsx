@@ -1,6 +1,7 @@
 // apps/web/app/components/exhibition/ActionBottomBar.tsx
 // 꾸미기 모드 구현 장소
 'use client';
+import styles from './ActionBottomBar.module.css';
 
 interface ActionBottomBarProps {
   promptValue: string;
@@ -18,12 +19,11 @@ export const ActionBottomBar = ({ promptValue, setPromptValue, onSubmit, isLoadi
   };
 
   return (
-    <div className="exh-bottom-bar"
-    >
-      <div className="prompt-input-wrapper">
+    <div className={styles.container}>
+      <div className={styles.promptWrapper}>
         <input 
           type="text" 
-          className="prompt-input" 
+          className={styles.input}
           placeholder={isLoading ? "큐키가 전시회를 생성중이에요..." : "cukee 프롬프트 입력하기"}
           value={promptValue}
           onChange={(e) => setPromptValue(e.target.value)}
@@ -31,7 +31,7 @@ export const ActionBottomBar = ({ promptValue, setPromptValue, onSubmit, isLoadi
           disabled={isLoading} // 전송 중엔 입력 불가
         />
         <button 
-            className="prompt-submit-btn" 
+            className={styles.submitBtn}
             onClick={onSubmit}
             disabled={isLoading || !promptValue.trim()} // 빈 값이거나 로딩중이면 비활성
             style={{ 
@@ -43,15 +43,15 @@ export const ActionBottomBar = ({ promptValue, setPromptValue, onSubmit, isLoadi
         </button>
       </div>
 
-      <div className="bottom-actions">
+      <div className={styles.actions}>
         <button 
-            className="action-chip" 
+            className={styles.chip}
             onClick={() => handleChipClick("조금 더 감동적인 영화를 원해!")}
         >
             조금 더 감동적인 영화를 원해!
         </button>
         <button 
-            className="action-chip" 
+            className={styles.chip} 
             onClick={() => handleChipClick("영화 개수를 좀 더 늘려줘!")}
         >
             영화 개수를 좀 더 늘려줘!

@@ -164,23 +164,17 @@
 
     /* 3. 캐릭터 크기 및 위치 조정 */
     .mc-character-area {
-        width: 100px; /* 150px -> 100px */
-        left: -160px; /* -250px -> -160px (티켓쪽으로 당김) */
-    }
-
-    /* 4. 네비게이션 버튼 크기 축소 */
-    .mc-prev-btn, .mc-next-btn {
-        font-size: 45px; /* 70px -> 45px */
+        width: 130px; /* 150px -> 100px */
+        left: -100px; /* -250px -> -160px (티켓쪽으로 당김) */
     }
     
     /* 버튼 위치 미세 조정 */
     .mc-prev-btn {
-        left: -30px; /* -50px -> -30px */
+        left: 0px; 
     }
 
     /* 5. 텍스트 링크 크기 및 위치 조정 */
     .mc-link-text {
-        font-size: 20px; /* 30px -> 20px */
-        bottom: -40px;   /* -60px -> -40px */
+        bottom: -50px;   /* -60px -> -40px */
     }
 }

@@ -1,5 +1,6 @@
 // apps/web/app/components/exhibition/CuratorGuide.tsx
 'use client';
+import styles from './CuratorGuide.module.css';
 
 interface CuratorGuideProps {
     likeCount?: number;
@@ -11,14 +12,24 @@ export const CuratorGuide = ({
     message = <>안녕, 길초! MZ 큐레이터 김엠지 예요.<br />짧고 도파민 터지는 맛도리 영화만 추천해줄게요.</> 
 }: CuratorGuideProps) => {
   return (
-    <div className="middle-interaction-area">
-      <div className="character-wrapper">
-        <img src="/cara/c1.png" alt="MZ Curator" className="character-img" />
+    <div className={styles.container}>
+      
+      {/* 캐릭터 영역 */}
+      <div className={styles.charWrapper}>
+        <img 
+            src="/cara/c1.png" 
+            alt="MZ Curator" 
+            className={styles.charImg} 
+        />
       </div>
 
-      <div className="bubble-wrapper">
-        <p className="like-info">♥ {likeCount} 명의 유저가 이 쿠키를 좋아해요.</p>
-        <div className="curator-speech-bubble">
+      {/* 말풍선 및 좋아요 정보 영역 */}
+      <div className={styles.bubbleWrapper}>
+        <p className={styles.likeInfo}>
+            ♥ {likeCount} 명의 유저가 이 쿠키를 좋아해요.
+        </p>
+        
+        <div className={styles.bubble}>
           {message}
         </div>
       </div>
