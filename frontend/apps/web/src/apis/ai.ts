@@ -1,4 +1,4 @@
-// apps/web/app/types/ai.ts
+// apps/web/src/apis/ai.ts
 
 // 1. 요청 (Request)
 export interface AIExhibitionRequest {

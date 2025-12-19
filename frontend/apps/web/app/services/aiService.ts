@@ -1,5 +1,6 @@
 // apps/web/app/services/aiService.ts
-import { AIExhibitionRequest, AIExhibitionResponse } from "../types/ai";
+// import { AIExhibitionRequest, AIExhibitionResponse } from "../types/ai";
+import { AIExhibitionRequest, AIExhibitionResponse } from "../../src/apis/ai";
 
 // 백엔드 기본 주소 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';

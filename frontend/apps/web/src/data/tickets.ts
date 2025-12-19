@@ -1,4 +1,5 @@
 // apps/web/src/data/tickets.ts 
+//data: mock데이터 전용 폴더
 
 interface TicketData {
   id: number;

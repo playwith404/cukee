@@ -7,7 +7,8 @@ import styles from './Gallery.module.css';
 
 export interface Frame {
   id: number;
-  content: string;
+  content?: string;   
+  imageUrl?: string;  // 이미지 주소 추가 (선택사항)
 }
 
 interface Gallery3DProps {
@@ -61,7 +62,21 @@ export const Gallery3D = ({
             onClick={() => onSelect(index)}
           >
             {/* 내부 콘텐츠 */}
-            <div className={styles.content} />
+            <div className={styles.content}>
+              {frame.imageUrl ? (
+                    // 1순위:이미지가 있으면 보여줌
+                    <img 
+                        src={frame.imageUrl} 
+                        alt={`Movie ${frame.id}`} 
+                        style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }}
+                    />
+                ) : (
+                    // 2순위:이미지가 없으면 텍스트(content)나 ID를 보여주
+                    <div style={{ padding: '20px', color: '#fff', textAlign: 'center' }}>
+                        {frame.content || `영화 ID: ${frame.id}`}
+                    </div>
+                )}
+            </div>
 
             {/* 하단 액션 버튼 (고정하기/삭제하기) */}
             <div 
