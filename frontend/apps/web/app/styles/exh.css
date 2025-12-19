@@ -3,11 +3,12 @@
 /* 전체 컨테이너: 헤더 제외한 모든 영역 */
 .exh-container {
     width: 100%;
-    min-height: 100vh; 
+    min-height: 100vh;
     position: relative;
     display: flex;
     flex-direction: column;
-    background-color: #EDE6DD; /* 전체 배경색 유지 */
+    background-color: #EDE6DD;
+    /* 전체 배경색 유지 */
     /* 나중에 노이즈 넣는것도 고려... */
 }
 
@@ -16,12 +17,14 @@
 .exh-top-controls {
     position: relative;
     width: 100%;
-    max-width: 1500px; 
+    max-width: 1500px;
     margin: 30px auto 10px auto;
     display: flex;
     justify-content: space-between;
-    padding: 0 80px; /* inner-container 패딩과 맞춤 */
+    padding: 0 80px;
+    /* inner-container 패딩과 맞춤 */
 }
+
 /* 버튼 */
 .control-btn {
     background-color: #EDE6DD;
@@ -34,6 +37,7 @@
     cursor: pointer;
     transition: all 0.2s;
 }
+
 .control-btn:hover {
     background-color: #373431;
     color: #EDE6DD;
@@ -53,14 +57,20 @@
     transition: opacity 0.2s;
     pointer-events: auto;
 }
-.nav-arrow.prev { left: 15%; }
-.nav-arrow.next { right: 15%; }
+
+.nav-arrow.prev {
+    left: 15%;
+}
+
+.nav-arrow.next {
+    right: 15%;
+}
 
 .exh-gallery-area {
     position: relative;
     width: 100%;
-    min-height: 350px; 
-    flex: 1; 
+    min-height: 350px;
+    flex: 1;
     /* 남는 공간을 모두 차지하여 하단 바를 아래로 밀어냄 */
     display: flex;
     justify-content: center;
@@ -72,20 +82,22 @@
 .poster-frame {
     position: absolute;
     transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
-    
+
     /* [변경] 기존 CSS Border/Outline 제거 */
-    border: none; 
+    border: none;
     outline: none;
-    background-color: transparent; /* 액자 바깥 투명 영역 처리를 위해 투명화 */
-    
-    background-image: url('/frame.png'); 
-    background-size: 100% 100%; /* 액자 이미지를 div 크기에 꽉 채움 */
+    background-color: transparent;
+    /* 액자 바깥 투명 영역 처리를 위해 투명화 */
+
+    background-image: url('/frame.png');
+    background-size: 100% 100%;
+    /* 액자 이미지를 div 크기에 꽉 채움 */
     background-position: center;
 
     /* [중요] 액자 두께만큼 내부 콘텐츠를 안쪽으로 밀어넣기 */
     /* 사용하는 액자 이미지의 두께에 따라 이 값을 조절해야 합니다. */
-    padding: 40px; 
-    box-sizing: border-box; 
+    padding: 40px;
+    box-sizing: border-box;
 
     display: flex;
     flex-direction: column;
@@ -94,11 +106,28 @@
     pointer-events: auto;
 }
 
+/* [추가] 액자 없음 모드 정밀 구현 */
+.poster-frame.frame-style-none {
+    background-image: none !important;
+    padding: 0px !important;
+    /* 액자 틀이 사라지므로 패딩 제거 */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    /* 틀 대신 부드러운 그림자 */
+    border-radius: 8px;
+    /* 포스터 자체의 라운딩 */
+    overflow: hidden;
+}
+
+.poster-frame.frame-style-none .poster-content {
+    border-radius: 8px;
+}
+
 /* 포스터 내부 (데이터 로딩 전 비워둠) */
 .poster-content {
     width: 100%;
     height: 100%;
-    background-color: #e8e2dc; /* 빈 종이 색상 */
+    background-color: #e8e2dc;
+    /* 빈 종이 색상 */
     /* 포스터가 액자 안쪽 영역에 꽉 차게 됨 */
 
     /* box-shadow: inset 0 0 10px rgba(0,0,0,0.2);  */
@@ -115,9 +144,10 @@
     font-weight: 400;
     color: #373431;
     /* 가려두었다가 앞에 오면 보이게 */
-    opacity: 0; 
+    opacity: 0;
     transition: opacity 0.3s;
-    pointer-events: none; /* 안 보일 땐 클릭 불가 */
+    pointer-events: none;
+    /* 안 보일 땐 클릭 불가 */
 }
 
 /* [상태 클래스] 중앙 (Active) */
@@ -127,6 +157,7 @@
     transform: translateX(0) scale(1);
     filter: brightness(1);
 }
+
 .poster-frame.center .poster-actions {
     opacity: 1;
     pointer-events: auto;
@@ -139,6 +170,7 @@
     transform: translateX(-300px) scale(0.9) rotateY(20deg);
     filter: brightness(0.9);
 }
+
 .poster-frame.right-1 {
     width: 275px;
     height: 390px;
@@ -154,6 +186,7 @@
     transform: translateX(-510px) scale(0.8) rotateY(30deg);
     opacity: 0.6;
 }
+
 .poster-frame.right-2 {
     width: 220px;
     height: 310px;
@@ -175,25 +208,29 @@
     /* [수정] 여기도 똑같이 적용 */
     width: 100%;
     max-width: 1400px;
-    
+
     height: 200px;
-    margin: 0 auto; /* 중앙 정렬 */
-    position: relative; 
+    margin: 0 auto;
+    /* 중앙 정렬 */
+    position: relative;
     display: flex;
     align-items: flex-end;
-    
+
     /* [추가] 안전장치 */
-    padding: 0 20px; /* 모바일에서 좌우 여백 확보 */
+    padding: 0 20px;
+    /* 모바일에서 좌우 여백 확보 */
     box-sizing: border-box;
 }
+
 /* 캐릭터 위치 */
 .character-wrapper {
     position: relative;
     height: auto;
     margin-right: 10px;
 }
+
 .character-img {
-    width: 250px; 
+    width: 250px;
     display: block;
 }
 
@@ -201,8 +238,10 @@
 .bubble-wrapper {
     height: 200px;
     display: flex;
-    flex-direction: column; /* 세로 방향 정렬 */
-    justify-content: center; /* 내부 요소들을 세로 중앙에 배치 */
+    flex-direction: column;
+    /* 세로 방향 정렬 */
+    justify-content: center;
+    /* 내부 요소들을 세로 중앙에 배치 */
 }
 
 .like-info {
@@ -216,28 +255,29 @@
 
 /* [요청하신 말풍선 CSS 그대로 적용] */
 .curator-speech-bubble {
-  position: relative;  
-  background-color: #ffffff;     
-  color: #373431;                 
-  padding: 16px 40px;             
-  border-radius: 30px 30px 30px 0px; 
-  font-size: 18px; /* 크기 약간 조정 */
-  letter-spacing: -0.03em;
-  line-height: 1.5;
-  font-weight: 500;
-  width: fit-content;            
-  box-shadow: 2px 4px 12px rgba(0,0,0,0.08);
+    position: relative;
+    background-color: #ffffff;
+    color: #373431;
+    padding: 16px 40px;
+    border-radius: 30px 30px 30px 0px;
+    font-size: 18px;
+    /* 크기 약간 조정 */
+    letter-spacing: -0.03em;
+    line-height: 1.5;
+    font-weight: 500;
+    width: fit-content;
+    box-shadow: 2px 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .curator-speech-bubble::after {
-  content: "";
-  position: absolute; 
-  width: 100%;
-  height: 100%;
-  border: 1px solid #000000; 
-  border-radius: 30px 30px 30px 0px; 
-  top: -6px;
-  left: 8px;
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: 1px solid #000000;
+    border-radius: 30px 30px 30px 0px;
+    top: -6px;
+    left: 8px;
 }
 
 
@@ -267,15 +307,18 @@
     padding: 0 12px 0 32px;
     margin-bottom: 24px;
 }
+
 .prompt-input-wrapper::after {
     content: "";
     position: absolute;
     width: 100%;
     height: 100%;
-    left: 3px; 
+    left: 3px;
     /* [핵심 3: 테두리 및 배경] 배경은 투명, 테두리만 남김 */
-    background-color: transparent; /* 배경색은 투명 */
-    border: 2px solid #FEF8F2; /* 원하는 두께와 색상의 테두리 설정 */
+    background-color: transparent;
+    /* 배경색은 투명 */
+    border: 2px solid #FEF8F2;
+    /* 원하는 두께와 색상의 테두리 설정 */
 
     /* 부모와 동일한 둥근 모양 */
     border-radius: 9999px;
@@ -291,7 +334,10 @@
     color: #373431;
     background: transparent;
 }
-.prompt-input::placeholder { color: #ccc; }
+
+.prompt-input::placeholder {
+    color: #ccc;
+}
 
 .prompt-submit-btn {
     width: 48px;
@@ -308,7 +354,10 @@
     transition: background 0.2s;
     z-index: 100;
 }
-.prompt-submit-btn:hover { background-color: #7a726f; }
+
+.prompt-submit-btn:hover {
+    background-color: #7a726f;
+}
 
 /* 하단 액션 버튼들 */
 .bottom-actions {
@@ -318,8 +367,8 @@
 
 .action-chip {
     background: transparent;
-    border: 1px solid rgba(255,255,255,0.6);
-    color: rgba(255,255,255,0.9);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    color: rgba(255, 255, 255, 0.9);
     padding: 10px 100px;
     border-radius: 9999px;
     font-size: 20px;
@@ -334,43 +383,229 @@
     color: #373431;
 }
 
+/* [고도화] 전시회 꾸미기 모드 확장 디자인 및 스타일 */
+
+/* 푸터 수직 확장 높이 축소 (사용자 피드백 반영: 480px -> 380px) */
+.exh-bottom-bar.expanded {
+    height: 380px !important;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    background-color: #373431;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* 프롬프트 내 옵션창 높이 조정 (350px -> 300px) */
+.prompt-input-wrapper.expanded {
+    width: 1000px !important;
+    height: 300px !important;
+    background-color: #FEF8F2 !important;
+    border: 2.5px solid #373431 !important;
+    flex-direction: column !important;
+    padding: 0 !important;
+    justify-content: flex-start !important;
+    border-radius: 40px !important;
+    margin-top: 0px;
+    /* 높이가 줄어들었으므로 마진 조절 */
+    margin-bottom: 0px;
+}
+
+.prompt-input-wrapper.expanded::after {
+    display: none;
+}
+
+/* 꾸미기 타이틀 내부로 이동 및 스타일 조정 (이미지 명세 반영) */
+.deco-mode-header-inner {
+    margin-top: 25px;
+    margin-bottom: 25px;
+    font-size: 24px;
+    font-weight: 600;
+    color: #8F8784;
+    text-align: center;
+    letter-spacing: -0.02em;
+}
+
+/* 옵션 행 정렬 컨테이너 내부 패딩 조정 */
+.decorate-options-content {
+    width: 100%;
+    height: 100%;
+    padding: 20px 60px;
+    /* 좌우 여백 확보 */
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    /* 공간 협소해졌으므로 간격 축소 */
+    position: relative;
+    box-sizing: border-box;
+}
+
+.option-row {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+.option-label {
+    min-width: 140px;
+    font-size: 20px;
+    font-weight: 700;
+    color: #373431;
+}
+
+.chip-group {
+    display: flex;
+    gap: 15px;
+}
+
+/* 스타일 선택 칩 (이미지 0, 1, 2) */
+.style-chip {
+    padding: 10px 24px;
+    border-radius: 999px;
+    border: 1.5px solid #8F8784;
+    background: #fff;
+    font-size: 18px;
+    color: #373431;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 500;
+}
+
+.style-chip.active {
+    background: #373431;
+    color: #FEF8F2;
+    border-color: #373431;
+    font-weight: 700;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.style-chip:hover:not(.active) {
+    background: #F0EBE3;
+}
+
+/* 컬러 칩 (이미지 1) */
+.bg-chip-1 {
+    background-color: #EDE6DD !important;
+    min-width: 50px;
+}
+
+.bg-chip-2 {
+    background-color: #F0EBE3 !important;
+    min-width: 50px;
+}
+
+.bg-chip-3 {
+    background-color: #FFEDED !important;
+    min-width: 50px;
+}
+
+.bg-chip-4 {
+    background-color: #FFE4C4 !important;
+    min-width: 50px;
+}
+
+.photo-chip {
+    min-width: 100px;
+    font-weight: 600;
+}
+
+/* [이미지 3] 저장 체크 버튼 - 사각형 박스 디자인 적용 */
+.deco-save-btn-box {
+    position: absolute;
+    bottom: 30px;
+    right: 40px;
+    width: 60px;
+    height: 60px;
+    background-color: #373431;
+    /* 진한 회색/검정 배경 */
+    border: none;
+    border-radius: 12px;
+    /* 살짝 둥근 사각형 */
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.2s, background-color 0.2s;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.deco-save-btn-box img {
+    width: 35px;
+    height: auto;
+}
+
+.deco-save-btn-box:hover {
+    transform: scale(1.05);
+    background-color: #4a4642;
+}
+
+/* 기존 배경 및 큐키 스타일 클래스 유지 및 보강 */
+.exh-container.bg-style-1 {
+    background-color: #EDE6DD !important;
+}
+
+.exh-container.bg-style-2 {
+    background-color: #F0EBE3 !important;
+}
+
+.exh-container.bg-style-3 {
+    background-color: #FFEDED !important;
+}
+
+.exh-container.bg-style-4 {
+    background-color: #FFE4C4 !important;
+}
+
+.exh-container.bg-style-5 {
+    background-size: cover !important;
+    background-position: center !important;
+}
+
+.cookie-style-none {
+    /* [수정] 선 X: 경계를 부드럽게 하고 밝기를 조절해 '선'의 느낌을 최소화 */
+    filter: brightness(1.05) contrast(0.9) blur(0.3px) !important;
+}
+
+.cookie-style-unbalance {
+    /* [수정] 언밸런스: 이미지와 그림자(선)를 어긋나게 배치하여 힙한 효과 연동 */
+    filter: drop-shadow(12px 8px 0px rgba(0, 0, 0, 0.1)) !important;
+    transform: rotate(-1.5deg) translateY(-5px);
+}
+
 /* 반응형 코드 추가 */
 @media (max-height: 900px) {
-
-    /* 상단 버튼 여백 줄이기 */
     .exh-top-controls {
-        margin: 25 px auto 5px auto; /* 위아래 여백 축소 */
+        margin: 25px auto 5px auto;
     }
 
-    /* 중간 캐릭터 영역 높이 줄이기 */
     .middle-interaction-area {
-        height: 140px; /* 200px -> 140px로 축소 */
+        height: 140px;
     }
-    
-    /* 캐릭터 이미지도 같이 작아져야 함 */
+
     .character-img {
-        width: 180px; /* 250px -> 180px */
+        width: 180px;
     }
-    
-    /* 말풍선 폰트 살짝 축소 */
+
     .curator-speech-bubble {
         padding: 12px 25px;
         font-size: 15px;
     }
 
-    /* 하단 바 높이 줄이기 */
-    .exh-bottom-bar {
-        height: 130px; /* 170px -> 130px */
+    .exh-bottom-bar:not(.expanded) {
+        height: 130px;
     }
-    /* .exh-gallery-area {
-        width: 100%;
-        min-height: 250px; 
-        flex: 1; 
-    } */
 
-    /* 입력창 마진 축소 */
-    .prompt-input-wrapper {
+    .prompt-input-wrapper:not(.expanded) {
         margin-bottom: 15px;
-        height: 50px; /* 입력창 높이도 살짝 */
+        height: 50px;
+    }
+
+    /* 확장 모드 시 반응형 */
+    .exh-bottom-bar.expanded {
+        height: 420px !important;
+    }
+
+    .prompt-input-wrapper.expanded {
+        width: 90% !important;
+        height: 320px !important;
     }
 }

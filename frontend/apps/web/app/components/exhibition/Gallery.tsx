@@ -16,15 +16,17 @@ interface Gallery3DProps {
   onNext: () => void;
   onDelete: (id: number, index: number) => void;
   onSelect: (index: number) => void; // 액자 클릭 시 중앙 이동
+  frameStyle?: string; // 액자 스타일 (none, default)
 }
 
-export const Gallery3D = ({ 
-  frames, 
-  activeIndex, 
-  onPrev, 
-  onNext, 
+export const Gallery3D = ({
+  frames,
+  activeIndex,
+  onPrev,
+  onNext,
   onDelete,
-  onSelect 
+  onSelect,
+  frameStyle
 }: Gallery3DProps) => {
   const maxIndex = frames.length - 1;
 
@@ -48,24 +50,24 @@ export const Gallery3D = ({
         const isCenter = frameClass === 'center';
 
         return (
-          <div 
-            key={frame.id} 
-            className={`poster-frame ${frameClass}`}
+          <div
+            key={frame.id}
+            className={`poster-frame ${frameClass} frame-style-${frameStyle || 'default'}`}
             onClick={() => onSelect(index)}
           >
             <div className="poster-content" />
 
             {/* 중앙일 때만 보이는 액션 */}
-            <div 
-                className="poster-actions" 
-                style={{ opacity: isCenter ? 1 : 0, pointerEvents: isCenter ? 'auto' : 'none' }}
+            <div
+              className="poster-actions"
+              style={{ opacity: isCenter ? 1 : 0, pointerEvents: isCenter ? 'auto' : 'none' }}
             >
-              <span style={{ cursor: 'pointer' }}>고정하기 </span>| 
-              <span 
-                style={{ cursor: 'pointer' }} 
-                onClick={(e) => { 
-                    e.stopPropagation(); 
-                    onDelete(frame.id, index);
+              <span style={{ cursor: 'pointer' }}>고정하기 </span>|
+              <span
+                style={{ cursor: 'pointer' }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete(frame.id, index);
                 }}
               > 삭제하기</span>
             </div>
@@ -75,9 +77,9 @@ export const Gallery3D = ({
       <button className="nav-arrow prev" onClick={onPrev} disabled={activeIndex === 0}>
         &lt;
       </button>
-      <button 
-        className="nav-arrow next" 
-        onClick={onNext} 
+      <button
+        className="nav-arrow next"
+        onClick={onNext}
         disabled={activeIndex === maxIndex || frames.length === 0}
       >
         &gt;
