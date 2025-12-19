@@ -3,14 +3,14 @@
 import { AIExhibitionRequest, AIExhibitionResponse } from "../../src/apis/ai";
 
 // 백엔드 기본 주소 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 export const generateExhibition = async (
   prompt: string, 
   ticketId: number
 ): Promise<AIExhibitionResponse> => {
   
-  const url = `${API_BASE_URL}/ai/generate`;
+  const url = `${API_BASE_URL}/api/v1/ai/generate`;
   
   // 요청 바디 생성
   const requestBody: AIExhibitionRequest = {
