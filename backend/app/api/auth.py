@@ -1,12 +1,13 @@
 """
 인증 관련 API 엔드포인트
 """
-from fastapi import APIRouter, Depends, HTTPException, status, Response, Request, Cookie
+from fastapi import APIRouter, Depends, status, Response, Request, Cookie
 from sqlalchemy.orm import Session as DBSession
 from typing import Optional
 
 from app.core.database import get_db
 from app.core.config import settings
+from app.core.exceptions import UnauthorizedException
 from app.schemas.user import SignupRequest, SignupResponse, LoginRequest, LoginResponse
 from app.schemas.common import MessageResponse
 from app.services.auth_service import AuthService
@@ -145,17 +146,17 @@ def refresh(
     - 새로운 세션 발급
     """
     if not session:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="세션이 존재하지 않습니다."
+        raise UnauthorizedException(
+            message="세션이 존재하지 않습니다.",
+            details="쿠키에 세션 정보가 없습니다."
         )
 
     # 기존 세션 검증
     db_session = SessionService.get_session(db, session)
     if not db_session:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="유효하지 않은 세션입니다."
+        raise UnauthorizedException(
+            message="유효하지 않은 세션입니다.",
+            details="세션이 만료되었거나 유효하지 않습니다."
         )
 
     # 기존 세션 무효화

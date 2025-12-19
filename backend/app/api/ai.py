@@ -1,10 +1,11 @@
 """
 AI 관련 API 엔드포인트 (Mock)
 """
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session as DBSession
 
 from app.core.database import get_db
+from app.core.exceptions import BadRequestException
 from app.schemas.ai import AIGenerateRequest, AIGenerateResponse
 from app.utils.dependencies import get_current_user
 from app.models import User
@@ -24,9 +25,9 @@ def generate_exhibition(
     - 실제 AI 모델 연동 전까지 Mock 데이터 반환
     """
     if not request_data.prompt:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="프롬프트를 입력해주세요."
+        raise BadRequestException(
+            message="프롬프트를 입력해주세요.",
+            details="프롬프트는 필수 항목입니다."
         )
 
     # Mock 응답 데이터

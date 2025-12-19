@@ -5,7 +5,11 @@ from sqlalchemy.orm import Session as DBSession
 from app.models import User
 from app.core.security import verify_password, get_password_hash
 from app.schemas.user import SignupRequest, LoginRequest
-from fastapi import HTTPException, status
+from app.core.exceptions import (
+    ConflictException,
+    UnauthorizedException,
+    NotFoundException
+)
 
 
 class AuthService:
@@ -17,9 +21,9 @@ class AuthService:
         # 이메일 중복 체크
         existing_user = db.query(User).filter(User.email == signup_data.email).first()
         if existing_user:
-            raise HTTPException(
-                status_code=status.HTTP_409_CONFLICT,
-                detail="이미 등록된 이메일입니다."
+            raise ConflictException(
+                message="이미 등록된 이메일입니다.",
+                details=f"이메일 '{signup_data.email}'은(는) 이미 사용 중입니다."
             )
 
         # 비밀번호 해싱
@@ -51,16 +55,16 @@ class AuthService:
         ).first()
 
         if not user:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="이메일 또는 비밀번호가 올바르지 않습니다."
+            raise UnauthorizedException(
+                message="이메일 또는 비밀번호가 올바르지 않습니다.",
+                details="인증 정보를 확인해주세요."
             )
 
         # 비밀번호 검증
         if not verify_password(login_data.password, user.hashed_password):
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="이메일 또는 비밀번호가 올바르지 않습니다."
+            raise UnauthorizedException(
+                message="이메일 또는 비밀번호가 올바르지 않습니다.",
+                details="인증 정보를 확인해주세요."
             )
 
         return user
@@ -74,9 +78,9 @@ class AuthService:
         ).first()
 
         if not user:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="사용자를 찾을 수 없습니다."
+            raise NotFoundException(
+                message="사용자를 찾을 수 없습니다.",
+                details=f"사용자 ID '{user_id}'가 존재하지 않습니다."
             )
 
         return user

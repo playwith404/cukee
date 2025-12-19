@@ -3,8 +3,20 @@ FastAPI 메인 애플리케이션
 """
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.exceptions import RequestValidationError
+from pydantic import ValidationError
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
+
 from app.core.config import settings
 from app.core.database import Base, engine
+from app.core.exceptions import CukeeException
+from app.core.exception_handlers import (
+    cukee_exception_handler,
+    validation_exception_handler,
+    integrity_error_handler,
+    sqlalchemy_exception_handler,
+    general_exception_handler
+)
 from app.api import auth, users, ai, exhibitions
 
 # 데이터베이스 테이블 생성
@@ -27,6 +39,14 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# 예외 핸들러 등록 (API 명세서 v1.6 표준 에러 포맷)
+app.add_exception_handler(CukeeException, cukee_exception_handler)
+app.add_exception_handler(RequestValidationError, validation_exception_handler)
+app.add_exception_handler(ValidationError, validation_exception_handler)
+app.add_exception_handler(IntegrityError, integrity_error_handler)
+app.add_exception_handler(SQLAlchemyError, sqlalchemy_exception_handler)
+app.add_exception_handler(Exception, general_exception_handler)
 
 # 라우터 등록
 app.include_router(auth.router)
