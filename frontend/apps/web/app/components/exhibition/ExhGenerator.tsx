@@ -4,7 +4,8 @@
 import React, { useState } from 'react';
 import { ActionBottomBar } from './ActionBottomBar';
 import { generateExhibition } from '../../services/aiService';
-import { AIExhibitionResponse } from '../../types/ai';
+import { AIExhibitionResponse } from '../../../src/apis/ai';
+
 
 interface ExhibitionGeneratorProps {
   currentTicketId: number;

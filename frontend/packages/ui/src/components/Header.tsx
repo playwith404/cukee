@@ -90,12 +90,16 @@ const DropdownMenu = () => {
     </div>
   );
 };
+
+
 interface HeaderProps {
   currentSection: string; 
   onBack?: () => void; 
+  //전시회제목 받기
+  exhibitionTitle?: string;
 }
 
-export const Header: React.FC<HeaderProps> = ({ currentSection, onBack }) => {
+export const Header: React.FC<HeaderProps> = ({ currentSection, onBack, exhibitionTitle }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const handleDropdownToggle = () => {
@@ -127,6 +131,7 @@ export const Header: React.FC<HeaderProps> = ({ currentSection, onBack }) => {
         </div>
         <div className="cukee-header-title">
           cukee / {currentSection}
+          {exhibitionTitle && ` / ${exhibitionTitle}`}
         </div>
       </div>
       

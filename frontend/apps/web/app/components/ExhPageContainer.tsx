@@ -10,7 +10,10 @@ import { TopControls } from './exhibition/TopControls';
 import { Gallery3D } from './exhibition/Gallery';
 import { CuratorGuide } from './exhibition/CuratorGuide';
 import { ExhibitionGenerator } from './exhibition/ExhGenerator';
-import { AIExhibitionResponse } from '../types/ai';
+import { AIExhibitionResponse } from "../../src/apis/ai";
+
+import { ExhibitionDetailResponse } from '../types/exhibition';
+import { Frame } from './exhibition/Gallery'; 
 
 const INITIAL_FRAMES = [
   { id: 1, content: 'Frame 1' },
@@ -22,9 +25,10 @@ const INITIAL_FRAMES = [
 
 export const ExhPageContainer: React.FC = () => {
   // === 1. 갤러리 관련 상태만 남음 (깔끔!) ===
-  const [frames, setFrames] = useState(INITIAL_FRAMES);
+  const [frames, setFrames] = useState<Frame[]>(INITIAL_FRAMES);
   const initialIndex = frames.length > 0 ? Math.floor(frames.length / 2) : 0;
   const [activeIndex, setActiveIndex] = useState(initialIndex);
+  const [exhibitionTitle, setExhibitionTitle] = useState("나만의 전시회");
   
   // 티켓 ID
   const currentTicketId = 123; 
@@ -35,36 +39,54 @@ export const ExhPageContainer: React.FC = () => {
   const handleNext = () => setActiveIndex((prev) => (prev < maxIndex ? prev + 1 : prev));
 
   const handleDelete = (frameId: number, currentIndex: number) => {
-      // (삭제 로직 기존과 동일... 생략)
+      setFrames((prev) => prev.filter((f) => f.id !== frameId));
+      if (currentIndex >= frames.length - 1) {
+          setActiveIndex(Math.max(0, frames.length - 2));
+      }
   };
 
   // === 3. [핵심] AI가 생성 완료했을 때 호출될 함수 ===
   // 나중에 커스텀 훅으로 분리하기!!!!!!!!
   const handleExhibitionCreated = (data: AIExhibitionResponse) => {
-    console.log("AI 생성이 완료되어 부모가 데이터를 받았습니다:", data);
+    console.log("전시회 생성 완료~:", data);
     
     // TODO: 받아온 data.resultJson.movies를 가공해서 setFrames로 업데이트!
     // alert(`"${data.resultJson.title}" 전시회로 변경합니다.`);
     
     // 예시: setFrames(convertDataToFrames(data.resultJson.movies));
+    
+    // (1) 제목 업데이트
+    setExhibitionTitle(data.resultJson.title);
+
+    // (2) 영화 데이터 변환 (API 데이터 -> 갤러리 프레임 포맷)
+    const newFrames: Frame[] = data.resultJson.movies.map((movie) => ({
+      id: movie.movieId, 
+      // 멘트도 넣고, 이미지도 넣습니다. (없으면 없는대로 동작함)
+      content: movie.curatorComment,
+      imageUrl: movie.posterUrl ?? "https://via.placeholder.com/300x450?text=No+Image"
+    }));
+
+    // (3) 상태 업데이트 -> 화면이 자동으로 바뀜!
+    if (newFrames.length > 0) {
+        setFrames(newFrames);
+        setActiveIndex(Math.floor(newFrames.length / 2)); // 다시 가운데 정렬: 3번 영화가 가운데로
+    } else {
+        alert("추천된 영화가 없습니다.");
+    }
+
   };
 
   return (
     <MainLayout>
-      {/* ✅ [변경] 문자열 "exh-container" 대신 
-         모듈 객체 styles.container를 사용합니다. 
-      */}
       <div className={styles.container}>
-        
-        {/* 헤더 위치 잡는 CSS도 모듈화했다면 styles.headerWrapper 등으로 변경 필요 */}
         <div className="header-outer-wrapper">
-            <Header currentSection="romancerCukee" />
+            <Header 
+            currentSection="romancerCukee"
+            exhibitionTitle={exhibitionTitle}
+            // 나중에 여기에 onSelectExhibition={handleLoadExhibition} 이런 식으로 연결
+            //드롭다운에서 전시회 선택하면 화면 전환하게
+             />
         </div>
-
-        {/* 👇 자식 컴포넌트들 (TopControls, Gallery3D 등)은
-          각자의 파일 안에서 자신의 module.css를 import하고 있을 것이므로
-          여기서는 아무것도 건드릴 필요가 없습니다! (이게 모듈화의 장점)
-        */}
         <TopControls 
             onSave={() => console.log('Save')} 
             onDecorate={() => console.log('Decorate')} 
@@ -79,7 +101,7 @@ export const ExhPageContainer: React.FC = () => {
         />
 
         <CuratorGuide />
-
+        {/* 하단 입력바 (성공 시 handleExhibitionCreated 호출) */}
         <ExhibitionGenerator 
             currentTicketId={currentTicketId}
             onSuccess={handleExhibitionCreated}
