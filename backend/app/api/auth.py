@@ -45,7 +45,7 @@ def set_session_cookie(response: Response, session_id: str, environment: str = "
         )
 
 
-@router.post("/signup", response_model=SignupResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/signup", response_model=SignupResponse, response_model_by_alias=False, status_code=status.HTTP_201_CREATED)
 def signup(
     response: Response,
     request: Request,
@@ -79,7 +79,7 @@ def signup(
     )
 
 
-@router.post("/login", response_model=LoginResponse, status_code=status.HTTP_200_OK)
+@router.post("/login", response_model=LoginResponse, response_model_by_alias=False, status_code=status.HTTP_200_OK)
 def login(
     response: Response,
     request: Request,
