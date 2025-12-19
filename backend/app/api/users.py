@@ -13,7 +13,7 @@ from app.models import User
 router = APIRouter(prefix="/api/v1/users", tags=["Users"])
 
 
-@router.get("/me", response_model=UserResponse, status_code=status.HTTP_200_OK)
+@router.get("/me", response_model=UserResponse, response_model_by_alias=False, status_code=status.HTTP_200_OK)
 def get_current_user_info(
     current_user: User = Depends(get_current_user),
 ):
@@ -29,7 +29,7 @@ def get_current_user_info(
     )
 
 
-@router.put("/me", response_model=UserResponse, status_code=status.HTTP_200_OK)
+@router.put("/me", response_model=UserResponse, response_model_by_alias=False, status_code=status.HTTP_200_OK)
 def update_user_info(
     update_data: UpdateUserRequest,
     current_user: User = Depends(get_current_user),

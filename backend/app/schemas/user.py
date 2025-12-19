@@ -32,6 +32,7 @@ class SignupResponse(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
         from_attributes=True,
+        by_alias=False,
         json_schema_extra={
             "example": {
                 "userId": 1,
@@ -66,6 +67,7 @@ class LoginResponse(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
         from_attributes=True,
+        by_alias=False,
         json_schema_extra={
             "example": {
                 "userId": 1,
@@ -86,6 +88,7 @@ class UserResponse(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
         from_attributes=True,
+        by_alias=False,
         json_schema_extra={
             "example": {
                 "userId": 1,

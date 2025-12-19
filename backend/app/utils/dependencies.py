@@ -2,9 +2,10 @@
 FastAPI 의존성 (Dependency Injection)
 """
 from typing import Optional
-from fastapi import Cookie, Depends, HTTPException, status, Request
+from fastapi import Cookie, Depends, Request
 from sqlalchemy.orm import Session as DBSession
 from app.core.database import get_db
+from app.core.exceptions import UnauthorizedException
 from app.services.session_service import SessionService
 from app.services.auth_service import AuthService
 from app.models import User
@@ -19,17 +20,17 @@ def get_current_user(
     현재 인증된 사용자 조회 (HttpOnly Cookie)
     """
     if not session:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="인증이 필요합니다."
+        raise UnauthorizedException(
+            message="인증이 필요합니다.",
+            details="쿠키에 세션 정보가 없습니다."
         )
 
     # 세션 검증
     db_session = SessionService.get_session(db, session)
     if not db_session:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="유효하지 않은 세션입니다."
+        raise UnauthorizedException(
+            message="유효하지 않은 세션입니다.",
+            details="세션이 만료되었거나 유효하지 않습니다."
         )
 
     # 사용자 조회
