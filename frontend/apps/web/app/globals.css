@@ -5,6 +5,38 @@
 @import './styles/header.css'; /* Header 및 Dropdown 스타일 임포트 */
 @import './styles/home.css';   /* HomePage 전용 스타일 임포트 */
 @import './styles/carousel.css';
+
+/* CSS 변수 정의 (인증 페이지용) */
+:root {
+  /* Primary Colors */
+  --primary: #ff6b6b;
+
+  /* Gray Scale */
+  --white: #ffffff;
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-800: #1f2937;
+  --gray-900: #111827;
+
+  /* Error Colors */
+  --red-50: #fef2f2;
+  --red-100: #fee2e2;
+  --red-200: #fecaca;
+  --red-300: #fca5a5;
+  --red-400: #f87171;
+  --red-500: #ef4444;
+  --red-600: #dc2626;
+  --red-700: #b91c1c;
+  --red-800: #991b1b;
+  --red-900: #7f1d1d;
+}
+
 * {
   box-sizing: border-box;
 }

@@ -2,6 +2,7 @@
 
 import type { Metadata } from "next";
 import "./globals.css"; // 전역 스타일 임포트 (필수)
+import Providers from "./providers";
 
 export const metadata: Metadata = {
   // 프로젝트에 맞는 메타데이터로 수정
@@ -16,9 +17,11 @@ export default function RootLayout({
 }>) {
   return (
     // Next.js Root Layout의 필수 구조
-    <html lang="ko"> 
-      <body> 
-        {children} 
+    <html lang="ko">
+      <body>
+        <Providers>
+          {children}
+        </Providers>
       </body>
     </html>
   );
