@@ -1,0 +1,84 @@
+name: Backend CI/CD
+
+on:
+  push:
+    branches: [ "main", "dev" ]
+    paths:
+      - 'backend/**'
+  pull_request:
+    branches: [ "main", "dev" ]
+    paths:
+      - 'backend/**'
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ secrets.DOCKER_USERNAME }}/cukee-backend
+          tags: |
+            type=sha,prefix=sha-,format=short
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy:
+    needs: build-and-push
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Copy docker-compose to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST_VM }}
+          username: ${{ secrets.SSH_USER_VM }}
+          key: ${{ secrets.SSH_KEY_VM }}
+          port: ${{ secrets.SSH_PORT || 22 }}
+          source: "docker-compose.yaml,nginx/nginx.conf"
+          target: "~/app"
+
+      - name: Deploy Backend to VM
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST_VM }}
+          username: ${{ secrets.SSH_USER_VM }}
+          key: ${{ secrets.SSH_KEY_VM }}
+          port: ${{ secrets.SSH_PORT || 22 }}
+          script: |
+            cd ~/app
+            echo ${{ secrets.DOCKER_TOKEN }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+            
+            docker-compose pull backend
+            docker-compose up -d backend
+            
+            # Restart Nginx explicitly if needed (optional, often good to refresh connection pools)
+            # docker-compose restart nginx
+            
+            docker image prune -f
