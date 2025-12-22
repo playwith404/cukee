@@ -45,6 +45,8 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/cukee-backend:buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/cukee-backend:buildcache,mode=max
 
   deploy:
     needs: build-and-push
@@ -64,7 +66,7 @@ jobs:
           source: "docker-compose.yaml,nginx/nginx.conf"
           target: "~/app"
 
-      - name: Deploy Backend to VM
+      - name: Deploy to VM
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST_VM }}
@@ -73,14 +75,11 @@ jobs:
           port: ${{ secrets.SSH_PORT || 22 }}
           command_timeout: 30m
           script: |
-            # Create short SHA (same logic as docker metadata action)
-            SHA_SHORT=$(echo ${{ github.sha }} | cut -c1-7)
-            
             cd ~/app
             echo ${{ secrets.DOCKER_TOKEN }} | sudo docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
             
-            sudo IMAGE_TAG=sha-$SHA_SHORT docker compose pull backend
-            sudo IMAGE_TAG=sha-$SHA_SHORT docker compose up -d backend
+            sudo IMAGE_TAG=sha-${{ github.sha }} docker compose pull backend
+            sudo IMAGE_TAG=sha-${{ github.sha }} docker compose up -d backend
             
             # Restart Nginx explicitly if needed (optional, often good to refresh connection pools)
             # docker-compose restart nginx

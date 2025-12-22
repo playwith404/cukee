@@ -33,18 +33,18 @@ jobs:
         with:
           images: ${{ secrets.DOCKER_USERNAME }}/cukee-ai
           tags: |
-            type=sha,prefix=sha-,format=short
+            type=raw,value=sha-${{ github.sha }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
           context: ./ai
           file: ./ai/Dockerfile
-          push: ${{ github.event_name != 'pull_request' }}
+          push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/cukee-ai:buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/cukee-ai:buildcache,mode=max
 
   deploy:
     needs: build-and-push
@@ -54,7 +54,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Copy docker-compose to GPU server
+      - name: Copy docker-compose and nginx config to GPU Server
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SSH_HOST_GPU }}
@@ -64,7 +64,7 @@ jobs:
           source: "docker-compose.yaml"
           target: "~/app"
 
-      - name: Deploy AI to GPU Server
+      - name: Deploy to GPU Server
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST_GPU }}
@@ -73,16 +73,13 @@ jobs:
           port: ${{ secrets.SSH_PORT_GPU || 22 }}
           command_timeout: 30m
           script: |
-            # Create short SHA (same logic as docker metadata action)
-            SHA_SHORT=$(echo ${{ github.sha }} | cut -c1-7)
-            
             cd ~/app
             echo ${{ secrets.DOCKER_TOKEN }} | sudo docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
             
             # Pull specific version
-            sudo IMAGE_TAG=sha-$SHA_SHORT docker compose pull ai
+            sudo IMAGE_TAG=sha-${{ github.sha }} docker compose pull ai
             
             # AI 서비스 재시작
-            sudo IMAGE_TAG=sha-$SHA_SHORT docker compose up -d ai
+            sudo IMAGE_TAG=sha-${{ github.sha }} docker compose up -d ai
             
             sudo docker image prune -f

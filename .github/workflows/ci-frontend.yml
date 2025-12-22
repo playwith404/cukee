@@ -44,7 +44,8 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/cukee-frontend:buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/cukee-frontend:buildcache,mode=max
 
   deploy:
     needs: build-and-push
@@ -64,7 +65,7 @@ jobs:
           source: "docker-compose.yaml,nginx/nginx.conf"
           target: "~/app"
 
-      - name: Deploy Frontend to VM
+      - name: Deploy to VM
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST_VM }}
@@ -73,18 +74,15 @@ jobs:
           port: ${{ secrets.SSH_PORT || 22 }}
           command_timeout: 30m
           script: |
-            # Create short SHA (same logic as docker metadata action)
-            SHA_SHORT=$(echo ${{ github.sha }} | cut -c1-7)
-            
             cd ~/app
             # Login to Docker Hub
             echo ${{ secrets.DOCKER_TOKEN }} | sudo docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
             
-            # Pull specific version
-            sudo IMAGE_TAG=sha-$SHA_SHORT docker compose pull frontend
+            # Pull specific version (Full SHA)
+            sudo IMAGE_TAG=sha-${{ github.sha }} docker compose pull frontend
             
             # Restart frontend and nginx with specific version
-            sudo IMAGE_TAG=sha-$SHA_SHORT docker compose up -d frontend nginx
+            sudo IMAGE_TAG=sha-${{ github.sha }} docker compose up -d frontend nginx
             
             # Prune unused images
             sudo docker image prune -f
