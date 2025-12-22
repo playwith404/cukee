@@ -16,11 +16,11 @@ export const useSignup = () => {
 
   return useMutation({
     mutationFn: async (data: SignupRequest): Promise<SignupResponse> => {
-      const response = await api.post('/api/v1/auth/signup', data);
+      const response = await api.post('/auth/signup', data);
       return response.data;
     },
     onSuccess: () => {
-      // 회원가입 성공 시 자동으로 로그인 상태
+      // 회원가입 성공 시 자동으로 로그인 상태 (HttpOnly Cookie 발급됨)
       queryClient.invalidateQueries({ queryKey: ['user'] });
       router.push('/'); // 홈으로 이동
     },
@@ -34,7 +34,7 @@ export const useLogin = () => {
 
   return useMutation({
     mutationFn: async (data: LoginRequest): Promise<LoginResponse> => {
-      const response = await api.post('/api/v1/auth/login', data);
+      const response = await api.post('/auth/login', data);
       return response.data;
     },
     onSuccess: () => {
@@ -52,7 +52,7 @@ export const useLogout = () => {
 
   return useMutation({
     mutationFn: async (): Promise<void> => {
-      await api.post('/api/v1/auth/logout');
+      await api.post('/auth/logout');
     },
     onSuccess: () => {
       // 로그아웃 성공 시
@@ -68,7 +68,7 @@ export const useUser = () => {
     queryKey: ['user'],
     queryFn: async (): Promise<User | null> => {
       try {
-        const response = await api.get('/api/v1/users/me');
+        const response = await api.get('/users/me');
         return response.data;
       } catch (error) {
         return null;

@@ -6,11 +6,11 @@ import { AIExhibitionRequest, AIExhibitionResponse } from "../../src/apis/ai";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 export const generateExhibition = async (
-  prompt: string, 
+  prompt: string,
   ticketId: number
 ): Promise<AIExhibitionResponse> => {
-  
-  const url = `${API_BASE_URL}/api/v1/ai/generate`;
+
+  const url = `${API_BASE_URL}/ai/generate`;
   
   // 요청 바디 생성
   const requestBody: AIExhibitionRequest = {

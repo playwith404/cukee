@@ -50,7 +50,7 @@ export interface TicketLikeResponse {
  */
 export const getExhibitions = async (page = 1, limit = 20): Promise<ExhibitionListResponse> => {
   // params 객체를 사용하면 axios가 자동으로 쿼리스트링(?page=1&limit=20)을 만들어줍니다.
-  const response = await api.get<ExhibitionListResponse>('/api/v1/exhibitions', {
+  const response = await api.get<ExhibitionListResponse>('/exhibitions', {
     params: { page, limit },
   });
   return response.data;

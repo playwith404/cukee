@@ -44,7 +44,7 @@ api.interceptors.response.use(
 
       try {
         // 토큰 갱신 요청
-        await api.post('/api/v1/auth/refresh');
+        await api.post('/auth/refresh');
 
         // 원래 요청 재시도
         return api.request(originalRequest);
