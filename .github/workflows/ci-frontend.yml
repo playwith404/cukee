@@ -43,7 +43,6 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
           cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/cukee-frontend:buildcache
           cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/cukee-frontend:buildcache,mode=max
 
