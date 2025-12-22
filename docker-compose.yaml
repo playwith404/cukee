@@ -2,36 +2,31 @@ version: '3.8'
 
 services:
   frontend:
-    image: juin925/cukee-frontend:${IMAGE_TAG}
+    image: juin925/cukee-frontend:${FRONTEND_TAG}
     restart: always
+    ports:
+      - "3000:3000"
     networks:
       - app-network
 
   backend:
-    image: juin925/cukee-backend:${IMAGE_TAG}
+    image: juin925/cukee-backend:${BACKEND_TAG}
+    # (선택) DB 접속 정보 등을 위해 .env 파일을 로드
+    env_file:
+      - .env
     restart: always
     ports:
       - "8000:8000"
-    environment:
-      - DB_HOST=${DB_HOST}
-      - DB_PORT=${DB_PORT}
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_NAME=${DB_NAME}
     networks:
       - app-network
 
   ai:
-    image: juin925/cukee-ai:${IMAGE_TAG}
+    image: juin925/cukee-ai:${AI_TAG}
+    env_file:
+      - .env
     restart: always
     ports:
       - "5000:5000"
-    environment:
-      - DB_HOST=${DB_HOST}
-      - DB_PORT=${DB_PORT}
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_NAME=${DB_NAME}
     networks:
       - app-network
 

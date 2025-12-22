@@ -3,7 +3,6 @@ set -e # 에러 발생 시 즉시 종료
 
 # 인자 받기
 SERVICE_NAME=$1
-# Full SHA를 받아서 앞에서 7자리만 사용 (일관성 보장)
 COMMIT_SHA=$2
 DOCKER_USERNAME=$3
 DOCKER_TOKEN=$4
@@ -19,30 +18,55 @@ echo "🚀 Starting deployment for $SERVICE_NAME (SHA: $COMMIT_SHA)..."
 # 작업 디렉토리로 이동
 cd ~/app
 
+# .env 파일이 없으면 생성 (최초 배포 시)
+if [ ! -f .env ]; then
+    touch .env
+fi
+
+# 서비스별 태그 변수명 매핑
+if [ "$SERVICE_NAME" == "frontend" ]; then
+    TAG_VAR="FRONTEND_TAG"
+elif [ "$SERVICE_NAME" == "backend" ]; then
+    TAG_VAR="BACKEND_TAG"
+elif [ "$SERVICE_NAME" == "ai" ]; then
+    TAG_VAR="AI_TAG"
+else
+    echo "Unknown service: $SERVICE_NAME"
+    exit 1
+fi
+
+# 1. .env 파일에 태그 업데이트 (Persist Tag)
+# 해당 변수가 이미 있으면 sed로 교체, 없으면 파일 끝에 추가
+if grep -q "^$TAG_VAR=" .env; then
+    # 리눅스 sed 문법
+    sed -i "s/^$TAG_VAR=.*/$TAG_VAR=sha-$COMMIT_SHA/" .env
+else
+    echo "$TAG_VAR=sha-$COMMIT_SHA" >> .env
+fi
+
+# 2. 다른 서비스 태그가 비어있을 경우 대비 (초기 부트스트래핑)
+# 처음 배포할 때는 다른 TAG 변수가 아예 없어서 에러가 날 수 있음.
+# 임시로 현재 배포하는 SHA로 채워넣어서 에러 방지 (어차피 그 서비스는 지금 배포 안 함)
+for v in FRONTEND_TAG BACKEND_TAG AI_TAG; do
+    if ! grep -q "^$v=" .env; then
+        echo "Initializing missing variable $v..."
+        echo "$v=sha-$COMMIT_SHA" >> .env
+    fi
+done
+
 # Docker Hub 로그인
-# (보안을 위해 로그에는 토큰을 출력하지 않음)
 echo "$DOCKER_TOKEN" | sudo docker login -u "$DOCKER_USERNAME" --password-stdin
 
-# 이미지 태그 생성 (Full SHA 사용)
-# YAML에서 넘어온 값이 Full SHA이므로 그대로 사용
-TAG="sha-${COMMIT_SHA}"
+# 3. Docker Compose 실행
+# 이제 환경변수(IMAGE_TAG)를 주입할 필요 없이, 업데이트된 .env 파일을 자동으로 읽음
+echo "📦 Pulling image for $SERVICE_NAME..."
+sudo docker compose pull $SERVICE_NAME
 
-echo "📦 Pulling image: $TAG"
-# sudo -E: 환경변수 보존
-sudo IMAGE_TAG=$TAG docker compose pull $SERVICE_NAME
-
-echo "🔄 Restarting service..."
-# --force-recreate: 강제 재생성으로 확실한 업데이트 보장
-# -d: 백그라운드 실행
-sudo IMAGE_TAG=$TAG docker compose up -d --force-recreate $SERVICE_NAME nginx
-
-# AI 서비스가 아닌 경우 Nginx 재시작 (Frontend/Backend 배포 시 Nginx 갱신 필요할 수 있음)
-# if [ "$SERVICE_NAME" != "ai" ]; then
-#     echo "🔄 Reloading Nginx..."
-#     sudo docker compose exec nginx nginx -s reload || true
-# fi
+echo "🔄 Restarting $SERVICE_NAME..."
+# Nginx도 같이 리로드 (설정 변경 가능성 대비)
+sudo docker compose up -d --force-recreate $SERVICE_NAME nginx
 
 echo "🧹 Cleaning up unused images..."
 sudo docker image prune -f
 
-echo "✅ Deployment successful!"
+echo "✅ Deployment successful for $SERVICE_NAME!"
