@@ -54,14 +54,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Copy docker-compose and nginx config to server
+      - name: Copy deployment files to VM
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SSH_HOST_VM }}
           username: ${{ secrets.SSH_USER_VM }}
           key: ${{ secrets.SSH_KEY_VM }}
           port: ${{ secrets.SSH_PORT || 22 }}
-          source: "docker-compose.yaml,nginx/nginx.conf"
+          source: "docker-compose.yaml,nginx/nginx.conf,deploy.sh"
           target: "~/app"
 
       - name: Deploy to VM
@@ -74,14 +74,6 @@ jobs:
           command_timeout: 30m
           script: |
             cd ~/app
-            # Login to Docker Hub
-            echo ${{ secrets.DOCKER_TOKEN }} | sudo docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
-            
-            # Pull specific version (Full SHA)
-            sudo IMAGE_TAG=sha-${{ github.sha }} docker compose pull frontend
-            
-            # Restart frontend and nginx with specific version
-            sudo IMAGE_TAG=sha-${{ github.sha }} docker compose up -d frontend nginx
-            
-            # Prune unused images
-            sudo docker image prune -f
+            chmod +x deploy.sh
+            # 실행: ./deploy.sh <서비스명> <SHA> <유저명> <토큰>
+            ./deploy.sh frontend ${{ github.sha }} ${{ secrets.DOCKER_USERNAME }} ${{ secrets.DOCKER_TOKEN }}

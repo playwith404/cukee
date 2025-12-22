@@ -54,14 +54,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Copy docker-compose to server
+      - name: Copy deployment files to server
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SSH_HOST_VM }}
           username: ${{ secrets.SSH_USER_VM }}
           key: ${{ secrets.SSH_KEY_VM }}
           port: ${{ secrets.SSH_PORT || 22 }}
-          source: "docker-compose.yaml,nginx/nginx.conf"
+          source: "docker-compose.yaml,nginx/nginx.conf,deploy.sh"
           target: "~/app"
 
       - name: Deploy to VM
@@ -74,12 +74,5 @@ jobs:
           command_timeout: 30m
           script: |
             cd ~/app
-            echo ${{ secrets.DOCKER_TOKEN }} | sudo docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
-            
-            sudo IMAGE_TAG=sha-${{ github.sha }} docker compose pull backend
-            sudo IMAGE_TAG=sha-${{ github.sha }} docker compose up -d backend
-            
-            # Restart Nginx explicitly if needed (optional, often good to refresh connection pools)
-            # docker-compose restart nginx
-            
-            sudo docker image prune -f
+            chmod +x deploy.sh
+            ./deploy.sh backend ${{ github.sha }} ${{ secrets.DOCKER_USERNAME }} ${{ secrets.DOCKER_TOKEN }}
