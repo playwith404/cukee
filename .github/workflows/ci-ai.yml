@@ -71,9 +71,10 @@ jobs:
           username: ${{ secrets.SSH_USER_GPU }}
           key: ${{ secrets.SSH_KEY_GPU }}
           port: ${{ secrets.SSH_PORT_GPU || 22 }}
+          command_timeout: 30m
           script: |
             cd ~/app
-            echo ${{ secrets.DOCKER_TOKEN }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+            echo ${{ secrets.DOCKER_TOKEN }} | sudo docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
             
             # Pull specific version
             sudo IMAGE_TAG=sha-${{ github.sha }} docker compose pull ai

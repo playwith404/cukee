@@ -71,10 +71,11 @@ jobs:
           username: ${{ secrets.SSH_USER_VM }}
           key: ${{ secrets.SSH_KEY_VM }}
           port: ${{ secrets.SSH_PORT || 22 }}
+          command_timeout: 30m
           script: |
             cd ~/app
-            # Login to Docker Hub (optional if repo is public, but good practice)
-            echo ${{ secrets.DOCKER_TOKEN }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+            # Login to Docker Hub
+            echo ${{ secrets.DOCKER_TOKEN }} | sudo docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
             
             # Pull specific version
             sudo IMAGE_TAG=sha-${{ github.sha }} docker compose pull frontend
