@@ -77,10 +77,10 @@ jobs:
             echo ${{ secrets.DOCKER_TOKEN }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
             
             # Pull latest frontend image
-            docker-compose pull frontend
+            docker compose pull frontend
             
             # Restart frontend and nginx (nginx configuration might have changed)
-            docker-compose up -d frontend nginx
+            docker compose up -d frontend nginx
             
             # Prune unused images
             docker image prune -f

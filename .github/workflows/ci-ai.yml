@@ -75,9 +75,9 @@ jobs:
             cd ~/app
             echo ${{ secrets.DOCKER_TOKEN }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
             
-            docker-compose pull ai
+            docker compose pull ai
             
             # AI 서비스 재시작 (GPU 사용을 위해 docker-compose의 nvidia runtime 설정 필요할 수 있음)
-            docker-compose up -d ai
+            docker compose up -d ai
             
             docker image prune -f

@@ -75,8 +75,8 @@ jobs:
             cd ~/app
             echo ${{ secrets.DOCKER_TOKEN }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
             
-            docker-compose pull backend
-            docker-compose up -d backend
+            docker compose pull backend
+            docker compose up -d backend
             
             # Restart Nginx explicitly if needed (optional, often good to refresh connection pools)
             # docker-compose restart nginx
