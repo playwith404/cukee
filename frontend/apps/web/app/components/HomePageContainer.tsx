@@ -1,25 +1,48 @@
 // app/(routes)/components/HomePageContainer.tsx
 
-'use client'; 
+'use client';
 
-import { Header, MainLayout, MainCarousel } from '@repo/ui'; 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation'; 
-import { TICKET_DATA } from '../../src/data/tickets'; // 데이터 임포트
+import { Header, MainLayout, MainCarousel } from '@repo/ui';
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { fetchTickets, Ticket } from '../../src/apis/tickets';
 
 // --- 고정 데이터 (API 미연동 상태) ---
-const currentNickname = '길초'; 
-const likeCount = 103; 
+const currentNickname = '길초';
+const likeCount = 103;
 const curatorIntroText = "안녕하세요. MZ 큐레이터 김엠지예요. 밝고 도파민 터지는 영화만 추천해줄게요.";
 
 export const HomePageContainer: React.FC = () => {
-  const router = useRouter(); 
+  const router = useRouter();
   const [currentIndex, setCurrentIndex] = useState(0);
-  const totalTickets = TICKET_DATA.length;
-  const currentTicket = TICKET_DATA[currentIndex]; 
+  const [tickets, setTickets] = useState<Ticket[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const totalTickets = tickets.length;
+  const currentTicket = tickets[currentIndex];
+
+  // 티켓 데이터 로드
+  useEffect(() => {
+    const loadTickets = async () => {
+      try {
+        setLoading(true);
+        const response = await fetchTickets();
+        setTickets(response.data);
+        setError(null);
+      } catch (err) {
+        console.error('티켓 로드 실패:', err);
+        setError('티켓을 불러오는데 실패했습니다.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadTickets();
+  }, []); 
 
   const handleNext = () => {
-    if (currentIndex < TICKET_DATA.length - 1) {
+    if (currentIndex < tickets.length - 1) {
       setCurrentIndex(currentIndex + 1);
     }
   };
@@ -29,15 +52,37 @@ export const HomePageContainer: React.FC = () => {
       setCurrentIndex(currentIndex - 1);
     }
   };
-  
+
   const handleTicketClick = (ticketId: number) => {
-    router.push(`/exhibition?ticket=${ticketId}`); 
+    router.push(`/exhibition?ticket=${ticketId}`);
   };
+
+  // 로딩 상태
+  if (loading) {
+    return (
+      <MainLayout>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+          <p>티켓을 불러오는 중...</p>
+        </div>
+      </MainLayout>
+    );
+  }
+
+  // 에러 상태
+  if (error || tickets.length === 0) {
+    return (
+      <MainLayout>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+          <p>{error || '티켓이 없습니다.'}</p>
+        </div>
+      </MainLayout>
+    );
+  }
 
   return (
     <MainLayout>
       <div className="header-outer-wrapper">
-          <Header currentSection={currentTicket.curatorName} /> 
+          <Header currentSection={currentTicket.curatorName} />
       </div>
       {/* 1. [가운데 정렬 구역] 텍스트 + 티켓 */}
       <div className="inner-container">
@@ -54,7 +99,7 @@ export const HomePageContainer: React.FC = () => {
                       당신을 위한 큐레이터가 대기 중이에요.
                     </p>
                   </div>
-                  
+
                   {/* 카운터 */}
                   <p className="ticket-counter">
                     <span className="counter-current">
@@ -74,7 +119,7 @@ export const HomePageContainer: React.FC = () => {
                   zIndex: 20,
                 }}>
                   <MainCarousel
-                    tickets={TICKET_DATA}
+                    tickets={tickets}
                     currentIndex={currentIndex}
                     onNext={handleNext}
                     onPrev={handlePrev}
@@ -92,7 +137,7 @@ export const HomePageContainer: React.FC = () => {
               <h2 className="curator-name-display">
                 {currentTicket.curatorName}
               </h2>
-              
+
               <div className="curator-likes-info">
                 <p style={{ margin: '0 0 4px 0' }}>♥  {likeCount}명의 유저가 이 전시회를 좋아해요.</p>
                 <div className="curator-speech-bubble2">

@@ -1,7 +1,8 @@
 // apps/web/app/components/ExhPageContainer.tsx
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Header, MainLayout } from '@repo/ui';
 // import '../styles/exh.css';
 import styles from './ExhPageContainer.module.css';
@@ -11,9 +12,10 @@ import { Gallery3D } from './exhibition/Gallery';
 import { CuratorGuide } from './exhibition/CuratorGuide';
 import { ExhibitionGenerator } from './exhibition/ExhGenerator';
 import { AIExhibitionResponse } from "../../src/apis/ai";
+import { fetchTickets, Ticket } from '../../src/apis/tickets';
 
 import { ExhibitionDetailResponse } from '../types/exhibition';
-import { Frame } from './exhibition/Gallery'; 
+import { Frame } from './exhibition/Gallery';
 
 const INITIAL_FRAMES = [
   { id: 1, content: 'Frame 1' },
@@ -29,9 +31,36 @@ export const ExhPageContainer: React.FC = () => {
   const initialIndex = frames.length > 0 ? Math.floor(frames.length / 2) : 0;
   const [activeIndex, setActiveIndex] = useState(initialIndex);
   const [exhibitionTitle, setExhibitionTitle] = useState("나만의 전시회");
-  
-  // 티켓 ID
-  const currentTicketId = 123; 
+
+  // URL 파라미터에서 티켓 ID 가져오기
+  const searchParams = useSearchParams();
+  const ticketIdParam = searchParams.get('ticket');
+  const currentTicketId = ticketIdParam ? parseInt(ticketIdParam, 10) : 1;
+
+  // 티켓 정보 상태
+  const [ticketInfo, setTicketInfo] = useState<Ticket | null>(null);
+  const [loadingTicket, setLoadingTicket] = useState(true);
+
+  // 티켓 정보 로드
+  useEffect(() => {
+    const loadTicketInfo = async () => {
+      try {
+        setLoadingTicket(true);
+        const response = await fetchTickets();
+        const ticket = response.data.find((t: Ticket) => t.id === currentTicketId);
+
+        if (ticket) {
+          setTicketInfo(ticket);
+        }
+      } catch (error) {
+        console.error('티켓 정보 로드 실패:', error);
+      } finally {
+        setLoadingTicket(false);
+      }
+    };
+
+    loadTicketInfo();
+  }, [currentTicketId]); 
 
   // === 2. 갤러리 조작 핸들러 ===
   const maxIndex = frames.length - 1;
@@ -80,8 +109,8 @@ export const ExhPageContainer: React.FC = () => {
     <MainLayout>
       <div className={styles.container}>
         <div className="header-outer-wrapper">
-            <Header 
-            currentSection="romancerCukee"
+            <Header
+            currentSection={ticketInfo?.curatorName || "큐레이터"}
             exhibitionTitle={exhibitionTitle}
             // 나중에 여기에 onSelectExhibition={handleLoadExhibition} 이런 식으로 연결
             //드롭다운에서 전시회 선택하면 화면 전환하게
@@ -100,9 +129,13 @@ export const ExhPageContainer: React.FC = () => {
             onDelete={handleDelete}
         />
 
-        <CuratorGuide />
+        <CuratorGuide
+          characterImageUrl={ticketInfo?.characterImageUrl || '/cara/cara1.png'}
+          curatorName={ticketInfo?.curatorName || 'MZ 큐레이터'}
+          curatorMessage={ticketInfo?.curatorMessage || '안녕하세요! 당신을 위한 영화를 추천해드릴게요.'}
+        />
         {/* 하단 입력바 (성공 시 handleExhibitionCreated 호출) */}
-        <ExhibitionGenerator 
+        <ExhibitionGenerator
             currentTicketId={currentTicketId}
             onSuccess={handleExhibitionCreated}
         />

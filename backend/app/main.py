@@ -17,7 +17,7 @@ from app.core.exception_handlers import (
     sqlalchemy_exception_handler,
     general_exception_handler
 )
-from app.api import auth, users, ai, exhibitions
+from app.api import auth, users, ai, exhibitions, tickets, exhibitions_new
 
 # 데이터베이스 테이블 생성
 Base.metadata.create_all(bind=engine)
@@ -52,7 +52,9 @@ app.add_exception_handler(Exception, general_exception_handler)
 app.include_router(auth.router)
 app.include_router(users.router)
 app.include_router(ai.router)
-app.include_router(exhibitions.router)
+app.include_router(tickets.router)  # 티켓 API 추가
+app.include_router(exhibitions.router)  # 기존 Mock 전시회 API
+app.include_router(exhibitions_new.router)  # 새로운 실제 DB 연동 전시회 API
 
 
 @app.get("/")
