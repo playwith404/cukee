@@ -75,8 +75,8 @@ jobs:
             cd ~/app
             echo ${{ secrets.DOCKER_TOKEN }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
             
-            sudo docker compose pull backend
-            sudo docker compose up -d backend
+            sudo IMAGE_TAG=sha-${{ github.sha }} docker compose pull backend
+            sudo IMAGE_TAG=sha-${{ github.sha }} docker compose up -d backend
             
             # Restart Nginx explicitly if needed (optional, often good to refresh connection pools)
             # docker-compose restart nginx
