@@ -40,10 +40,6 @@ services:
       # SSL 인증서 경로는 추후 실제 인증서 생성 후 마운트 필요
       # - ./nginx/ssl:/etc/nginx/ssl:ro
     restart: always
-    depends_on:
-      - frontend
-      - backend
-      - ai
     networks:
       - app-network
 
