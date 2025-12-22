@@ -66,13 +66,16 @@ echo "🔄 Restarting $SERVICE_NAME..."
 # 해당 서비스는 의존성 무시하고 강제 재시작 (다른 서비스에 영향 안 받기 위함)
 sudo docker compose up -d --force-recreate --no-deps $SERVICE_NAME
 
-echo "🔄 Reloading Nginx..."
-# Nginx 컨테이너가 떠있으면 설정만 리로드, 안 떠있으면 새로 시작 (upsert)
-# Nginx도 다른 서비스(frontend/backend/ai) 이미지 유무와 상관없이 독립적으로 띄움
-if [ "$(sudo docker ps -q -f name=nginx)" ]; then
-    sudo docker compose exec nginx nginx -s reload
-else
-    sudo docker compose up -d --no-deps nginx
+# AI 서비스(GPU 서버)는 Nginx가 필요 없으므로 건너뜀
+if [ "$SERVICE_NAME" != "ai" ]; then
+    echo "🔄 Reloading Nginx..."
+    # Nginx 컨테이너가 떠있으면 설정만 리로드, 안 떠있으면 새로 시작 (upsert)
+    # Nginx도 다른 서비스(frontend/backend/ai) 이미지 유무와 상관없이 독립적으로 띄움
+    if [ "$(sudo docker ps -q -f name=nginx)" ]; then
+        sudo docker compose exec nginx nginx -s reload
+    else
+        sudo docker compose up -d --no-deps nginx
+    fi
 fi
 
 echo "🧹 Cleaning up unused images..."
