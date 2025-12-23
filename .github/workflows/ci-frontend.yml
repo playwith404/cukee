@@ -106,9 +106,10 @@ jobs:
             sudo docker compose pull frontend
             sudo docker compose up -d --force-recreate --no-deps frontend
             
-            # 4. Nginx Update (Recreate if compose changed, Reload if config changed)
-            sudo docker compose up -d --no-deps nginx
-            sudo docker compose exec nginx nginx -s reload || true
+            # 4. Nginx Update (Force Recreate to apply new volumes/ports)
+            sudo docker compose up -d --force-recreate --no-deps nginx
+            # Reload is strictly not needed after recreate, but keeps it alive if already up
+            # sudo docker compose exec nginx nginx -s reload || true
             
             # 5. Cleanup
             sudo docker image prune -af
