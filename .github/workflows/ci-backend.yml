@@ -84,6 +84,7 @@ jobs:
             
             # 2. Update .env for Backend Tag & Docker Username
             touch .env
+            sudo chown $USER:$USER .env
             
             # DOCKER_USERNAME 업데이트
             if grep -q "^DOCKER_USERNAME=" .env; then
@@ -99,11 +100,17 @@ jobs:
               echo "BACKEND_TAG=sha-${{ github.sha }}" >> .env
             fi
             
+            echo "Current .env content:"
+            cat .env
+            
             # 3. Pull & Up (Backend Only)
             sudo docker compose pull backend
             sudo docker compose up -d --force-recreate --no-deps backend
             
-            # 4. Nginx Update (Force Recreate to apply new volumes/ports)
+            # 4. Nginx Update (Nuclear Option: Stop & Remove first)
+            echo "Recreating Nginx..."
+            sudo docker compose stop nginx || true
+            sudo docker compose rm -f nginx || true
             sudo docker compose up -d --force-recreate --no-deps nginx
             
             # 5. Cleanup

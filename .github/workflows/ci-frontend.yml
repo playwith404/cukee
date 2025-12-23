@@ -87,6 +87,7 @@ jobs:
             
             # 2. Update .env for Frontend Tag & Docker Username
             touch .env
+            sudo chown $USER:$USER .env
             
             # DOCKER_USERNAME 업데이트
             if grep -q "^DOCKER_USERNAME=" .env; then
@@ -102,14 +103,18 @@ jobs:
               echo "FRONTEND_TAG=sha-${{ github.sha }}" >> .env
             fi
             
+            echo "Current .env content:"
+            cat .env
+            
             # 3. Pull & Up (Frontend Only)
             sudo docker compose pull frontend
             sudo docker compose up -d --force-recreate --no-deps frontend
             
-            # 4. Nginx Update (Force Recreate to apply new volumes/ports)
+            # 4. Nginx Update (Nuclear Option: Stop & Remove first)
+            echo "Recreating Nginx..."
+            sudo docker compose stop nginx || true
+            sudo docker compose rm -f nginx || true
             sudo docker compose up -d --force-recreate --no-deps nginx
-            # Reload is strictly not needed after recreate, but keeps it alive if already up
-            # sudo docker compose exec nginx nginx -s reload || true
             
             # 5. Cleanup
             sudo docker image prune -af
