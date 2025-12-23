@@ -82,6 +82,10 @@ jobs:
           script: |
             cd ~/app
             
+            # 0. Pre-check: Clean up and ensure config validity
+            mkdir -p backend
+            touch backend/.env # Satisfy docker-compose env_file requirement
+
             # 1. Docker Login
             echo ${{ secrets.DOCKER_TOKEN }} | sudo docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
             
