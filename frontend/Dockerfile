@@ -30,6 +30,9 @@ COPY turbo.json turbo.json
 ARG NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 
+ARG INTERNAL_API_URL
+ENV INTERNAL_API_URL=${INTERNAL_API_URL}
+
 # Turbo 대신 직접 빌드 (환경변수 이슈 원천 차단)
 WORKDIR /app/apps/web
 RUN npx next build
