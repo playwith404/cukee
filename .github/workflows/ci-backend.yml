@@ -80,7 +80,7 @@ jobs:
             
             # 2. Update .env for Backend Tag
             touch .env
-            if grep -q "BACKEND_TAG=" .env; then
+            if grep -q "^BACKEND_TAG=" .env; then
               sed -i "s/^BACKEND_TAG=.*/BACKEND_TAG=sha-${{ github.sha }}/" .env
             else
               echo "BACKEND_TAG=sha-${{ github.sha }}" >> .env

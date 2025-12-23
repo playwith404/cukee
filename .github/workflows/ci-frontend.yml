@@ -80,7 +80,7 @@ jobs:
             
             # 2. Update .env for Frontend Tag
             touch .env
-            if grep -q "FRONTEND_TAG=" .env; then
+            if grep -q "^FRONTEND_TAG=" .env; then
               sed -i "s/^FRONTEND_TAG=.*/FRONTEND_TAG=sha-${{ github.sha }}/" .env
             else
               echo "FRONTEND_TAG=sha-${{ github.sha }}" >> .env

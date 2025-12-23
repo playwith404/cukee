@@ -80,7 +80,7 @@ jobs:
             
             # 2. Update .env for AI Tag
             touch .env
-            if grep -q "AI_TAG=" .env; then
+            if grep -q "^AI_TAG=" .env; then
               sed -i "s/^AI_TAG=.*/AI_TAG=sha-${{ github.sha }}/" .env
             else
               echo "AI_TAG=sha-${{ github.sha }}" >> .env
