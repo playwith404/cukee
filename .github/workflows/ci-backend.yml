@@ -103,5 +103,9 @@ jobs:
             sudo docker compose pull backend
             sudo docker compose up -d --force-recreate --no-deps backend
             
-            # 4. Cleanup
+            # 4. Nginx Update (Recreate if compose changed, Reload if config changed)
+            sudo docker compose up -d --no-deps nginx
+            sudo docker compose exec nginx nginx -s reload || true
+            
+            # 5. Cleanup
             sudo docker image prune -af
