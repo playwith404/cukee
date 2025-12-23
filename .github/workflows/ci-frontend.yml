@@ -33,7 +33,7 @@ jobs:
         with:
           images: ${{ secrets.DOCKER_USERNAME }}/cukee-frontend
           tags: |
-            type=sha,prefix=sha-,format=short
+            type=raw,value=sha-${{ github.sha }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
