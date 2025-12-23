@@ -2,7 +2,7 @@ name: AI CI/CD
 
 on:
   push:
-    branches: [ "main", "dev", "test/**" ]
+    branches: [ "main", "dev" ]
     paths:
       - 'ai/**'
   pull_request:
