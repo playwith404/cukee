@@ -54,16 +54,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Copy deployment files to GPU Server
+      - name: Copy docker-compose to GPU Server
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SSH_HOST_GPU }}
           username: ${{ secrets.SSH_USER_GPU }}
           key: ${{ secrets.SSH_KEY_GPU }}
           port: ${{ secrets.SSH_PORT_GPU || 22 }}
-          source: "docker-compose.yaml,deploy.sh"
+          source: "docker-compose.yaml"
           target: "~/app"
-
+          
       - name: Deploy to GPU Server
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -74,5 +74,22 @@ jobs:
           command_timeout: 30m
           script: |
             cd ~/app
-            chmod +x deploy.sh
-            ./deploy.sh ai ${{ github.sha }} ${{ secrets.DOCKER_USERNAME }} ${{ secrets.DOCKER_TOKEN }}
+            
+            # 1. Docker Login
+            echo ${{ secrets.DOCKER_TOKEN }} | sudo docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+            
+            # 2. Update .env for AI Tag
+            touch .env
+            if grep -q "AI_TAG=" .env; then
+              sed -i "s/^AI_TAG=.*/AI_TAG=sha-${{ github.sha }}/" .env
+            else
+              echo "AI_TAG=sha-${{ github.sha }}" >> .env
+            fi
+            
+            # 3. Pull & Up (AI Only)
+            # 여기서는 Nginx를 건드리지 않음 (GPU 서버에는 Nginx 없거나 필요 없음)
+            sudo docker compose pull ai
+            sudo docker compose up -d --force-recreate --no-deps ai
+            
+            # 4. Cleanup
+            sudo docker image prune -f

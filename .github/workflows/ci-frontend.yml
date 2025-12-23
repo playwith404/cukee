@@ -54,14 +54,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Copy deployment files to VM
+      - name: Copy docker-compose and nginx config to VM
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SSH_HOST_VM }}
           username: ${{ secrets.SSH_USER_VM }}
           key: ${{ secrets.SSH_KEY_VM }}
           port: ${{ secrets.SSH_PORT || 22 }}
-          source: "docker-compose.yaml,nginx/nginx.conf,deploy.sh"
+          source: "docker-compose.yaml,nginx/nginx.conf"
           target: "~/app"
 
       - name: Deploy to VM
@@ -74,6 +74,30 @@ jobs:
           command_timeout: 30m
           script: |
             cd ~/app
-            chmod +x deploy.sh
-            # 실행: ./deploy.sh <서비스명> <SHA> <유저명> <토큰>
-            ./deploy.sh frontend ${{ github.sha }} ${{ secrets.DOCKER_USERNAME }} ${{ secrets.DOCKER_TOKEN }}
+            
+            # 1. Docker Login
+            echo ${{ secrets.DOCKER_TOKEN }} | sudo docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+            
+            # 2. Update .env for Frontend Tag
+            touch .env
+            if grep -q "FRONTEND_TAG=" .env; then
+              sed -i "s/^FRONTEND_TAG=.*/FRONTEND_TAG=sha-${{ github.sha }}/" .env
+            else
+              echo "FRONTEND_TAG=sha-${{ github.sha }}" >> .env
+            fi
+            
+            # 3. Pull & Up (Frontend Only)
+            # .env 파일이 갱신되었으므로 compose가 알아서 새 태그를 읽음
+            sudo docker compose pull frontend
+            sudo docker compose up -d --force-recreate --no-deps frontend
+            
+            # 4. Nginx Reload (For Frontend routing)
+            # Nginx가 켜져 있으면 리로드, 꺼져 있으면 실행
+            if [ "$(sudo docker ps -q -f name=nginx)" ]; then
+                sudo docker compose exec nginx nginx -s reload
+            else
+                sudo docker compose up -d --no-deps nginx
+            fi
+            
+            # 5. Cleanup
+            sudo docker image prune -f
