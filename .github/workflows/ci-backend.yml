@@ -5,6 +5,8 @@ on:
     branches: [ "main", "dev", "feature/**" ]
     paths:
       - 'backend/**'
+      - 'docker-compose.yml'
+      - '.github/workflows/ci-backend.yml'
   pull_request:
     branches: [ "main", "dev" ]
     paths:
