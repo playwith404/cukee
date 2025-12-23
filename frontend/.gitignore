@@ -16,7 +16,7 @@ yarn.lock
 .env.test.local
 .env.production.local
 # 추가: 각 앱 폴더 내의 env 파일 무시
-apps/*/.env*
+
 
 # Testing
 coverage
