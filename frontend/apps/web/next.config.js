@@ -24,7 +24,7 @@ const nextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: `${INTERNAL_API_URL}/api/:path`,
+        destination: `${process.env.INTERNAL_API_URL}/api/:path`,
       },
     ];
   },
