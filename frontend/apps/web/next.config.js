@@ -1,4 +1,8 @@
 /** @type {import('next').NextConfig} */
+
+// 환경 변수에서 INTERNAL_API_URL을 가져오거나 기본값 사용
+const INTERNAL_API_URL = process.env.INTERNAL_API_URL || 'http://backend:8000';
+
 const nextConfig = {
   //선장님 요구사항
   output: "standalone",
