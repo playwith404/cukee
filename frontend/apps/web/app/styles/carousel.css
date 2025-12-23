@@ -28,7 +28,7 @@
 /* 3. 티켓 뭉치 영역 */
 .mc-ticket-cluster {
     position: relative;
-    width: 400px;
+    width: 450px;
     height: 850px;
     margin: 0 auto; 
     /* 이미지들만 깔끔하게 보이도록 다른 스타일 제거 */
