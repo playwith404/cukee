@@ -19,6 +19,7 @@ export interface ExhibitionDesign {
 export interface RecommendedMovie {
   movieId: number;
   curatorComment: string;
+  posterUrl?: string; // 포스터 URL이 제공될 수 있음
 }
 
 // 3. 응답 (Response)
