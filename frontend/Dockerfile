@@ -31,6 +31,7 @@ ARG NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 
 # ui 패키지는 next.config.js의 transpilePackages 설정을 통해 web 빌드 시 자동으로 함께 컴파일, 그래서 ui 빌드 건너뛰고 web만 단독으로 빌드
+# Turbo Build (이제 turbo.json에 globalEnv가 있어서 환경변수 읽을 수 있음)
 RUN npx turbo run build --filter=web
 
 # 4. Runner stage: 실제 실행 (Standalone 모드 활용)
