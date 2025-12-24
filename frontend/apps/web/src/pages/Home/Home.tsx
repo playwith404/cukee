@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Header, MainLayout } from '@repo/ui';
+import { MainLayout } from '@repo/ui';
 import { MainCarousel } from './MainCarousel';
+import { Header } from '../../components/Header/Header';
 
 // ❌ 수정 전: import { fetchTickets, Ticket } from '../../apis/tickets';
 // ✅ 수정 후: tickets.ts를 삭제하고 통합했으므로 exhibition에서 가져옵니다.
@@ -89,7 +90,7 @@ export default function HomePage() {
         <main className={styles.mainContent}>
           <div className={styles.upperSplit}>
             <div className={styles.decoBox}></div>
-            
+
             <div className={styles.textSection}>
               <div>
                 <h1 className={styles.title}>
@@ -138,7 +139,7 @@ export default function HomePage() {
           <div className={styles.curatorLikesInfo}>
             <p style={{ margin: '0 0 4px 0' }}>♥ {likeCount}명의 유저가 이 전시회를 좋아해요.</p>
             <div className={styles.speechBubble}>
-                {curatorIntroText}
+              {curatorIntroText}
             </div>
           </div>
         </div>
