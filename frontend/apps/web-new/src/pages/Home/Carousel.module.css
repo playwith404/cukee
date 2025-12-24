@@ -1,0 +1,227 @@
+/* 1. 컴포넌트 전체 컨테이너 */
+.container {
+  bottom: -50px;
+  position: relative;
+  min-width: 500px;
+  height: auto;
+  display: flex;
+  align-items: flex-end;
+}
+
+/* 2. 캐릭터 */
+.characterArea {
+  position: absolute;
+  left: -250px;
+  width: 150px;
+  pointer-events: none;
+}
+
+.characterImg {
+  width: 170%;
+  height: auto;
+  display: block;
+}
+
+/* 3. 티켓 뭉치 영역 */
+.ticketCluster {
+  position: relative;
+  width: 450px;
+  height: 850px;
+  margin: 0 auto;
+}
+
+/* 티켓 공통 스타일 */
+.ticketBase {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transform-origin: bottom left;
+  background: transparent;
+  box-shadow: none;
+  border: none;
+  overflow: visible;
+}
+
+.ticketImg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+}
+
+/* --- [Layer 3] 3번째 티켓 (가장 뒤) --- */
+.layerThird {
+  z-index: 1;
+  opacity: 0.7;
+  transform: translateX(250px) scale(0.5);
+}
+
+.layerThird.animateLeft {
+  animation: slideThirdLeft 0.5s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+}
+
+.layerThird.animateRight {
+  animation: slideThirdRight 0.5s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+}
+
+/* --- [Layer 2] 2번째 티켓 (중간) --- */
+.layerSecond {
+  z-index: 2;
+  opacity: 0.7;
+  transform: translateX(200px) scale(0.5);
+}
+
+.layerSecond.animateLeft {
+  animation: slideSecondLeft 0.5s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+}
+
+.layerSecond.animateRight {
+  animation: slideSecondRight 0.5s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+}
+
+/* --- [Layer 1] Main 티켓 (가장 앞) --- */
+.layerMain {
+  z-index: 3;
+  opacity: 1;
+  transform: translateX(0) scale(1);
+  cursor: pointer;
+}
+
+.layerMain:hover {
+  transform: translateX(0) scale(1.02);
+}
+
+.layerMain.animateLeft {
+  animation: slideMainLeft 0.5s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+}
+
+.layerMain.animateRight {
+  animation: slideMainRight 0.5s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+}
+
+/* 공통 슬라이드 아웃 (기존 코드에 없던 정의 보강) */
+.ticketBase.animateLeft {
+  /* 필요 시 정의: animation: slideOutLeft ... */
+}
+.ticketBase.animateRight {
+  /* 필요 시 정의: animation: slideOutRight ... */
+}
+
+/* 4. 네비게이션 버튼 */
+.prevBtn {
+  position: absolute;
+  left: -50px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 70px;
+  color: #3e3e3e;
+  cursor: pointer;
+  z-index: 40;
+}
+
+.prevBtn:hover {
+  color: #000;
+}
+
+.nextBtn {
+  position: absolute;
+  right: 0px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 70px;
+  color: #3e3e3e;
+  cursor: pointer;
+  z-index: 30;
+}
+
+/* 5. 텍스트 링크 */
+.linkText {
+  position: absolute;
+  bottom: -60px;
+  right: 0;
+  font-size: 30px;
+  color: #EDE6DD;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* ----------------------------------------------------
+   Keyframes (CSS Modules가 자동으로 스코핑해줍니다)
+---------------------------------------------------- */
+
+@keyframes slideMainLeft {
+  0% { transform: translateX(0) scale(1); opacity: 1; }
+  100% { transform: translateX(200px) scale(0.5); opacity: 0.7; }
+}
+
+@keyframes slideMainRight {
+  0% { transform: translateX(0) scale(1); opacity: 1; }
+  100% { transform: translateX(-150px) scale(0.8); opacity: 0; }
+}
+
+@keyframes slideSecondLeft {
+  0% { transform: translateX(200px) scale(0.5); opacity: 0.7; }
+  100% { transform: translateX(250px) scale(0.5); opacity: 0.5; }
+}
+
+@keyframes slideSecondRight {
+  0% { transform: translateX(200px) scale(0.5); opacity: 0.7; }
+  100% { transform: translateX(0) scale(1); opacity: 1; }
+}
+
+@keyframes slideThirdLeft {
+  0% { transform: translateX(250px) scale(0.5); opacity: 0.5; }
+  100% { transform: translateX(300px) scale(0.4); opacity: 0; }
+}
+
+@keyframes slideThirdRight {
+  0% { transform: translateX(250px) scale(0.5); opacity: 0.5; }
+  100% { transform: translateX(200px) scale(0.5); opacity: 0.7; }
+}
+
+/* ----------------------------------------------------
+   반응형 (900px 미만)
+---------------------------------------------------- */
+@media (max-height: 900px) {
+  .ticketCluster {
+    width: 260px;
+    height: 550px;
+  }
+
+  .layerMain {
+    transform: scale(0.9);
+  }
+  .layerSecond {
+    transform: translateX(130px) scale(0.5);
+  }
+  .layerThird {
+    transform: translateX(165px) scale(0.5);
+  }
+
+  .characterArea {
+    width: 130px;
+    left: -100px;
+  }
+
+  .prevBtn {
+    left: 0px;
+  }
+
+  .linkText {
+    bottom: -50px;
+  }
+
+  /* 반응형 키프레임 덮어쓰기 */
+  /* 주의: 모듈 시스템에서 keyframe 이름이 동일하면 충돌날 수 있으니, 
+     미디어 쿼리 안에서 keyframe을 재정의하는 것은 표준 CSS에서 복잡합니다.
+     보통은 transform 값만 클래스로 제어하는 것이 좋습니다. 
+     하지만 일단 기존 로직 유지를 위해 아래 애니메이션 이름은 그대로 둡니다. */
+     
+   /* (참고: CSS Modules에서는 미디어 쿼리 내부 @keyframes가 
+      일부 환경에서 제대로 오버라이딩 안 될 수도 있습니다.) */
+}
