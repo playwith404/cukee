@@ -1,4 +1,4 @@
-// apps/web-new/src/pages/Home/Home.tsx (상단 import 부분만 수정)
+// apps/web/src/pages/Home/Home.tsx (상단 import 부분만 수정)
 
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';

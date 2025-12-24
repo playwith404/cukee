@@ -1,4 +1,4 @@
-// apps/web-new/src/apis/exhibition.ts
+// apps/web/src/apis/exhibition.ts
 
 import api from './index';
 

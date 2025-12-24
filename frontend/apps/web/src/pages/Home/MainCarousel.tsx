@@ -1,4 +1,4 @@
-// apps/web-new/src/pages/Home/MainCarousel.tsx
+// apps/web/src/pages/Home/MainCarousel.tsx
 
 import React, { useState } from "react";
 // 👇 CSS Module 임포트 (파일 경로는 같은 폴더 가정)

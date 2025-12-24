@@ -1,4 +1,4 @@
-// apps/web-new/src/main.tsx
+// apps/web/src/main.tsx
 
 import React from 'react'
 import ReactDOM from 'react-dom/client'

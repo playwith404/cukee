@@ -1,4 +1,4 @@
-// apps/web-new/src/layouts/RootLayout.tsx
+// apps/web/src/layouts/RootLayout.tsx
 import { Outlet } from 'react-router-dom';
 // ❌ 제거: import Providers from ... (main.tsx에서 이미 했음!)
 

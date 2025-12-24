@@ -1,4 +1,4 @@
-// apps/web-new/src/components/Providers.tsx
+// apps/web/src/components/Providers.tsx
 
 // 'use client'; ❌ Vite는 모든게 클라이언트이므로 삭제
 
