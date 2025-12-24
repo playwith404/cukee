@@ -1,28 +1,51 @@
 """
-AI 관련 API 엔드포인트 (Mock)
+AI 관련 API 엔드포인트 - VM2 AI 서버 연동
 """
+import httpx
+import logging
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session as DBSession
 
 from app.core.database import get_db
-from app.core.exceptions import BadRequestException
+from app.core.exceptions import BadRequestException, InternalServerErrorException
 from app.schemas.ai import AIGenerateRequest, AIGenerateResponse
 from app.utils.dependencies import get_current_user
 from app.models import User
+from app.models.ticket import TicketGroup
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/v1/ai", tags=["AI"])
 
+# VM2 AI 서버 설정
+AI_SERVER_URL = "http://10.0.19.117:5000"
+
+# ticketId -> AI 서버 테마 매핑
+TICKET_TO_THEME = {
+    1: "숏폼 러버 MZ 스타일",
+    2: "영화덕후의 최애 마이너영화",
+    3: "편안하고 잔잔한 감성 추구",
+    4: "찝찝한 여운의 우울한 명작들",
+    5: "뇌 빼고도 볼 수 있는 레전드 코미디 ",
+    6: "심장 터질 것 같은 액션 범죄 영화",
+    7: "세계관 과몰입 판타지러버",
+    8: "이거 실화야? 실화야. ",
+    9: "여름에 찰떡인 역대급 호러 ",
+    10: "설레고 싶은 날의 로맨스 ",
+    11: "3D 보단 2D ",
+}
+
 
 @router.post("/generate", response_model=AIGenerateResponse, status_code=status.HTTP_200_OK)
-def generate_exhibition(
+async def generate_exhibition(
     request_data: AIGenerateRequest,
     current_user: User = Depends(get_current_user),
     db: DBSession = Depends(get_db)
 ):
     """
-    AI 전시회 생성 (Mock)
+    AI 전시회 생성
     - HttpOnly Cookie 필요
-    - 실제 AI 모델 연동 전까지 Mock 데이터 반환
+    - VM2 AI 서버와 연동하여 영화 추천 생성
     """
     if not request_data.prompt:
         raise BadRequestException(
@@ -30,34 +53,50 @@ def generate_exhibition(
             details="프롬프트는 필수 항목입니다."
         )
 
-    # Mock 응답 데이터
-    mock_response = {
-        "resultJson": {
-            "title": f"{request_data.prompt[:20]}... 큐레이션",
-            "design": {
-                "font": "Pretendard",
-                "colorScheme": "dark",
-                "layoutType": "grid",
-                "frameStyle": "modern",
-                "background": "#1a1a1a",
-                "backgroundImage": "https://images.unsplash.com/photo-1478720568477-152d9b164e26"
-            },
-            "movies": [
-                {
-                    "movieId": 101,
-                    "curatorComment": "당신의 취향에 딱 맞는 영화입니다."
-                },
-                {
-                    "movieId": 102,
-                    "curatorComment": "감동적인 스토리가 인상적입니다."
-                },
-                {
-                    "movieId": 103,
-                    "curatorComment": "시각적으로 아름다운 작품입니다."
-                }
-            ],
-            "keywords": ["감성", "힐링", "추천"]
-        }
-    }
+    # ticketId로 테마 찾기
+    theme = TICKET_TO_THEME.get(request_data.ticketId)
+    if not theme:
+        raise BadRequestException(
+            message="유효하지 않은 티켓입니다.",
+            details=f"ticketId {request_data.ticketId}에 해당하는 테마를 찾을 수 없습니다."
+        )
 
-    return AIGenerateResponse(**mock_response)
+    try:
+        # VM2 AI 서버 호출
+        async with httpx.AsyncClient(timeout=120.0) as client:
+            response = await client.post(
+                f"{AI_SERVER_URL}/api/v1/generate",
+                json={
+                    "prompt": request_data.prompt,
+                    "theme": theme,
+                    "max_length": 2048,
+                    "temperature": 0.7,
+                    "top_p": 0.9,
+                    "top_k": 50
+                }
+            )
+
+            if response.status_code != 200:
+                logger.error(f"AI Server error: {response.status_code} - {response.text}")
+                raise InternalServerErrorException(
+                    message="AI 서버 오류가 발생했습니다.",
+                    details=f"Status: {response.status_code}"
+                )
+
+            ai_response = response.json()
+            logger.info(f"AI Server response received for theme: {theme}")
+
+            return AIGenerateResponse(resultJson=ai_response.get("result_json", ai_response.get("resultJson", {})))
+
+    except httpx.TimeoutException:
+        logger.error("AI Server timeout")
+        raise InternalServerErrorException(
+            message="AI 서버 응답 시간이 초과되었습니다.",
+            details="잠시 후 다시 시도해주세요."
+        )
+    except httpx.RequestError as e:
+        logger.error(f"AI Server connection error: {e}")
+        raise InternalServerErrorException(
+            message="AI 서버에 연결할 수 없습니다.",
+            details=str(e)
+        )
