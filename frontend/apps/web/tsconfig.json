@@ -1,35 +1,7 @@
-// apps/web/tsconfig.json
-
 {
-  "extends": "@repo/typescript-config/nextjs.json",
-  "compilerOptions": {
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
-    "baseUrl": ".",
-    "paths": {
-      // '@repo/ui'가 프로젝트 루트에서 packages/ui/src를 가리키도록 설정
-      "@repo/ui": ["../../packages/ui/src"],
-      "@repo/ui/*": ["../../packages/ui/src/*"],
-      // 인증 기능용 경로 별칭
-      "@/app/*": ["./app/*"],
-      "@/components/*": ["./app/components/*"],
-      "@/hooks/*": ["./app/hooks/*"],
-      "@/lib/*": ["./app/lib/*"],
-      "@/types/*": ["./app/types/*"],
-      "@/styles/*": ["./app/styles/*"]
-    }
-  },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    "next-env.d.ts",
-    "next.config.js",
-    ".next/types/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules"
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.node.json" }
   ]
 }
