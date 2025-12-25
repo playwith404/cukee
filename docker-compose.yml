@@ -6,7 +6,7 @@ services:
       dockerfile: Dockerfile
       args:
         # 빌드 시점에 필요한 환경변수
-        NEXT_PUBLIC_API_URL: https://cloudkakao.store/api
+        VITE_API_URL: https://cloudkakao.store/api
     restart: always
     expose:
       - "3000"

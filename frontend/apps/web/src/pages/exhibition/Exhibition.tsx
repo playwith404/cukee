@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom'; // 👈 변경 포인트 1
 //import { Header, MainLayout } from '@repo/ui'; // 🚧 UI 패키지 경로 확인 필요 (일단 주석 or 로컬 경로)
 import styles from './Exhibition.module.css'; // ExhPageContainer.module.css 이름 변경 추천
@@ -94,36 +94,36 @@ export const Exhibition = () => {
   // 🚧 MainLayout이나 Header가 없으면 임시 div로 감싸세요.
   return (
     <div className={styles.container}>
-        {/* 헤더 영역 (임시 구현) */}
-        <Header 
-          currentSection={ticketInfo?.curatorName || "Loading..."}
-          exhibitionTitle={exhibitionTitle}
-        />
+      {/* 헤더 영역 (임시 구현) */}
+      <Header
+        currentSection={loadingTicket ? "로딩 중..." : (ticketInfo?.curatorName || "큐레이터")}
+        exhibitionTitle={exhibitionTitle}
+      />
 
-        <TopControls
-          onSave={() => console.log('Save')}
-          onDecorate={() => console.log('Decorate')}
-        />
-        
-        <Gallery3D
-          frames={frames}
-          activeIndex={activeIndex}
-          onPrev={handlePrev}
-          onNext={handleNext}
-          onSelect={setActiveIndex}
-          onDelete={handleDelete}
-        />
+      <TopControls
+        onSave={() => console.log('Save')}
+        onDecorate={() => console.log('Decorate')}
+      />
 
-        <CuratorGuide
-          characterImageUrl={ticketInfo?.characterImageUrl || '/cara/cara1.png'}
-          curatorName={ticketInfo?.curatorName || 'MZ 큐레이터'}
-          curatorMessage={ticketInfo?.curatorMessage || '안녕하세요! 당신을 위한 영화를 추천해드릴게요.'}
-        />
+      <Gallery3D
+        frames={frames}
+        activeIndex={activeIndex}
+        onPrev={handlePrev}
+        onNext={handleNext}
+        onSelect={setActiveIndex}
+        onDelete={handleDelete}
+      />
 
-        <ExhibitionGenerator
-          currentTicketId={currentTicketId}
-          onSuccess={handleExhibitionCreated}
-        />
+      <CuratorGuide
+        characterImageUrl={ticketInfo?.characterImageUrl || '/cara/cara1.png'}
+        curatorName={loadingTicket ? "로딩 중..." : (ticketInfo?.curatorName || 'MZ 큐레이터')}
+        curatorMessage={loadingTicket ? "티켓 정보를 불러오는 중입니다..." : (ticketInfo?.curatorMessage || '안녕하세요! 당신을 위한 영화를 추천해드릴게요.')}
+      />
+
+      <ExhibitionGenerator
+        currentTicketId={currentTicketId}
+        onSuccess={handleExhibitionCreated}
+      />
     </div>
   );
 };

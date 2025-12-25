@@ -1,0 +1,99 @@
+/* src/styles/emailVerify.css */
+/* 전체 배경 */
+.verify-container {
+  min-height: 100vh;
+  background: #EDE6DD;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 카드 */
+.verify-card {
+  width: 100%;
+  max-width: 500px;
+  background: #ffffff;
+  padding: 36px 32px 40px;
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+  text-align: center;
+}
+
+/* 제목 */
+.verify-card h1 {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+/* 설명 */
+.verify-card p {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 28px;
+}
+
+/* 인증 코드 영역 */
+.code-input-wrapper {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+/* 인증 코드 input */
+.code-input {
+  width: 52px;
+  height: 60px;
+  font-size: 22px;
+  font-weight: 600;
+  text-align: center;
+  border-radius: 12px;
+  border: 1.5px solid #d1d5db;
+  transition: all 0.2s ease;
+}
+
+/* 포커스 효과 */
+.code-input:focus {
+  border-color: #373431;
+  box-shadow: 0 0 0 4px rgba(55, 52, 49, 0.15);
+  outline: none;
+}
+
+/* 에러 메시지 */
+.error-text {
+  margin-top: 8px;
+  font-size: 13px;
+  color: #dc2626;
+}
+
+/* 버튼 */
+.verify-button {
+  margin-top: 20px;
+  width: 100%;
+  height: 48px;
+  border-radius: 12px;
+  border: none;
+  font-size: 16px;
+  font-weight: 600;
+  background: #373431;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* hover */
+.verify-button:hover:not(:disabled) {
+  background: #373431;
+}
+
+/* disabled */
+.verify-button:disabled {
+  background: #77716a;
+  cursor: not-allowed;
+}
+
+/* 로딩 중 */
+.verify-button.loading {
+  opacity: 0.8;
+}
