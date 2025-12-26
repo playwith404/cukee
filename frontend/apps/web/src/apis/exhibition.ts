@@ -43,7 +43,7 @@ export interface Exhibition {
   curatorMsg: string;   // 큐레이터 한마디
   likes: number;
   imageUrl: string;     // 대표 이미지
-  
+
   // 선택적 속성 (UI 상황에 따라 필요)
   tags?: string[];
   color?: string;
@@ -65,12 +65,12 @@ export interface ExhibitionDetailResponse {
   userId: number;
   title: string;
   isPublic: boolean;
-  
+
   // 상세 중첩 객체
   design: ExhibitionDesign;
   movies: ExhibitionMovie[];
   keywords: ExhibitionKeyword[];
-  
+
   createdAt: string;
   updatedAt: string;
 }
