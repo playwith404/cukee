@@ -2,7 +2,7 @@ name: Frontend CI/CD
 
 on:
   push:
-    branches: [ "main", "dev", "feature/**" ]
+    branches: [ "main", "dev" ]
     paths:
       - 'frontend/**'
       - 'docker-compose.yml'
@@ -13,7 +13,7 @@ on:
     branches: [ "main", "dev" ]
     paths:
       - 'frontend/**'
- 
+
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
@@ -44,7 +44,7 @@ jobs:
         with:
           context: ./frontend
           file: ./frontend/Dockerfile
-          push: true
+          push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/cukee-frontend:buildcache
