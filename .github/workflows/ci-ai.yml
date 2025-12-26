@@ -7,6 +7,12 @@ on:
       - 'ai/**'
       - 'docker-compose.ai.yml'
       - '.github/workflows/ci-ai.yml'
+  pull_request:
+    branches: [ "main", "dev" ]
+    paths:
+      - 'ai/**'
+      - 'docker-compose.ai.yml'
+      - '.github/workflows/ci-ai.yml'
 
 jobs:
   build-and-push:
@@ -100,8 +106,11 @@ jobs:
             echo ${{ secrets.DOCKER_TOKEN }} | sudo docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
             
             # 전용 docker-compose 파일로 배포 (환경변수 파일 명시)
+            # 중요: 이름 충돌 방지를 위해 기존 컨테이너 강제 삭제 (이름 하드코딩된 경우 대비)
+            sudo docker rm -f cukee-ai-server || true
+            
             sudo docker compose -f docker-compose.ai.yml --env-file ai/.env pull ai-server
             sudo docker compose -f docker-compose.ai.yml --env-file ai/.env up -d --force-recreate
             
-            # 정리
-            sudo docker image prune -af --filter "until=10m" || true
+            # 정리: '지금 사용 중이지 않은' 모든 이미지를 즉시 삭제 (until 필터 제거)
+            sudo docker image prune -af || true
