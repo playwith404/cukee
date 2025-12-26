@@ -7,7 +7,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 from peft import PeftModel
 import logging
 from typing import Dict, Optional
-from app.config import settings
+from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 
