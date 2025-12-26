@@ -99,9 +99,9 @@ jobs:
             # Docker Hub 로그인
             echo ${{ secrets.DOCKER_TOKEN }} | sudo docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
             
-            # 배포 실행
-            sudo docker compose -f docker-compose.ai.yml pull ai-server
-            sudo docker compose -f docker-compose.ai.yml up -d
+            # 전용 docker-compose 파일로 배포 (환경변수 파일 명시)
+            sudo docker compose -f docker-compose.ai.yml --env-file ai/.env pull ai-server
+            sudo docker compose -f docker-compose.ai.yml --env-file ai/.env up -d
             
             # 정리
             sudo docker image prune -af --filter "until=10m" || true
