@@ -12,6 +12,7 @@ import { ExhibitionGenerator } from './components/ExhGenerator';
 
 // API 타입 import (경로는 프로젝트 구조에 맞게 수정)
 import type { AIExhibitionResponse } from '../../apis/ai'; // 👈 경로 확인
+import { curateMovies } from '../../apis/ai'; // 영화 조회 API
 import { fetchTickets, type Ticket } from '../../apis/exhibition'; // 👈 경로 확인
 
 const INITIAL_FRAMES = [
@@ -58,6 +59,32 @@ export const Exhibition = () => {
     };
 
     loadTicketInfo();
+  }, [currentTicketId]);
+
+  // === 티켓 선택 시 영화 자동 로드 ===
+  useEffect(() => {
+    const loadMovies = async () => {
+      try {
+        const response = await curateMovies(currentTicketId, 5);
+
+        if (response.movies && response.movies.length > 0) {
+          const newFrames: Frame[] = response.movies.map((movie) => ({
+            id: movie.movieId,
+            content: movie.title,
+            imageUrl: movie.posterUrl.startsWith('http')
+              ? movie.posterUrl
+              : `https://image.tmdb.org/t/p/w500${movie.posterUrl}`
+          }));
+
+          setFrames(newFrames);
+          setActiveIndex(Math.floor(newFrames.length / 2));
+        }
+      } catch (error) {
+        console.error('영화 로드 실패:', error);
+      }
+    };
+
+    loadMovies();
   }, [currentTicketId]);
 
   // === 4. 핸들러들 ===

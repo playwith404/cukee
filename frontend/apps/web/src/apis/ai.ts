@@ -2,6 +2,8 @@
 // 1. 타입 정의 (Types)
 // ==========================================
 
+import api from './index';
+
 // 요청 (Request)
 export interface AIExhibitionRequest {
   prompt: string;
@@ -34,47 +36,46 @@ export interface AIExhibitionResponse {
   };
 }
 
+// 큐레이션 영화 응답 타입
+export interface CurateMoviesResponse {
+  ticketId: number;
+  movies: {
+    movieId: number;
+    title: string;
+    posterUrl: string;
+  }[];
+}
+
 // ==========================================
 // 2. API 호출 함수 (Service Logic)
 // ==========================================
 
-// ✅ Vite 환경 변수 사용 (process.env -> import.meta.env)
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+/**
+ * 티켓 ID로 영화 목록 조회 (빠른 조회)
+ * nginx 프록시 경로: /api/ai/curate-movies -> /api/v1/ai/curate-movies
+ */
+export const curateMovies = async (
+  ticketId: number,
+  limit: number = 5
+): Promise<CurateMoviesResponse> => {
+  const response = await api.post<CurateMoviesResponse>('/ai/curate-movies', {
+    ticketId,
+    limit,
+  });
+  return response.data;
+};
 
+/**
+ * AI 전시회 생성
+ * nginx 프록시 경로: /api/ai/generate -> /api/v1/ai/generate
+ */
 export const generateExhibition = async (
   prompt: string,
   ticketId: number
 ): Promise<AIExhibitionResponse> => {
-  
-  const url = `${API_BASE_URL}/ai/generate`;
-
-  const requestBody: AIExhibitionRequest = {
+  const response = await api.post<AIExhibitionResponse>('/ai/generate', {
     prompt,
     ticketId,
-  };
-
-  try {
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      // 쿠키(세션) 포함 설정
-      credentials: 'include',
-      body: JSON.stringify(requestBody),
-    });
-
-    if (!response.ok) {
-      if (response.status === 400) throw new Error("프롬프트를 입력해주세요.");
-      if (response.status === 401) throw new Error("로그인이 만료되었습니다.");
-      if (response.status === 500) throw new Error("큐레이터 생성에 실패했습니다.");
-      throw new Error(`알 수 없는 에러 발생: ${response.status}`);
-    }
-
-    return await response.json();
-
-  } catch (error) {
-    console.error("API Error:", error);
-    throw error;
-  }
+  });
+  return response.data;
 };
