@@ -8,11 +8,13 @@ on:
       - 'docker-compose.yml'
       - '.github/workflows/ci-frontend.yml'
       - 'nginx/**'
-      - 'nginx/**'
   pull_request:
     branches: [ "main", "dev" ]
     paths:
       - 'frontend/**'
+      - 'docker-compose.yml'
+      - '.github/workflows/ci-frontend.yml'
+      - 'nginx/**'
 
 jobs:
   build-and-push:
