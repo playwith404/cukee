@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom'; // next/navigation, next/link 대체
-import styles from './Auth.module.css'; 
+import { useNavigate, Link } from 'react-router-dom';
+import styles from './Auth.module.css';
+import { login } from '../../apis/auth'; 
 
 export const Login = () => {
   const navigate = useNavigate(); // router.push -> navigate
@@ -22,19 +23,10 @@ export const Login = () => {
     setIsLoading(true);
 
     try {
-      // -------------------------------------------------------------
-      // 🚧 [Mocking Mode] 백엔드 없이 디자인 작업을 위한 가짜 로직
-      // -------------------------------------------------------------
-      console.log('로그인 시도:', { email, password });
-      
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      alert('로그인 성공! (Mocking)');
-      navigate('/'); // router.push('/') -> navigate('/')
-      // -------------------------------------------------------------
-
+      await login(email, password);
+      navigate('/home');
     } catch (err: any) {
-      const errorMessage = err.response?.data?.detail || '로그인에 실패했습니다';
+      const errorMessage = err.response?.data?.message || err.response?.data?.detail || '로그인에 실패했습니다';
       setError(errorMessage);
     } finally {
       setIsLoading(false);

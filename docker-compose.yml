@@ -1,6 +1,5 @@
 services:
   # 1. Frontend Service
-  # 1. Frontend Service
   frontend:
     image: ${DOCKER_USERNAME}/cukee-frontend:${FRONTEND_TAG}
     restart: always
@@ -12,11 +11,25 @@ services:
     image: ${DOCKER_USERNAME}/cukee-backend:${BACKEND_TAG}
     restart: always
     expose:
-      - "8000"  
-    env_file: 
-      - ./backend/.env  # 백엔드용 환경변수 (DB 접속 정보 등)
+      - "8000"
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - redis
 
-  # 3. Nginx (Web Server & Reverse Proxy)
+  # 3. Redis Service
+  redis:
+    build:
+      context: ./redis
+      dockerfile: Dockerfile
+    container_name: cukee-redis
+    restart: always
+    expose:
+      - "6379"
+    volumes:
+      - redis_data:/data
+
+  # 4. Nginx (Web Server & Reverse Proxy)
   nginx:
     image: nginx:alpine
     container_name: nginx
@@ -32,7 +45,7 @@ services:
       - frontend
       - backend
 
-  # 4. Certbot (SSL 인증서 발급/갱신)
+  # 5. Certbot (SSL 인증서 발급/갱신)
   certbot:
     image: certbot/certbot
     container_name: certbot
@@ -41,3 +54,6 @@ services:
       - ./certbot/www:/var/www/certbot
     # 인증서 자동 갱신을 위한 커맨드 (12시간마다 체크)
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+
+volumes:
+  redis_data:

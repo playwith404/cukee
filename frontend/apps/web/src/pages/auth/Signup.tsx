@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import styles from './Auth.module.css';
+import { sendVerificationCode } from '../../apis/auth';
 
 export const Signup = () => {
   const navigate = useNavigate();
@@ -56,23 +57,24 @@ export const Signup = () => {
     setIsLoading(true);
 
     try {
-      // 🚧 [Mocking Mode]
-      console.log('회원가입 시도:', { email, password, nickname });
+      // 이메일 인증번호 발송
+      await sendVerificationCode(email);
 
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      alert('회원가입 성공! 로그인 페이지로 이동합니다.');
-      navigate('/auth/login'); // router.push -> navigate
-      
+      // 인증 페이지로 이동 (회원가입 정보를 state로 전달)
+      navigate('/auth/email/verify', {
+        state: { email, password, nickname }
+      });
     } catch (err: any) {
-      // 에러 처리 로직
-      if (err.response?.data?.detail && Array.isArray(err.response.data.detail)) {
+      if (err.response?.status === 429) {
+        const retryAfter = err.response?.data?.detail?.retry_after || 60;
+        setError(`${retryAfter}초 후에 다시 시도해주세요.`);
+      } else if (err.response?.data?.detail && Array.isArray(err.response.data.detail)) {
         const validationErrors = err.response.data.detail
           .map((e: any) => e.msg || e.message)
           .join(', ');
         setError(validationErrors);
       } else {
-        const errorMessage = err.response?.data?.detail || '회원가입에 실패했습니다';
+        const errorMessage = err.response?.data?.message || err.response?.data?.detail || '인증번호 발송에 실패했습니다';
         setError(errorMessage);
       }
     } finally {

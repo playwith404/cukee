@@ -6,6 +6,70 @@ from typing import Optional
 from datetime import datetime
 
 
+class SendVerificationRequest(BaseModel):
+    """인증번호 발송 요청"""
+    email: EmailStr
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "email": "user@example.com"
+            }
+        }
+    )
+
+
+class SendVerificationResponse(BaseModel):
+    """인증번호 발송 응답"""
+    success: bool
+    message: str
+    expiresIn: Optional[int] = Field(None, alias="expires_in")
+    retryAfter: Optional[int] = Field(None, alias="retry_after")
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+        json_schema_extra={
+            "example": {
+                "success": True,
+                "message": "인증번호가 발송되었습니다.",
+                "expiresIn": 300
+            }
+        }
+    )
+
+
+class VerifyCodeRequest(BaseModel):
+    """인증번호 검증 요청"""
+    email: EmailStr
+    code: str = Field(..., min_length=6, max_length=6)
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "email": "user@example.com",
+                "code": "123456"
+            }
+        }
+    )
+
+
+class VerifyCodeResponse(BaseModel):
+    """인증번호 검증 응답"""
+    success: bool
+    message: str
+    errorCode: Optional[str] = Field(None, alias="error_code")
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+        json_schema_extra={
+            "example": {
+                "success": True,
+                "message": "이메일 인증이 완료되었습니다."
+            }
+        }
+    )
+
+
 class SignupRequest(BaseModel):
     """회원가입 요청"""
     email: EmailStr
