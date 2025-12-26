@@ -101,7 +101,7 @@ jobs:
             
             # 전용 docker-compose 파일로 배포 (환경변수 파일 명시)
             sudo docker compose -f docker-compose.ai.yml --env-file ai/.env pull ai-server
-            sudo docker compose -f docker-compose.ai.yml --env-file ai/.env up -d
+            sudo docker compose -f docker-compose.ai.yml --env-file ai/.env up -d --force-recreate
             
             # 정리
             sudo docker image prune -af --filter "until=10m" || true
