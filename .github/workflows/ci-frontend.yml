@@ -115,4 +115,4 @@ jobs:
             sudo docker compose up -d
             
             # 5. Cleanup
-            sudo docker image prune -af
+            sudo docker image prune -af || true
