@@ -115,4 +115,4 @@ jobs:
             sudo docker compose up -d
             
             # 5. Cleanup
-            sudo docker image prune -af || true
+            sudo docker image prune -af --filter "until=10m" || true
