@@ -3,14 +3,14 @@
 """
 from app.models.user import User
 from app.models.session import Session
-from app.models.ticket import TicketGroup
+from app.models.ticket import TicketGroup, TicketGroupMovie
 from app.models.exhibition import (
     Exhibition, ExhibitionDesign, ExhibitionMovie, ExhibitionKeyword,
     UserSavedExhibition, UserPinnedExhibition
 )
 
 __all__ = [
-    "User", "Session", "TicketGroup",
+    "User", "Session", "TicketGroup", "TicketGroupMovie",
     "Exhibition", "ExhibitionDesign", "ExhibitionMovie", "ExhibitionKeyword",
     "UserSavedExhibition", "UserPinnedExhibition"
 ]
