@@ -19,13 +19,12 @@ services:
 
   # 3. Redis Service
   redis:
-    build:
-      context: ./redis
-      dockerfile: Dockerfile
+    image: ${DOCKER_USERNAME}/cukee-redis:${REDIS_TAG}
     container_name: cukee-redis
     restart: always
     expose:
       - "6379"
+    command: redis-server --appendonly yes
     volumes:
       - redis_data:/data
 
