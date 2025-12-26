@@ -110,15 +110,9 @@ jobs:
             echo "Current .env content:"
             cat .env
             
-            # 3. Pull & Up (Frontend Only)
+            # 3. Pull & Deploy (All Services)
             sudo docker compose pull frontend
-            sudo docker compose up -d --force-recreate --no-deps frontend
-            
-            # 4. Nginx Update (Nuclear Option: Stop & Remove first)
-            echo "Recreating Nginx..."
-            sudo docker compose stop nginx || true
-            sudo docker compose rm -f nginx || true
-            sudo docker compose up -d --force-recreate --no-deps nginx
+            sudo docker compose up -d
             
             # 5. Cleanup
             sudo docker image prune -af
