@@ -127,7 +127,7 @@ async def curate_movies(
     try:
         # ticket_group_movies와 movies 테이블 조인하여 영화 조회
         query = text("""
-            SELECT m.id as movie_id, m.title, m.poster_url
+            SELECT m.id as movie_id, m.title_ko as title, m.poster_path as poster_url
             FROM ticket_group_movies tgm
             JOIN movies m ON tgm.movie_id = m.id
             WHERE tgm.ticket_group_id = :ticket_id
