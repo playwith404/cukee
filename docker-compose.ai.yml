@@ -1,0 +1,57 @@
+services:
+  ai-server:
+    container_name: cukee-ai-server
+    build:
+      context: ./ai
+      dockerfile: Dockerfile
+    image: ${DOCKER_USERNAME}/cukee-ai:${AI_TAG}
+    
+    # GPU 사용 설정
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    
+    # 포트 매핑
+    ports:
+      - "5000:5000"
+    
+    # 볼륨 마운트
+    # 기존: - /home/ubuntu/model/Llama-3.1-8B-Instruct:/app/model/Llama-3.1-8B-Instruct:ro
+    # 기존: - ./logs:/app/logs
+    volumes:
+      - /home/ubuntu/model/Llama-3.1-8B-Instruct:/app/model/Llama-3.1-8B-Instruct:ro
+      - ./ai/logs:/app/logs
+    
+    # 환경 변수 파일 (ai 폴더 내의 .env 사용)
+    env_file:
+      - ./ai/.env
+    
+    # 재시작 정책
+    restart: unless-stopped
+    
+    # 네트워크 설정
+    networks:
+      - ai-network
+    
+    # 헬스체크
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5m
+    
+    # 로깅 설정
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  ai-network:
+    driver: bridge

@@ -1,20 +1,16 @@
-name: Backend CI/CD
+name: Redis CI/CD
 
 on:
   push:
     branches: [ "main", "dev", "feature/**" ]
     paths:
-      - 'backend/**'
-      - 'docker-compose.yml'
-      - '.github/workflows/ci-backend.yml'
-      - 'nginx/**'
+      - 'redis/**'
+      - '.github/workflows/ci-redis.yml'
   pull_request:
     branches: [ "main", "dev" ]
     paths:
-      - 'backend/**'
-      - 'docker-compose.yml'
-      - '.github/workflows/ci-backend.yml'
-      - 'nginx/**'
+      - 'redis/**'
+      - '.github/workflows/ci-redis.yml'
 
 jobs:
   build-and-push:
@@ -36,20 +32,20 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ secrets.DOCKER_USERNAME }}/cukee-backend
+          images: ${{ secrets.DOCKER_USERNAME }}/cukee-redis
           tags: |
             type=raw,value=sha-${{ github.sha }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: ./backend
-          file: ./backend/Dockerfile
+          context: ./redis
+          file: ./redis/Dockerfile
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/cukee-backend:buildcache
-          cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/cukee-backend:buildcache,mode=max
+          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/cukee-redis:buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/cukee-redis:buildcache,mode=max
 
   deploy:
     needs: build-and-push
@@ -58,15 +54,16 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Copy docker-compose and nginx config to VM
+        
+      # docker-compose.yml이 필요하므로 복사
+      - name: Copy docker-compose to VM
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SSH_HOST_VM }}
           username: ${{ secrets.SSH_USER_VM }}
           key: ${{ secrets.SSH_KEY_VM }}
           port: ${{ secrets.SSH_PORT || 22 }}
-          source: "docker-compose.yml,nginx"
+          source: "docker-compose.yml"
           target: "~/app"
 
       - name: Deploy to VM
@@ -76,43 +73,27 @@ jobs:
           username: ${{ secrets.SSH_USER_VM }}
           key: ${{ secrets.SSH_KEY_VM }}
           port: ${{ secrets.SSH_PORT || 22 }}
-          command_timeout: 30m
           script: |
             cd ~/app
             
-            # 0. Pre-check: Clean up and ensure config validity
-            mkdir -p backend
-            touch backend/.env # Satisfy docker-compose env_file requirement
-
-            # 1. Docker Login
+            # Docker Login
             echo ${{ secrets.DOCKER_TOKEN }} | sudo docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
             
-            # 2. Update .env for Backend Tag & Docker Username
-            touch .env
-            sudo chown $USER:$USER .env
-            
-            # DOCKER_USERNAME 업데이트
-            if grep -q "^DOCKER_USERNAME=" .env; then
-              sed -i "s/^DOCKER_USERNAME=.*/DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}/" .env
+            # REDIS_TAG 업데이트
+            if grep -q "^REDIS_TAG=" .env; then
+              sed -i "s/^REDIS_TAG=.*/REDIS_TAG=sha-${{ github.sha }}/" .env
             else
+              echo "REDIS_TAG=sha-${{ github.sha }}" >> .env
+            fi
+            
+            # DOCKER_USERNAME 환경변수 확인 (없으면 추가)
+            if ! grep -q "^DOCKER_USERNAME=" .env; then
               echo "DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}" >> .env
             fi
-
-            # BACKEND_TAG 업데이트
-            if grep -q "^BACKEND_TAG=" .env; then
-              sed -i "s/^BACKEND_TAG=.*/BACKEND_TAG=sha-${{ github.sha }}/" .env
-            else
-              echo "BACKEND_TAG=sha-${{ github.sha }}" >> .env
-            fi
             
-            echo "Current .env content:"
-            cat .env
+            # Redis만 독립 배포 (다른 서비스 영향 X)
+            sudo docker compose pull redis
+            sudo docker compose up -d redis
             
-            # 3. Pull & Deploy (All Services)
-            # 백엔드만 풀 받고, 실행할 때는 (backend + 나머지)가 모두 보장되도록
-            sudo docker compose pull backend
-            sudo docker compose up -d
-            
-            # 5. Cleanup
+            # Cleanup
             sudo docker image prune -af --filter "until=10m" || true
-

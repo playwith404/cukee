@@ -1,17 +1,22 @@
 """
 인증 관련 API 엔드포인트
 """
-from fastapi import APIRouter, Depends, status, Response, Request, Cookie
+from fastapi import APIRouter, Depends, status, Response, Request, Cookie, HTTPException
 from sqlalchemy.orm import Session as DBSession
 from typing import Optional
 
 from app.core.database import get_db
 from app.core.config import settings
-from app.core.exceptions import UnauthorizedException
-from app.schemas.user import SignupRequest, SignupResponse, LoginRequest, LoginResponse
+from app.core.exceptions import UnauthorizedException, BadRequestException
+from app.schemas.user import (
+    SignupRequest, SignupResponse, LoginRequest, LoginResponse,
+    SendVerificationRequest, SendVerificationResponse,
+    VerifyCodeRequest, VerifyCodeResponse
+)
 from app.schemas.common import MessageResponse
 from app.services.auth_service import AuthService
 from app.services.session_service import SessionService
+from app.services.verification_service import VerificationService
 from app.utils.dependencies import get_current_user
 
 router = APIRouter(prefix="/api/v1/auth", tags=["Authentication"])
@@ -55,12 +60,23 @@ def signup(
 ):
     """
     회원가입
+    - 이메일 인증 완료 확인
     - 이메일 중복 체크
     - 비밀번호 해싱
     - HttpOnly Cookie로 세션 발급
     """
+    # 이메일 인증 완료 확인
+    if not VerificationService.is_email_verified(signup_data.email):
+        raise BadRequestException(
+            message="이메일 인증이 완료되지 않았습니다.",
+            details="먼저 이메일 인증을 완료해주세요."
+        )
+
     # 사용자 생성
     user = AuthService.create_user(db, signup_data)
+
+    # 인증 완료 플래그 삭제
+    VerificationService.clear_verified_flag(signup_data.email)
 
     # 세션 생성
     session = SessionService.create_session(
@@ -174,3 +190,86 @@ def refresh(
     set_session_cookie(response, new_session.id, settings.ENVIRONMENT)
 
     return MessageResponse(message="Token refreshed")
+
+
+@router.post("/email/send", response_model=SendVerificationResponse, status_code=status.HTTP_200_OK)
+def send_verification_code(
+    request_data: SendVerificationRequest,
+    db: DBSession = Depends(get_db)
+):
+    """
+    이메일 인증번호 발송
+    - 6자리 인증번호 생성
+    - Redis에 저장 (5분 TTL)
+    - 이메일 발송
+    - Rate limiting: 1분에 1회
+    """
+    from app.models import User
+
+    # 이메일 중복 체크
+    existing_user = db.query(User).filter(User.email == request_data.email).first()
+    if existing_user:
+        raise BadRequestException(
+            message="이미 등록된 이메일입니다.",
+            details="다른 이메일을 사용해주세요."
+        )
+
+    try:
+        result = VerificationService.send_verification_code(request_data.email)
+        if not result["success"]:
+            raise HTTPException(
+                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                detail={
+                    "success": False,
+                    "message": result["message"],
+                    "retry_after": result.get("retry_after")
+                }
+            )
+        return SendVerificationResponse(
+            success=True,
+            message=result["message"],
+            expires_in=result.get("expires_in")
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail={"success": False, "message": "이메일 발송에 실패했습니다."}
+        )
+
+
+@router.post("/email/verify", response_model=VerifyCodeResponse, status_code=status.HTTP_200_OK)
+def verify_email_code(request_data: VerifyCodeRequest):
+    """
+    이메일 인증번호 검증
+    - Redis에서 인증번호 확인
+    - 성공 시 인증 완료 플래그 설정
+    """
+    result = VerificationService.verify_code(request_data.email, request_data.code)
+
+    if not result["success"]:
+        error_code = result.get("error_code")
+        if error_code == "EXPIRED":
+            raise HTTPException(
+                status_code=status.HTTP_410_GONE,
+                detail={
+                    "success": False,
+                    "message": result["message"],
+                    "error_code": error_code
+                }
+            )
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail={
+                    "success": False,
+                    "message": result["message"],
+                    "error_code": error_code
+                }
+            )
+
+    return VerifyCodeResponse(
+        success=True,
+        message=result["message"]
+    )

@@ -2,7 +2,7 @@
 애플리케이션 설정 관리
 """
 from pydantic_settings import BaseSettings
-from typing import List
+from typing import List, Optional
 
 
 class Settings(BaseSettings):
@@ -21,6 +21,20 @@ class Settings(BaseSettings):
 
     # Environment
     ENVIRONMENT: str = "development"
+
+    # Redis
+    REDIS_URL: str = "redis://localhost:6379/0"
+
+    # Email (SMTP)
+    SMTP_HOST: str = "smtp.gmail.com"
+    SMTP_PORT: int = 587
+    SMTP_USER: Optional[str] = None
+    SMTP_PASSWORD: Optional[str] = None
+    EMAIL_FROM: Optional[str] = None
+    EMAIL_FROM_NAME: str = "Cukee"
+
+    # Verification Code
+    VERIFICATION_CODE_EXPIRE_MINUTES: int = 5
 
     @property
     def allowed_origins_list(self) -> List[str]:

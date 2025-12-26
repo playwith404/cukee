@@ -1,0 +1,116 @@
+name: AI Server CI/CD
+
+on:
+  push:
+    branches: [ "main", "dev", "feature/**" ]
+    paths:
+      - 'ai/**'
+      - 'docker-compose.ai.yml'
+      - '.github/workflows/ci-ai.yml'
+  pull_request:
+    branches: [ "main", "dev" ]
+    paths:
+      - 'ai/**'
+      - 'docker-compose.ai.yml'
+      - '.github/workflows/ci-ai.yml'
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        # PR 조건 없이 로그인 (캐시 활용 위해)
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ secrets.DOCKER_USERNAME }}/cukee-ai
+          tags: |
+            type=raw,value=sha-${{ github.sha }}
+            type=ref,event=branch
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./ai
+          file: ./ai/Dockerfile
+          # PR일 때는 빌드만 하고 푸시는 하지 않음
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/cukee-ai:buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/cukee-ai:buildcache,mode=max
+
+  deploy:
+    needs: build-and-push
+    # PR이 아닐 때만 배포
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Copy docker-compose.ai.yml to GPU Server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST_GPU }}
+          username: ${{ secrets.SSH_USER_GPU }}
+          key: ${{ secrets.SSH_KEY_GPU }}
+          port: ${{ secrets.SSH_PORT_GPU }}
+          source: "docker-compose.ai.yml"
+          target: "~/app"
+
+      - name: Deploy to GPU Server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST_GPU }}
+          username: ${{ secrets.SSH_USER_GPU }}
+          key: ${{ secrets.SSH_KEY_GPU }}
+          port: ${{ secrets.SSH_PORT_GPU }}
+          script: |
+            cd ~/app
+            
+            # 1. 필수 디렉토리 생성 (docker-compose.ai.yml 경로 의존성 해결)
+            mkdir -p ai/logs
+            touch ai/.env
+            
+            # 2. AI_TAG 업데이트 (ai/.env 파일에 기록)
+            if grep -q "^AI_TAG=" ai/.env; then
+              sed -i "s/^AI_TAG=.*/AI_TAG=sha-${{ github.sha }}/" ai/.env
+            else
+              echo "AI_TAG=sha-${{ github.sha }}" >> ai/.env
+            fi
+            
+            # 3. DOCKER_USERNAME 추가
+            if ! grep -q "^DOCKER_USERNAME=" ai/.env; then
+              echo "DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}" >> ai/.env
+            fi
+
+            # 4. 기타 Secrets 환경변수 주입 (필요 시 주석 해제하여 사용)
+            # echo "HF_TOKEN=${{ secrets.HF_TOKEN }}" >> ai/.env
+            
+            echo "Deploying AI Server with tag: sha-${{ github.sha }}"
+            
+            # Docker Hub 로그인
+            echo ${{ secrets.DOCKER_TOKEN }} | sudo docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+            
+            # 전용 docker-compose 파일로 배포 (환경변수 파일 명시)
+            # 중요: 이름 충돌 방지를 위해 기존 컨테이너 강제 삭제 (이름 하드코딩된 경우 대비)
+            sudo docker rm -f cukee-ai-server || true
+            
+            sudo docker compose -f docker-compose.ai.yml --env-file ai/.env pull ai-server
+            sudo docker compose -f docker-compose.ai.yml --env-file ai/.env up -d --force-recreate
+            
+            # 정리: '지금 사용 중이지 않은' 모든 이미지를 즉시 삭제 (until 필터 제거)
+            sudo docker image prune -af || true
