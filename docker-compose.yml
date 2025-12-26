@@ -1,21 +1,15 @@
 services:
   # 1. Frontend Service
+  # 1. Frontend Service
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-      args:
-        # 빌드 시점에 필요한 환경변수
-        VITE_API_URL: https://cloudkakao.store/api
+    image: ${DOCKER_USERNAME}/cukee-frontend:${FRONTEND_TAG}
     restart: always
     expose:
       - "3000"
 
   # 2. Backend Service
   backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
+    image: ${DOCKER_USERNAME}/cukee-backend:${BACKEND_TAG}
     restart: always
     expose:
       - "8000"
