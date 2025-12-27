@@ -34,7 +34,10 @@ export const Exhibition = () => {
   const [searchParams] = useSearchParams(); // 👈 변경 포인트 2 (배열 반환됨)
   const ticketIdParam = searchParams.get('ticket');
   const currentTicketId = ticketIdParam ? parseInt(ticketIdParam, 10) : 1;
-
+  // 예: ticket=1 -> /cara/cara1.png
+  // 예: ticket=2 -> /cara/cara2.png
+  const dynamicCharacterImage = `/cara/cara${currentTicketId}.png`;
+  
   // === 3. 티켓 정보 상태 ===
   const [ticketInfo, setTicketInfo] = useState<Ticket | null>(null);
   const [loadingTicket, setLoadingTicket] = useState(true);
@@ -142,7 +145,9 @@ export const Exhibition = () => {
       />
 
       <CuratorGuide
-        characterImageUrl={ticketInfo?.characterImageUrl || '/cara/cara1.png'}
+        // API에 이미지가 있으면 그걸 쓰고, 없으면 위에서 만든 규칙(cara + 번호)을 사용
+        characterImageUrl={ticketInfo?.characterImageUrl || dynamicCharacterImage}
+        
         curatorName={loadingTicket ? "로딩 중..." : (ticketInfo?.curatorName || 'MZ 큐레이터')}
         curatorMessage={loadingTicket ? "티켓 정보를 불러오는 중입니다..." : (ticketInfo?.curatorMessage || '안녕하세요! 당신을 위한 영화를 추천해드릴게요.')}
       />

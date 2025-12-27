@@ -291,8 +291,11 @@ export const MainCarousel: React.FC<MainCarouselProps> = ({
             key={slide.id}
             className={`${styles.ticketBase} ${getPositionClass(slide.position)}`}
             style={{
-              width: `${slide.ticket.width}px`,
-              height: `${slide.ticket.height}px`
+              // 수정 전 (삭제): width: `${slide.ticket.width}px`, height: `${slide.ticket.height}px`
+              
+              // 수정 후: 비율만 설정합니다.
+              // CSS에서 height: 80%를 잡고 있으므로, 비율에 맞춰 너비가 자동 계산됩니다.
+              aspectRatio: `${slide.ticket.width} / ${slide.ticket.height}`
             }}
           >
             <img

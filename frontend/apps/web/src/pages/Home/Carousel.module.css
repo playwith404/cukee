@@ -20,13 +20,14 @@
    ============================================================================= */
 .characterArea {
   position: absolute;
-  left: -250px;
+  left: -350px;
   width: 150px;
   pointer-events: none;
+  z-index: 10;
 }
 
 .characterImg {
-  width: 170%;
+  width: 240%;
   height: auto;
   display: block;
   transition: opacity 0.2s ease-in-out; /* 페이드 인/아웃 애니메이션 */
@@ -38,120 +39,131 @@
 }
 
 /* =============================================================================
-   3. 티켓 슬라이드 영역
+   3. 티켓 슬라이드 영역 (수정)
    ============================================================================= */
 .ticketCluster {
   position: relative;
-  width: 450px;
-  height: 850px;
+  /* width를 고정 px 대신 100%로 주어 부모 영역을 가득 채우게 합니다 */
+  width: 100%;  
+  /* 높이는 부모(Carousel container)에 맞추거나 고정 높이 유지 */
+  height: 750px; 
+  left: -130px;
   margin: 0 auto;
+  overflow: visible; /* 티켓이 흔들릴 때 잘리지 않도록 */
 }
 
-/* -----------------------------------------------------------------------------
-   3-1. 경계 도달 시 흔들림 애니메이션
-   - 첫 번째/마지막 티켓에서 더 이상 이동 불가할 때 피드백
-   ----------------------------------------------------------------------------- */
-.shakeLeft {
-  animation: shakeLeft 0.4s ease-in-out;
-}
-
-.shakeRight {
-  animation: shakeRight 0.4s ease-in-out;
-}
-
-@keyframes shakeLeft {
-  0% { transform: translateX(0); }
-  20% { transform: translateX(-15px); }
-  40% { transform: translateX(10px); }
-  60% { transform: translateX(-8px); }
-  80% { transform: translateX(5px); }
-  100% { transform: translateX(0); }
-}
-
-@keyframes shakeRight {
-  0% { transform: translateX(0); }
-  20% { transform: translateX(15px); }
-  40% { transform: translateX(-10px); }
-  60% { transform: translateX(8px); }
-  80% { transform: translateX(-5px); }
-  100% { transform: translateX(0); }
-}
-
-/* -----------------------------------------------------------------------------
-   3-2. 티켓 카드 공통 스타일
-   - CSS transition으로 부드러운 슬라이드 애니메이션 구현
-   ----------------------------------------------------------------------------- */
+/* =============================================================================
+   3-2. 티켓 카드 공통 스타일 (수정)
+   ============================================================================= */
 .ticketBase {
   position: absolute;
   bottom: 0;
-  left: 0;
+  left: 50%; /* 부모의 중앙 지점(x축 50%)에 배치 시작 */
+  
+  /* 높이를 컨테이너의 80%로 설정 */
+  height: 90%; 
+  width: auto; /* 너비는 이미지 비율에 따라 자동 조절 */
+  
+  /* 중요: 기준점을 왼쪽이 아닌 '중앙 하단'으로 변경 */
+  transform-origin: bottom center; 
+  
   transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1),
               opacity 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-  transform-origin: bottom left;
+  
   background: transparent;
   box-shadow: none;
   border: none;
-  overflow: visible;
-  will-change: transform, opacity; /* 성능 최적화 힌트 */
-}
+  will-change: transform, opacity;
 
+  max-width: 100%;
+}
 .ticketImg {
-  width: 100%;
+  /* 높이는 부모(ticketBase, 520px)를 꽉 채움 */
   height: 100%;
+  
+  /* 너비는 높이에 맞춰 비율대로 자동 조절됨 */
+  width: auto;
+  
+  /* 이미지 하단 공백 제거 및 렌더링 최적화 */
   display: block;
-  object-fit: contain;
+  
+  /* 이미지 드래그 방지 (선택) */
+  user-select: none;
+  -webkit-user-drag: none;
 }
+/* =============================================================================
+   3-3. 티켓 위치별 스타일 (수정)
+   - 핵심: 모든 transform에 translateX(-50%)를 포함시켜야 정중앙에 옵니다.
+   ============================================================================= */
 
-/* -----------------------------------------------------------------------------
-   3-3. 티켓 위치별 스타일
-   - main: 가장 앞 (현재 선택된 티켓)
-   - second: 두 번째 (오른쪽 뒤)
-   - third: 세 번째 (가장 뒤)
-   - hidden-left/right: 화면 밖 (애니메이션용)
-   ----------------------------------------------------------------------------- */
-
-/* [Main] 가장 앞 - 현재 선택된 티켓 */
+/* [Main] 가장 앞 */
 .layerMain {
   z-index: 3;
   opacity: 1;
-  transform: translateX(0) scale(1);
+  /* -50%를 해서 자신의 너비 절반만큼 왼쪽으로 당김 -> 정중앙 정렬 */
+  transform: translateX(-50%) scale(1);
   cursor: pointer;
 }
 
 .layerMain:hover {
-  transform: translateX(0) scale(1.02); /* 호버 시 살짝 확대 */
+  transform: translateX(-50%) scale(1.05);
 }
 
 /* [Second] 두 번째 - 오른쪽 뒤 */
 .layerSecond {
   z-index: 2;
   opacity: 0.8;
-  transform: translateX(180px) scale(0.6);
+  /* 중앙(-50%)에서 오른쪽으로 +180px 이동 */
+  transform: translateX(calc(-50% + 180px)) scale(0.6);
 }
 
 /* [Third] 세 번째 - 가장 뒤 */
 .layerThird {
   z-index: 1;
   opacity: 0.6;
-  transform: translateX(230px) scale(0.5);
+  /* 중앙(-50%)에서 오른쪽으로 +230px 이동 */
+  transform: translateX(calc(-50% + 230px)) scale(0.5);
 }
 
-/* [Hidden Left] 왼쪽 화면 밖 - 퇴장하는 티켓 */
+/* [Hidden Left] 왼쪽 화면 밖 - 퇴장 */
 .layerHiddenLeft {
-  z-index: 4; /* 퇴장 시 앞으로 나와서 사라짐 */
+  z-index: 4;
   opacity: 0;
-  transform: translateX(-150px) scale(0.9);
+  /* 중앙(-50%)에서 왼쪽으로 -150px 이동 */
+  transform: translateX(calc(-50% - 150px)) scale(0.9);
   pointer-events: none;
 }
 
-/* [Hidden Right] 오른쪽 화면 밖 - 등장 대기 중인 티켓 */
+/* [Hidden Right] 오른쪽 화면 밖 - 등장 대기 */
 .layerHiddenRight {
   z-index: 0;
   opacity: 0;
-  transform: translateX(280px) scale(0.4);
+  /* 중앙(-50%)에서 오른쪽으로 +280px 이동 */
+  transform: translateX(calc(-50% + 280px)) scale(0.4);
   pointer-events: none;
 }
 
+/* =============================================================================
+   흔들림 애니메이션 (Keyframes 수정)
+   - 기준점이 -50%로 변경되었으므로 애니메이션 기준도 수정해야 튑지 않습니다.
+   ============================================================================= */
+@keyframes shakeLeft {
+  0% { transform: translateX(-50%); }
+  20% { transform: translateX(calc(-50% - 15px)); }
+  40% { transform: translateX(calc(-50% + 10px)); }
+  60% { transform: translateX(calc(-50% - 8px)); }
+  80% { transform: translateX(calc(-50% + 5px)); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes shakeRight {
+  0% { transform: translateX(-50%); }
+  20% { transform: translateX(calc(-50% + 15px)); }
+  40% { transform: translateX(calc(-50% - 10px)); }
+  60% { transform: translateX(calc(-50% + 8px)); }
+  80% { transform: translateX(calc(-50% - 5px)); }
+  100% { transform: translateX(-50%); }
+}
 /* =============================================================================
    4. 네비게이션 버튼 (< >)
    ============================================================================= */
@@ -166,6 +178,14 @@
   color: #3e3e3e;
   cursor: pointer;
   transition: color 0.2s ease;
+
+  width: 120px;   /* 가로 넓게 */
+  height: 200px;  /* 세로도 넉넉하게 */
+  
+  /* 2. 글자(<)가 커진 영역 안에서 정중앙에 오도록 설정 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .prevBtn:hover,
@@ -181,7 +201,7 @@
 }
 
 .prevBtn {
-  left: -50px;
+  left: -150px;
   z-index: 40;
 }
 
@@ -206,11 +226,11 @@
 /* =============================================================================
    6. 반응형 스타일 (화면 높이 900px 미만)
    ============================================================================= */
-@media (max-height: 900px) {
-  .ticketCluster {
+@media (max-height: 300px) {
+  /* .ticketCluster {
     width: 260px;
     height: 550px;
-  }
+  } */
 
   .layerMain {
     transform: scale(0.9);

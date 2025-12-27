@@ -1,17 +1,14 @@
-// apps/web/src/pages/Home/Home.tsx (상단 import 부분만 수정)
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MainLayout } from '@repo/ui';
 import { MainCarousel } from './MainCarousel';
 import { Header } from '../../components/Header/Header';
-
-// ❌ 수정 전: import { fetchTickets, Ticket } from '../../apis/tickets';
-// ✅ 수정 후: tickets.ts를 삭제하고 통합했으므로 exhibition에서 가져옵니다.
-// 'type' 키워드를 명시적으로 붙여줍니다.
 import { fetchTickets, type Ticket } from '../../apis/exhibition';
-
 import styles from './Home.module.css';
+
+// ✅ [변경] 방금 만든 파일에서 데이터를 가져옵니다.
+import { FALLBACK_TICKETS } from './fallbackData';
+
 // --- 고정 데이터 ---
 const currentNickname = '길초';
 const likeCount = 103;
@@ -22,6 +19,8 @@ export default function HomePage() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  // 에러 로깅용
   const [error, setError] = useState<string | null>(null);
 
   const totalTickets = tickets.length;
@@ -32,11 +31,25 @@ export default function HomePage() {
       try {
         setLoading(true);
         const response = await fetchTickets();
-        setTickets(response.data);
-        setError(null);
+        
+        // 데이터가 정상적으로 왔는지 확인
+        if (response.data && response.data.length > 0) {
+           // 이미지 경로 보정 (필요 시)
+           const fixedTickets = response.data.map(t => ({
+             ...t,
+             characterImageUrl: t.characterImageUrl?.replace('cara/cara', 'cara/c') || null
+           }));
+           setTickets(fixedTickets);
+        } else {
+          // 데이터가 비었으면 임시 데이터 사용
+          console.warn("서버 데이터 없음. 임시 데이터 사용.");
+          setTickets(FALLBACK_TICKETS);
+        }
+        
       } catch (err) {
+        // 에러 발생 시 임시 데이터 사용
         console.error('티켓 로드 실패:', err);
-        setError('티켓을 불러오는데 실패했습니다.');
+        setTickets(FALLBACK_TICKETS);
       } finally {
         setLoading(false);
       }
@@ -44,6 +57,8 @@ export default function HomePage() {
     loadTickets();
   }, []);
 
+  // ... (이하 나머지 코드는 동일합니다)
+  
   const handleNext = () => {
     if (currentIndex < tickets.length - 1) {
       setCurrentIndex(currentIndex + 1);
@@ -70,18 +85,9 @@ export default function HomePage() {
     );
   }
 
-  if (error || tickets.length === 0) {
-    return (
-      <MainLayout>
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-          <p>{error || '티켓이 없습니다.'}</p>
-        </div>
-      </MainLayout>
-    );
-  }
-
   return (
     <MainLayout>
+      <div className={styles.killcho}>
       <div className={styles.headerWrapper}>
         <Header currentSection={currentTicket?.curatorName || '큐레이터'} />
       </div>
@@ -117,7 +123,6 @@ export default function HomePage() {
               bottom: '-120px',
               zIndex: 20,
             }}>
-              {/* 이제 같은 폴더의 MainCarousel을 사용합니다 */}
               <MainCarousel
                 tickets={tickets}
                 currentIndex={currentIndex}
@@ -139,10 +144,11 @@ export default function HomePage() {
           <div className={styles.curatorLikesInfo}>
             <p style={{ margin: '0 0 4px 0' }}>♥ {likeCount}명의 유저가 이 전시회를 좋아해요.</p>
             <div className={styles.speechBubble}>
-              {curatorIntroText}
+              {currentTicket?.curatorMessage || curatorIntroText}
             </div>
           </div>
         </div>
+      </div>
       </div>
     </MainLayout>
   );

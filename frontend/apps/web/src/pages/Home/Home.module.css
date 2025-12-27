@@ -1,6 +1,15 @@
 /* apps/web/src/pages/Home/Home.module.css */
 
 /* --- 메인 콘텐츠 영역 --- */
+.killcho {
+    width: 100%;
+    min-height: 100vh;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background-color: #EDE6DD;
+}
+
 .mainContent {
     width: 100%;
     margin-top: 32px;
