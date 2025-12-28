@@ -2,7 +2,7 @@ name: AI Server CI/CD
 
 on:
   push:
-    branches: [ "main", "dev" ]
+    branches: [ "main", "dev", "bugfix/CUK-64-ci-front" ]
     paths:
       - 'ai/**'
       - 'docker-compose.ai.yml'

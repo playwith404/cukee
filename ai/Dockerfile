@@ -18,9 +18,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 # 애플리케이션 코드 복사
 COPY app/ ./app/
 
-# 환경 변수 파일 복사
-COPY .env .
-
 # 포트 노출
 EXPOSE 5000
 
