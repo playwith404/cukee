@@ -7,14 +7,12 @@ on:
       - 'backend/**'
       - 'docker-compose.yml'
       - '.github/workflows/ci-backend.yml'
-      - 'nginx/**'
   pull_request:
     branches: [ "main", "dev" ]
     paths:
       - 'backend/**'
       - 'docker-compose.yml'
       - '.github/workflows/ci-backend.yml'
-      - 'nginx/**'
 
 jobs:
   build-and-push:
@@ -115,4 +113,3 @@ jobs:
             
             # 5. Cleanup
             sudo docker image prune -af --filter "until=10m" || true
-

@@ -6,11 +6,13 @@ on:
     paths:
       - 'redis/**'
       - '.github/workflows/ci-redis.yml'
+      - 'docker-compose.yml'
   pull_request:
     branches: [ "main", "dev" ]
     paths:
       - 'redis/**'
       - '.github/workflows/ci-redis.yml'
+      - 'docker-compose.yml'
 
 jobs:
   build-and-push:
