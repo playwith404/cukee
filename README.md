@@ -219,7 +219,7 @@ docker-compose down
 
 **frontend/.env.production**
 ```
-NEXT_PUBLIC_API_URL=https://cloudkakao.store/api
+NEXT_PUBLIC_API_URL=https://middle.cloudkakao.store/api
 ```
 
 **backend/.env**

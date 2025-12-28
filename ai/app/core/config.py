@@ -24,6 +24,10 @@ class Settings(BaseSettings):
     
     # VM1 Backend URL
     VM1_BACKEND_URL: str = "http://10.0.0.143:8000"
+
+    # Database
+    DATABASE_URL: str
+
     
     class Config:
         env_file = ".env"
