@@ -11,9 +11,12 @@ import { CuratorGuide } from './components/CuratorGuide';
 import { ExhibitionGenerator } from './components/ExhGenerator';
 
 // API 타입 import (경로는 프로젝트 구조에 맞게 수정)
-import type { AIExhibitionResponse } from '../../apis/ai'; // 👈 경로 확인
+import type { AIExhibitionResponse } from '../../apis/ai'; 
 import { curateMovies } from '../../apis/ai'; // 영화 조회 API
-import { fetchTickets, type Ticket } from '../../apis/exhibition'; // 👈 경로 확인
+import { fetchTickets, type Ticket } from '../../apis/exhibition'; 
+
+// AI 진행 상태 타입 정의 
+type AIStatus = 'idle' | 'loading' | 'delayed' | 'error';
 
 const INITIAL_FRAMES = [
   { id: 1, content: 'Frame 1' },
@@ -37,11 +40,49 @@ export const Exhibition = () => {
   // 예: ticket=1 -> /cara/cara1.png
   // 예: ticket=2 -> /cara/cara2.png
   const dynamicCharacterImage = `/cara/cara${currentTicketId}.png`;
+  const dynamicTicketImage = `/ticket/ticket${currentTicketId}.png`;
   
-  // === 3. 티켓 정보 상태 ===
+  // === 3.  티켓 정보 상태 ===
   const [ticketInfo, setTicketInfo] = useState<Ticket | null>(null);
   const [loadingTicket, setLoadingTicket] = useState(true);
 
+  // === 4. (추가) AI 상태 및 에러 메시지 관리 ===
+  const [aiStatus, setAiStatus] = useState<AIStatus>('idle');
+  const [errorMessage, setErrorMessage] = useState('');
+  // [신규] 10초 지연 감지 타이머 로직
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout>; 
+
+    if (aiStatus === 'loading') {
+      timer = setTimeout(() => {
+        setAiStatus('delayed');
+      }, 10000); 
+    }
+
+    return () => {
+      // timer가 존재할 때만 clear하도록 안전장치 추가
+      if (timer) clearTimeout(timer);
+    };
+  }, [aiStatus]);
+
+  // [신규] 상태에 따른 큐레이터 멘트 결정 함수
+  const getCuratorMessage = () => {
+    if (loadingTicket) return "티켓 정보를 불러오는 중입니다...";
+    
+    switch (aiStatus) {
+      case 'loading':
+        return "AI가 전시회를 구상하고 있어요! 잠시만 기다려주세요...";
+      case 'delayed':
+        return "AI가 평소보다 깊게 고민하고 있어요. 조금만 더 기다려주세요!";
+      case 'error':
+        return errorMessage || "프롬프트를 보내는데 실패했어요! 다시 시도해주세요.";
+      case 'idle':
+      default:
+        // 기본 멘트 (API에서 받아온 것 or 기본값)
+        return ticketInfo?.curatorMessage || '안녕하세요! 당신을 위한 영화를 추천해드릴게요.';
+    }
+  };
+  
   useEffect(() => {
     const loadTicketInfo = async () => {
       try {
@@ -103,6 +144,7 @@ export const Exhibition = () => {
   };
 
   const handleExhibitionCreated = (data: AIExhibitionResponse) => {
+    setAiStatus('idle'); // ai 상태 초기화
     console.log("전시회 생성 완료:", data);
 
     setExhibitionTitle(data.resultJson.title);
@@ -119,6 +161,12 @@ export const Exhibition = () => {
     } else {
       alert("추천된 영화가 없습니다.");
     }
+  };
+
+  // [신규] 에러 핸들러 (Generator에서 호출)
+  const handleAIError = (msg: string) => {
+    setErrorMessage(msg);
+    setAiStatus('error');
   };
 
   // 🚧 MainLayout이나 Header가 없으면 임시 div로 감싸세요.
@@ -149,12 +197,27 @@ export const Exhibition = () => {
         characterImageUrl={ticketInfo?.characterImageUrl || dynamicCharacterImage}
         
         curatorName={loadingTicket ? "로딩 중..." : (ticketInfo?.curatorName || 'MZ 큐레이터')}
-        curatorMessage={loadingTicket ? "티켓 정보를 불러오는 중입니다..." : (ticketInfo?.curatorMessage || '안녕하세요! 당신을 위한 영화를 추천해드릴게요.')}
+        // 여기서 상태에 따른 메시지를 주입합니다.
+        curatorMessage={getCuratorMessage()}
       />
+
+      {/* 오른쪽 하단 티켓 이미지 영역 */}
+      <div className={styles.ticketWrapper}>
+        <img 
+          // API에 티켓 이미지가 있다면 그걸 쓰고, 없으면 로컬 파일 규칙 사용
+          src={ticketInfo?.ticketImageUrl || dynamicTicketImage} 
+          alt="Ticket" 
+          className={styles.ticketImage} 
+        />
+      </div>
 
       <ExhibitionGenerator
         currentTicketId={currentTicketId}
         onSuccess={handleExhibitionCreated}
+        // [신규] 하위 컴포넌트가 부모 상태를 바꿀 수 있게 props 전달
+        onLoadingStart={() => setAiStatus('loading')}
+        onError={handleAIError}
+        isLoading={aiStatus === 'loading' || aiStatus === 'delayed'}
       />
     </div>
   );

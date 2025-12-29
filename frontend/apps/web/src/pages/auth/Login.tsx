@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import styles from './Auth.module.css';
-import { login } from '../../apis/auth'; 
+import { login as apiLogin } from '../../apis/auth';
+import { useAuth } from '../../contexts/AuthContext';
 
 export const Login = () => {
-  const navigate = useNavigate(); // router.push -> navigate
-  
+  const navigate = useNavigate();
+  const { login } = useAuth();
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -23,7 +25,8 @@ export const Login = () => {
     setIsLoading(true);
 
     try {
-      await login(email, password);
+      const user = await apiLogin(email, password);
+      login(user);
       navigate('/home');
     } catch (err: any) {
       const errorMessage = err.response?.data?.message || err.response?.data?.detail || '로그인에 실패했습니다';
@@ -55,7 +58,7 @@ export const Login = () => {
       <div className={styles.wrapper}>
         {/* 로그인 폼 */}
         <h2 className={styles.title}>로그인</h2>
-        
+
         <div className={styles.signupPrompt}>
           계정이 없으신가요?{' '}
           {/* Next Link -> React Router Link */}
@@ -130,16 +133,16 @@ export const Login = () => {
           {/* 제출 버튼 */}
           <button type="submit" form="loginForm" disabled={isLoading} className={styles.submitButton}>
             <img
-              src="/cookie2.png" 
-              alt="로그인 버튼" 
-              width="180"      
+              src="/cookie2.png"
+              alt="로그인 버튼"
+              width="180"
               height="150"
               className={`${styles.cookieImage} ${styles.defaultImage}`}
             />
             <img
-              src="/cookie2h.png" 
-              alt="로그인 버튼 호버" 
-              width="200"      
+              src="/cookie2h.png"
+              alt="로그인 버튼 호버"
+              width="200"
               height={180}
               className={`${styles.cookieImage} ${styles.hoverImage}`}
             />
