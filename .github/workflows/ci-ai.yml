@@ -9,7 +9,7 @@ on:
       - '.github/workflows/ci-ai.yml'
   pull_request:
     branches: [ "main", "dev" ]
-    paths:
+    paths: 
       - 'ai/**'
       - 'docker-compose.ai.yml'
       - '.github/workflows/ci-ai.yml'

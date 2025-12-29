@@ -10,7 +10,7 @@ on:
   pull_request:
     branches: [ "main", "dev" ]
     paths:
-      - 'redis/**'
+      - 'redis/**' 
       - '.github/workflows/ci-redis.yml'
       - 'docker-compose.yml'
 
