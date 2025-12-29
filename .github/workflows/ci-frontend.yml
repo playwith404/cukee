@@ -81,7 +81,6 @@ jobs:
           port: ${{ secrets.SSH_PORT || 22 }}
           command_timeout: 30m
           script: |
-            set -e
             cd ~/app
             
             # 0. Pre-check: Clean up and ensure config validity

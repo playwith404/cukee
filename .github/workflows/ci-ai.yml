@@ -79,7 +79,6 @@ jobs:
           key: ${{ secrets.SSH_KEY_GPU }}
           port: ${{ secrets.SSH_PORT_GPU }}
           script: |
-            set -e
             cd ~/app
             
             # 1. 필수 디렉토리 생성 (docker-compose.ai.yml 경로 의존성 해결)

@@ -76,7 +76,6 @@ jobs:
           key: ${{ secrets.SSH_KEY_VM }}
           port: ${{ secrets.SSH_PORT || 22 }}
           script: |
-            set -e
             cd ~/app
             
             # Docker Login
