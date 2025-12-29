@@ -30,6 +30,7 @@ export interface RecommendedMovie {
 export interface AIExhibitionResponse {
   resultJson: {
     title: string;
+    curatorComment: string;
     design: ExhibitionDesign;
     movies: RecommendedMovie[];
     keywords: string[];

@@ -53,6 +53,12 @@ Write ONLY the curator message in Korean, friendly tone, 50-100 characters:"""
             top_k=50
         ).strip()
         
+        # 코멘트 후처리
+        if "Example:" in curator_comment:
+            curator_comment = curator_comment.split("Example:")[0].strip()
+        
+        curator_comment = curator_comment.strip('"').strip("'")
+        
         logger.info(f"Generated curation comment: {curator_comment}")
         
         # 3. 영화 목록 구성 (PGVECTOR 결과 사용, 개별 코멘트 없음)
@@ -60,7 +66,7 @@ Write ONLY the curator message in Korean, friendly tone, 50-100 characters:"""
         for movie in retrieved_movies:
             movies_list.append({
                 "movieId": movie['id'],
-                "posterUrl": movie['poster_path'] or ""
+                "posterUrl": f"https://image.tmdb.org/t/p/w500{movie['poster_path']}" if movie['poster_path'] else ""
             })
         
         # 4. 응답 구성
