@@ -64,6 +64,7 @@ export const Exhibition = () => {
       if (timer) clearTimeout(timer);
     };
   }, [aiStatus]);
+  
 
   // [신규] 상태에 따른 큐레이터 멘트 결정 함수
   const getCuratorMessage = () => {
