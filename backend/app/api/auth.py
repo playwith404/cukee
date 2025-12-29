@@ -273,3 +273,19 @@ def verify_email_code(request_data: VerifyCodeRequest):
         success=True,
         message=result["message"]
     )
+
+
+@router.get("/me", response_model=LoginResponse, status_code=status.HTTP_200_OK)
+def get_current_user_info(
+    current_user=Depends(get_current_user)
+):
+    """
+    내 정보 조회 (세션 확인용)
+    - 쿠키 세션이 유효하면 사용자 정보 반환
+    - 유효하지 않으면 401 Unauthorized (get_current_user에서 처리)
+    """
+    return LoginResponse(
+        user_id=current_user.id,
+        email=current_user.email,
+        nickname=current_user.nickname
+    )

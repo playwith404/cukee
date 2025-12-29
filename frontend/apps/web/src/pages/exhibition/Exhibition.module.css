@@ -1,8 +1,40 @@
 .container {
   width: 100%;
+  min-width: 1280px;
   min-height: 100vh;
   position: relative;
   display: flex;
   flex-direction: column;
   background-color: #EDE6DD;
 }
+
+/* 티켓 래퍼: 위치 잡기 */
+.ticketWrapper {
+  position: absolute;
+  bottom: 0px; /* 바닥에서 얼마나 띄울지 */
+  right: auto;
+  left: 50%; 
+  z-index: 20;  /* 다른 요소보다 위에 오도록 (필요시 조절) */
+  margin-left: 500px;
+  /* 등장 애니메이션 (선택사항) */
+  /* animation: slideUp 0.8s ease-out forwards; */
+}
+
+/*  티켓 이미지: 크기 조절 */
+.ticketImage {
+  width: 240px; /* 시안에 맞춰 크기 조절하세요 */
+  height: auto;
+  display: block;
+}
+
+/* (선택사항) 아래에서 위로 올라오는 애니메이션 */
+/* @keyframes slideUp {
+  from {
+    transform: translateY(100px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+} */

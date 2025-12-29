@@ -72,6 +72,7 @@
   transform: translateX(0) scale(1);
   filter: brightness(1);
   pointer-events: auto; /* 중앙만 클릭 가능 */
+  z-index: 101; 
 
 }
 .center .actions {
@@ -90,7 +91,6 @@
   cursor: pointer;
   padding: 5px 10px; /* [핵심] 텍스트 주변에 클릭 가능한 투명 영역 추가 */
   position: relative;
-  z-index: 101; 
 }
 .deleteBtn {
   font-weight: 600;
