@@ -2,13 +2,13 @@ name: AI Server CI/CD
 
 on:
   push:
-    branches: [ "main", "dev", "test/auth/CUK-88" ]
+    branches: [ "main", "dev", ]
     paths:
       - 'ai/**'
       - 'docker-compose.ai.yml'
       - '.github/workflows/ci-ai.yml'
   pull_request:
-    branches: [ "main", "dev", "test/auth/CUK-88" ]
+    branches: [ "main", "dev" ]
     paths:
       - 'ai/**'
       - 'docker-compose.ai.yml'
