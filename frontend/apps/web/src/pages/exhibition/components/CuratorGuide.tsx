@@ -14,9 +14,8 @@ export const CuratorGuide: React.FC<CuratorGuideProps> = ({
     curatorName = 'MZ 큐레이터',
     curatorMessage,
     likeCount = 103,
-    message
 }) => {
-  const displayMessage = curatorMessage || message || <>안녕, 길초! MZ 큐레이터 김엠지 예요.<br />짧고 도파민 터지는 맛도리 영화만 추천해줄게요.</>;
+  const displayMessage = curatorMessage || <>message 데이터가 없을 때 보여줄<br />기본값 멘트입니다. 데헷~</>;
 
   return (
     <div className={styles.container}>
