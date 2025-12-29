@@ -1,9 +1,8 @@
 name: Backend CI/CD
 
 on:
-  workflow_dispatch:
   push:
-    branches: [ "main", "dev", "bugfix/backend/auth-login-signup-2" ]
+    branches: [ "main", "dev", "bugfix/backend/CUK-90-backend-fix"]
     paths:
       - 'backend/**'
       - 'docker-compose.yml'
