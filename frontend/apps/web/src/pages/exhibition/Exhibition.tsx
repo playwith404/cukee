@@ -151,9 +151,8 @@ export const Exhibition = () => {
     console.log("전시회 생성 완료:", data);
 
     setExhibitionTitle(data.resultJson.title);
-    if (data.resultJson.curatorComment) {
-      setAiCuratorComment(data.resultJson.curatorComment);
-    }
+    // [수정] 값이 있든 없든 무조건 업데이트 (이전 멘트가 남는 현상 방지)
+    setAiCuratorComment(data.resultJson.curatorComment || "");
 
     const newFrames: Frame[] = data.resultJson.movies.map((movie) => ({
       id: movie.movieId,
