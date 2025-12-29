@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import VerificationCodeInput from "../../../../../packages/ui/src/components/VerificationCodeInput";
 import { verifyEmailCode, signup, sendVerificationCode } from "../../apis/auth";
+import { useAuth } from "../../contexts/AuthContext";
 import "../../styles/emailVerify.css";
 
 interface SignupState {
@@ -14,6 +15,7 @@ interface SignupState {
 export default function EmailVerifyPage() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [code, setCode] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -67,7 +69,8 @@ export default function EmailVerifyPage() {
 
       if (verifyRes.success) {
         // 이메일 인증 완료 후 회원가입 진행
-        await signup(state.email, state.password, state.nickname);
+        const user = await signup(state.email, state.password, state.nickname);
+        login(user);
         alert("회원가입이 완료되었습니다!");
         navigate('/home');
       }
