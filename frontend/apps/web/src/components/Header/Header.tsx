@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 import styles from './Header.module.css';
 
 // === 데이터 상수 ===
@@ -18,9 +20,16 @@ const TICKET_LIST = [
 
 // === 내부 컴포넌트: 드롭다운 메뉴 ===
 const DropdownMenu = () => {
-  const nickname = '마길초';
+  const navigate = useNavigate();
+  const { logout, user } = useAuth();
+  const nickname = user?.nickname || '마길초';
   const [showInfo, setShowInfo] = useState(false);
   const [showMore, setShowMore] = useState(false);
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/auth/login');
+  };
 
   return (
     <div className={styles.dropdownOuter}>
@@ -78,7 +87,7 @@ const DropdownMenu = () => {
                 ))}
               </ul>
             </div>
-            <div className={styles.dropFooter}>로그아웃</div>
+            <button className={styles.dropFooter} onClick={handleLogout}>로그아웃</button>
           </div>
 
         </div>

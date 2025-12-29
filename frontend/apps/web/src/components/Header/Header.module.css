@@ -204,4 +204,11 @@
     color: #8F8784;
     cursor: pointer;
     text-decoration: underline;
+    background: none;
+    border: none;
+    padding: 0;
+}
+
+.dropFooter:hover {
+    color: #373431;
 }
