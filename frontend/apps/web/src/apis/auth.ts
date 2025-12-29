@@ -47,3 +47,13 @@ export async function logout() {
   const res = await api.post('/auth/logout');
   return res.data as { message: string };
 }
+
+// 내 정보 확인 (세션 체크)
+export async function checkAuth() {
+  const res = await api.get('/auth/me');
+  return res.data as {
+    userId: number;
+    email: string;
+    nickname: string;
+  };
+}

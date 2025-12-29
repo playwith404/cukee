@@ -22,18 +22,25 @@ api.interceptors.response.use(
 
     // 401 에러이고, 아직 재시도 안 한 요청이라면
     if (error.response?.status === 401 && !originalRequest._retry) {
+      // ⚠️ 무한 루프 방지: Refresh 요청 자체가 실패한 경우 재시도 금지
+      if (originalRequest.url?.includes('/auth/refresh')) {
+        return Promise.reject(error);
+      }
+
       originalRequest._retry = true;
 
       try {
-        // Silent refresh 요청 (백엔드 경로에 맞춰 수정 필요할 수 있음)
+        // Silent refresh 요청
         await api.post('/auth/refresh');
-        
+
         // 토큰 갱신 성공 시 원래 요청 다시 시도
         return api.request(originalRequest);
       } catch (refreshError) {
         // 리프레시 토큰도 만료됐다면 로그인 페이지로 이동
-        // (Next.js App Router에서는 useRouter를 훅 내부에서만 쓸 수 있어서 window.location 사용)
-        window.location.href = '/login';
+        // 단, 이미 로그인 페이지에 있거나 하는 경우 무한 리로딩 방지 필요할 수 있음
+        if (window.location.pathname !== '/auth/login') {
+          window.location.href = '/auth/login';
+        }
         return Promise.reject(refreshError);
       }
     }

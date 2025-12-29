@@ -2,7 +2,7 @@ name: AI Server CI/CD
 
 on:
   push:
-    branches: [ "main", "dev", "bugfix/backend/auth-login-signup-2" ]
+    branches: [ "main", "dev" ]
     paths:
       - 'ai/**'
       - 'docker-compose.ai.yml'
