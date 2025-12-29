@@ -1,16 +1,19 @@
 """AI 전시회 생성 엔드포인트"""
 import json
 import logging
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Depends
+from sqlalchemy.orm import Session
 from app.schemas.generation import GenerateRequest, GenerateResponse
 from app.models.model_loader import model_manager
+from app.api.dependencies import get_db_session
+from app.services.retrieval_service import RetrievalService
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
 @router.post("/generate", response_model=GenerateResponse)
-async def generate_exhibition(request: GenerateRequest):
-    """AI 전시회 생성"""
+async def generate_exhibition(request: GenerateRequest, db: Session = Depends(get_db_session)):
+    """AI 전시회 생성 (RAG 적용)"""
     try:
         if not model_manager.is_ready():
             raise HTTPException(status_code=503, detail="Model not ready")
@@ -20,11 +23,24 @@ async def generate_exhibition(request: GenerateRequest):
         
         logger.info(f"Generating for theme: {request.theme}")
         
-        # 구조화된 프롬프트
+        # 1. RAG: 유사 영화 검색
+        retrieved_movies = await RetrievalService.retrieve_similar_movies(db, request.prompt, limit=5)
+        
+        # 검색된 영화 정보를 컨텍스트로 구성
+        movie_context = ""
+        if retrieved_movies:
+            movie_context = "Refer to these similar movies from our database:\n"
+            for m in retrieved_movies:
+                movie_context += f"- Title: {m['title']}\n  Overview: {m['overview'][:100]}...\n"
+            logger.info(f"Added {len(retrieved_movies)} movies to context")
+
+        # 2. 구조화된 프롬프트 (RAG 컨텍스트 추가)
         structured_prompt = f"""You are a professional movie curator AI. Respond ONLY in valid JSON format.
 
 User Request: {request.prompt}
 Theme: {request.theme}
+
+{movie_context}
 
 Respond with ONLY this JSON format:
 {{

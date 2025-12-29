@@ -32,6 +32,7 @@ const DropdownMenu = () => {
   const [showMore, setShowMore] = useState(false);
   
   // 로그아웃 핸들러 (dev 브랜치 로직)
+
   const handleLogout = async () => {
     await logout();
     navigate('/auth/login');
@@ -93,7 +94,6 @@ const DropdownMenu = () => {
                 ))}
               </ul>
             </div>
-            {/* 로그아웃 버튼에 핸들러 연결 */}
             <button className={styles.dropFooter} onClick={handleLogout}>로그아웃</button>
           </div>
 
