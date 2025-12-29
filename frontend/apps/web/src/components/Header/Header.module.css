@@ -91,7 +91,7 @@
     padding: 30px;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
     position: relative;
-    height: 350px;
+    height: 360px;
     box-sizing: border-box;
 }
 
@@ -114,7 +114,7 @@
     width: 200px;
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 25px;
 }
 
 .menuGroup {
@@ -124,19 +124,76 @@
     padding: 5px 0;
 }
 
-.menuBtn {
+.menuLabel {
     font-size: 24px;
     font-weight: 300;
+    font-family: inherit;
     background: none;
     border: none;
     cursor: pointer;
     color: #373431;
 }
 
+.menuBtn {
+    font-size: 24px;
+    font-weight: 300;
+    font-family: inherit;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #373431;
+}
+
+.menuLabel {
+    font-size: 24px;
+    font-weight: 300;
+    font-family: inherit;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #373431;
+}
+
+/* 2. 닉네임 + 연필 감싸는 영역 */
+.profileRow {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* 가운데 정렬 */
+    gap: 8px; /* 닉네임과 연필 사이 간격 */
+    cursor: pointer; /* 손가락 모양 커서 */
+    transition: opacity 0.2s;
+    padding: 5px;
+}
+
+.profileName:hover {
+    /* font-weight: 500; */
+}
+
+/* 3. 닉네임 텍스트 */
+.profileName {
+    font-size: 20px; /* 타이틀보다 살짝 작게 */
+    font-weight: 300;
+    color: #555;
+}
+
+/* 4. 연필 아이콘 */
+.pencilIcon {
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+    opacity: 0.6;
+}
+.divider {
+    width: 60px;            /* 선의 길이 (취향껏 조절) */
+    border: none;
+    border-top: 1px solid rgba(55, 52, 49, 0.3); /* 선 색상 및 두께 */
+    margin: 40px auto 30px;      /* 위아래 간격 50px, 좌우 중앙 정렬 */
+}
 .menuBtnMore {
-    margin-top: 20px;
+    margin-top: 0px;
     font-size: 20px;
     font-weight: 300;
+    font-family: inherit;
     background: none;
     border: none;
     cursor: pointer;
@@ -153,13 +210,14 @@
 }
 
 /* === Right Section === */
+
 .dropRight {
     flex: 1;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    padding-left: 40px;
-    align-items: flex-start; /* 리스트 왼쪽 정렬 */
+    /* padding-left: 0px; */
+    align-items: center;
 }
 
 .listTitle {
@@ -186,6 +244,8 @@
 .scrollList li {
     padding: 8px 0;
     font-size: 16px;
+    font-weight: 300;
+    text-align: center;
     color: #373431;
     cursor: pointer;
 }

@@ -28,7 +28,7 @@ const DropdownMenu = () => {
   const nickname = user?.nickname || '게스트';
 
   // UI 상태 관리
-  const [showInfo, setShowInfo] = useState(false);
+  // const [showInfo, setShowInfo] = useState(false);
   const [showMore, setShowMore] = useState(false);
   
   // 로그아웃 핸들러 (dev 브랜치 로직)
@@ -49,23 +49,24 @@ const DropdownMenu = () => {
               
               {/* 내 정보 토글 */}
               <div className={styles.menuGroup}>
-                <button 
-                  className={styles.menuBtn} 
-                  onClick={() => setShowInfo(!showInfo)}
+                <span className={styles.menuLabel}>내 정보</span>
+                <div 
+                  className={styles.profileRow} 
+                  onClick={() => console.log("나중에 모달 띄울 곳")}
                 >
-                  내 정보
-                </button>
-                {showInfo && (
-                  <div className={styles.subMenu}>
-                    <p>✏️ {nickname} 님</p>
-                  </div>
-                )}
+                  <span className={styles.profileName}>{nickname} 님</span>
+                  <img 
+                    src="/pencil.png" 
+                    alt="edit" 
+                    className={styles.pencilIcon} 
+                  />
+                </div>
               </div>
 
               {/* 새 전시회 & 더보기 */}
               <div className={styles.menuGroup}>
                 <button className={styles.menuBtn}>새 전시회 생성하기</button>
-                
+                <hr className={styles.divider} />
                 <button 
                   className={styles.menuBtnMore} 
                   onClick={() => setShowMore(!showMore)}
@@ -75,8 +76,8 @@ const DropdownMenu = () => {
                 
                 {showMore && (
                   <div className={styles.subMenu}>
-                    <p style={{ cursor: 'pointer', margin: '5px 0' }}>버그 제보</p>
-                    <p style={{ cursor: 'pointer', margin: '5px 0' }}>탈퇴하기</p>
+                    <p style={{ cursor: 'pointer', margin: '15px 0 10px 0' }}>버그 제보</p>
+                    <p style={{ cursor: 'pointer' }}>탈퇴하기</p>
                   </div>
                 )}
               </div>
