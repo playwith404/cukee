@@ -40,7 +40,7 @@ export default function HomePage() {
           // 이미지 경로 보정 (필요 시)
           const fixedTickets = response.data.map(t => ({
             ...t,
-            characterImageUrl: t.characterImageUrl?.replace('cara/cara', 'cara/c') || null
+            characterImageUrl: t.characterImageUrl
           }));
           setTickets(fixedTickets);
         } else {
