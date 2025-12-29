@@ -6,6 +6,7 @@ from fastapi import FastAPI
 from contextlib import asynccontextmanager
 
 from app.models.model_loader import model_manager
+from app.models.embedding_loader import embedding_manager
 from app.api.routes import generation, curation, system
 
 # 로깅 설정
@@ -20,7 +21,11 @@ logger = logging.getLogger(__name__)
 async def lifespan(app: FastAPI):
     """애플리케이션 시작/종료 시 실행"""
     logger.info("Starting Cukee AI Server...")
+    
+    # 모델 로드 (순차적)
     model_manager.initialize()
+    embedding_manager.initialize()
+    
     logger.info("✓ All models loaded successfully")
     yield
     logger.info("Shutting down Cukee AI Server...")

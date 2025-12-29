@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     # AI Model Settings
     BASE_MODEL: str = "unsloth/Meta-Llama-3.1-8B-Instruct-bnb-4bit"
     MODEL_PATH: str = "/app/model/Llama-3.1-8B-Instruct"
+    EMBEDDING_MODEL_PATH: str = "/app/model/bge-m3"
     MAX_LENGTH: int = 2048
     TEMPERATURE: float = 0.7
     TOP_P: float = 0.9
