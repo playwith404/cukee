@@ -37,6 +37,7 @@ export const Exhibition = () => {
   // 예: ticket=1 -> /cara/cara1.png
   // 예: ticket=2 -> /cara/cara2.png
   const dynamicCharacterImage = `/cara/cara${currentTicketId}.png`;
+  const dynamicTicketImage = `/ticket/ticket${currentTicketId}.png`;
   
   // === 3. 티켓 정보 상태 ===
   const [ticketInfo, setTicketInfo] = useState<Ticket | null>(null);
@@ -151,6 +152,16 @@ export const Exhibition = () => {
         curatorName={loadingTicket ? "로딩 중..." : (ticketInfo?.curatorName || 'MZ 큐레이터')}
         curatorMessage={loadingTicket ? "티켓 정보를 불러오는 중입니다..." : (ticketInfo?.curatorMessage || '안녕하세요! 당신을 위한 영화를 추천해드릴게요.')}
       />
+
+      {/* 오른쪽 하단 티켓 이미지 영역 */}
+      <div className={styles.ticketWrapper}>
+        <img 
+          // API에 티켓 이미지가 있다면 그걸 쓰고, 없으면 로컬 파일 규칙 사용
+          src={ticketInfo?.ticketImageUrl || dynamicTicketImage} 
+          alt="Ticket" 
+          className={styles.ticketImage} 
+        />
+      </div>
 
       <ExhibitionGenerator
         currentTicketId={currentTicketId}
