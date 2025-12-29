@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './Header.module.css';
+import { getMe } from '../../apis/auth';
 
 // === 데이터 상수 ===
 const TICKET_LIST = [
@@ -18,10 +19,26 @@ const TICKET_LIST = [
 
 // === 내부 컴포넌트: 드롭다운 메뉴 ===
 const DropdownMenu = () => {
-  const nickname = '마길초';
+  const [nickname, setNickname] = useState('게스트');
   const [showInfo, setShowInfo] = useState(false);
   const [showMore, setShowMore] = useState(false);
+  
+  // 컴포넌트가 열릴 때 API 호출하여 닉네임 가져오기
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const userData = await getMe(); // auth.ts의 getMe 호출
+        if (userData && userData.nickname) {
+          setNickname(userData.nickname);
+        }
+      } catch (error) {
+        console.error("사용자 정보 로드 실패:", error);
+        // 로그인 안 된 상태라면 로그인 페이지로 보내거나 '게스트' 유지
+      }
+    };
 
+    fetchUserInfo();
+  }, []);
   return (
     <div className={styles.dropdownOuter}>
       <div className={styles.dropdownGlass}>

@@ -1,5 +1,12 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { checkAuth, logout as apiLogout } from '../apis/auth';
+import { checkAuth, login as apiLogin, logout as apiLogout } from '../apis/auth';
+const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true'; // 환경변수 확인
+
+const MOCK_USER = {
+  userId: 999,
+  email: 'mock@cukee.com',
+  nickname: '개발용',
+};
 
 interface User {
     userId: number;
@@ -11,7 +18,7 @@ interface AuthContextType {
     user: User | null;
     isAuthenticated: boolean;
     isLoading: boolean;
-    login: (user: User) => void;
+    login: (email: string, password: string) => Promise<void>;
     logout: () => Promise<void>;
 }
 
@@ -23,6 +30,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     useEffect(() => {
         const initAuth = async () => {
+            // [모드 1] 모킹 모드일 때
+            if (USE_MOCK) {
+                console.log("🛠️ [Mock Mode] 강제 로그인 처리됨");
+                setUser(MOCK_USER); // 무조건 로그인 상태로 시작
+                setIsLoading(false);
+            return; 
+            }
+            //[모드2] 실제 웹 모드일때
             try {
                 const userData = await checkAuth();
                 setUser(userData);
@@ -37,11 +52,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         initAuth();
     }, []);
 
-    const login = (userData: User) => {
+    const login = async (email: string, password: string) => {
+        // [1] Mock 모드면 API 호출 아예 안 함 (바로 성공 처리)
+        if (USE_MOCK) {
+            console.log(`🛠️ [Mock Mode] 로그인 성공 (입력값: ${email})`);
+            setUser(MOCK_USER);
+            return; // 여기서 함수 종료!
+        }
+
+        // [2] Real 모드면 여기서 API 호출
+        // 에러가 나면 Login.tsx의 catch 블록으로 던져짐
+        const userData = await apiLogin(email, password);
         setUser(userData);
     };
 
     const logout = async () => {
+        if (USE_MOCK) {
+            console.log("[Mock Mode] 로그아웃");
+            setUser(null);
+            return;
+        }
         try {
             await apiLogout();
         } catch (error) {
