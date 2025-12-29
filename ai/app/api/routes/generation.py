@@ -25,7 +25,7 @@ async def generate_exhibition(request: GenerateRequest, db: Session = Depends(ge
         
         # 1. PGVECTOR로 유사 영화 검색 (빠름, ~1초)
         retrieved_movies = await RetrievalService.retrieve_similar_movies(
-            db, request.prompt, limit=10
+            db, request.prompt, limit=5
         )
         
         if not retrieved_movies:
@@ -35,14 +35,24 @@ async def generate_exhibition(request: GenerateRequest, db: Session = Depends(ge
         logger.info(f"Retrieved {len(retrieved_movies)} movies from PGVECTOR")
         
         # 2. 큐레이션 전체에 대한 코멘트 생성 (사용자 프롬프트에 맞게 추천했다는 메시지)
-        curation_prompt = f"""Write a SHORT friendly curator message in Korean (50-100 characters).
+        curation_prompt = f"""[Role]
+You are a friendly movie curator.
 
-User Request: {request.prompt}
-Theme: {request.theme}
-Number of movies recommended: {len(retrieved_movies)}
+[Context]
+- User Input: {request.prompt}
+- Theme: {request.theme}
+- Number of movies: {len(retrieved_movies)}
 
-Write a message like: "잔잔한 영화를 원하셨군요! 마음을 편안하게 해줄 영화들을 추천해봤어요." 
-Write ONLY the curator message in Korean, friendly tone, 50-100 characters:"""
+[Task]
+Write a warm welcome message in Korean (30-60 characters) based on the context.
+
+[Rules]
+1. Write ONLY the message text.
+2. DO NOT include "User Request:", "Theme:", or "Example:".
+3. Do not use quotation marks.
+
+[Output]
+"""
         
         curator_comment = model_manager.generate(
             prompt=curation_prompt,
@@ -53,9 +63,24 @@ Write ONLY the curator message in Korean, friendly tone, 50-100 characters:"""
             top_k=50
         ).strip()
         
-        # 코멘트 후처리
-        if "Example:" in curator_comment:
-            curator_comment = curator_comment.split("Example:")[0].strip()
+        # 코멘트 후처리 (강력한 필터링)
+        lines = curator_comment.split('\n')
+        filtered_lines = []
+        for line in lines:
+            clean_line = line.strip()
+            # 불필요한 시스템 텍스트가 포함된 줄 제거
+            if any(x in clean_line for x in ["User Request:", "Theme:", "Example:", "[Output]"]):
+                continue
+            if not clean_line:
+                continue
+            filtered_lines.append(clean_line)
+            
+        # 남은 줄이 있다면 첫 번째 줄 사용, 없으면 원본(정제 시도) 사용
+        if filtered_lines:
+            curator_comment = filtered_lines[0]
+        else:
+            if "Example:" in curator_comment:
+                curator_comment = curator_comment.split("Example:")[0].strip()
         
         curator_comment = curator_comment.strip('"').strip("'")
         
