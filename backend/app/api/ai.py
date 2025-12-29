@@ -63,7 +63,7 @@ async def generate_exhibition(
 
     try:
         # VM2 AI 서버 호출
-        async with httpx.AsyncClient(timeout=120.0) as client:
+        async with httpx.AsyncClient(timeout=300.0) as client:
             response = await client.post(
                 f"{AI_SERVER_URL}/api/v1/generate",
                 json={
