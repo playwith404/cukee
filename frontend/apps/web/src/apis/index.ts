@@ -38,7 +38,9 @@ api.interceptors.response.use(
       } catch (refreshError) {
         // 리프레시 토큰도 만료됐다면 로그인 페이지로 이동
         // 단, 이미 로그인 페이지에 있거나 하는 경우 무한 리로딩 방지 필요할 수 있음
-        window.location.href = '/auth/login';
+        if (window.location.pathname !== '/auth/login') {
+          window.location.href = '/auth/login';
+        }
         return Promise.reject(refreshError);
       }
     }
