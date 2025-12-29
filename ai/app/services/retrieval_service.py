@@ -32,11 +32,12 @@ class RetrievalService:
             # embedding <=> vector : 코사인 거리 (작을수록 유사)
             # 1 - (embedding <=> vector) : 코사인 유사도 (클수록 유사)
             query = text("""
-                SELECT id, title_ko, overview_ko, poster_path, 
-                       1 - (embedding <=> :embedding) as similarity
-                FROM movies
-                WHERE embedding IS NOT NULL
-                ORDER BY embedding <=> :embedding ASC
+                SELECT m.id, m.title_ko, m.overview_ko, m.poster_path, 
+                       1 - (me.embedding <=> :embedding) as similarity
+                FROM movies m
+                JOIN movie_embeddings me ON m.id = me.movie_id
+                WHERE me.embedding IS NOT NULL
+                ORDER BY me.embedding <=> :embedding ASC
                 LIMIT :limit
             """)
             

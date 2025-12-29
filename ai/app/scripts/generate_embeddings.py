@@ -21,9 +21,14 @@ def generate_embeddings():
     
     db = SessionLocal()
     try:
-        # 1. 임베딩이 없는 영화 조회
+        # 1. 임베딩이 없는 영화 조회 (movie_embeddings 테이블과 LEFT JOIN)
         logger.info("Fetching movies without embeddings...")
-        query = text("SELECT id, title_ko, overview_ko, genres FROM movies WHERE embedding IS NULL")
+        query = text("""
+            SELECT m.id, m.title_ko, m.overview_ko, m.genres 
+            FROM movies m 
+            LEFT JOIN movie_embeddings me ON m.id = me.movie_id 
+            WHERE me.id IS NULL
+        """)
         movies = db.execute(query).fetchall()
         
         total_movies = len(movies)
@@ -45,12 +50,15 @@ def generate_embeddings():
                 # 3. 임베딩 생성
                 embedding = embedding_manager.encode(text_chunk)
                 
-                # 4. DB 업데이트
-                # vector 타입은 문자열로 변환하여 저장 (pgvector 호환성)
+                # 4. DB 저장 (movie_embeddings 테이블에 INSERT)
+                # vector 타입은 문자열로 변환하여 저장
                 embedding_str = str(embedding)
                 
-                update_query = text("UPDATE movies SET embedding = :embedding WHERE id = :id")
-                db.execute(update_query, {"embedding": embedding_str, "id": movie.id})
+                insert_query = text("""
+                    INSERT INTO movie_embeddings (movie_id, embedding, model_name, updated_at)
+                    VALUES (:movie_id, :embedding, 'bge-m3', NOW())
+                """)
+                db.execute(insert_query, {"movie_id": movie.id, "embedding": embedding_str})
                 
                 # 50개마다 커밋
                 if (i + 1) % 50 == 0:
