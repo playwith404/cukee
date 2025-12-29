@@ -8,7 +8,7 @@ on:
       - 'docker-compose.yml'
       - '.github/workflows/ci-backend.yml'
   pull_request:
-    branches: [ "main", "dev", "test/auth/CUK-88" ]
+    branches: [ "main", "dev" ]
     paths:
       - 'backend/**'
       - 'docker-compose.yml'
@@ -102,6 +102,52 @@ jobs:
             else
               echo "BACKEND_TAG=sha-${{ github.sha }}" >> .env
             fi
+
+            # 3. Update backend/.env with SMTP configuration
+            sudo chown $USER:$USER backend/.env
+            
+            # SMTP_HOST
+            if grep -q "^SMTP_HOST=" backend/.env; then
+              sed -i "s/^SMTP_HOST=.*/SMTP_HOST=${{ secrets.SMTP_HOST }}/" backend/.env
+            else
+              echo "SMTP_HOST=${{ secrets.SMTP_HOST }}" >> backend/.env
+            fi
+            
+            # SMTP_PORT
+            if grep -q "^SMTP_PORT=" backend/.env; then
+              sed -i "s/^SMTP_PORT=.*/SMTP_PORT=${{ secrets.SMTP_PORT }}/" backend/.env
+            else
+              echo "SMTP_PORT=${{ secrets.SMTP_PORT }}" >> backend/.env
+            fi
+            
+            # SMTP_USER
+            if grep -q "^SMTP_USER=" backend/.env; then
+              sed -i "s/^SMTP_USER=.*/SMTP_USER=${{ secrets.SMTP_USER }}/" backend/.env
+            else
+              echo "SMTP_USER=${{ secrets.SMTP_USER }}" >> backend/.env
+            fi
+            
+            # SMTP_PASSWORD
+            if grep -q "^SMTP_PASSWORD=" backend/.env; then
+              sed -i "s|^SMTP_PASSWORD=.*|SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }}|" backend/.env
+            else
+              echo "SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }}" >> backend/.env
+            fi
+            
+            # EMAIL_FROM
+            if grep -q "^EMAIL_FROM=" backend/.env; then
+              sed -i "s/^EMAIL_FROM=.*/EMAIL_FROM=${{ secrets.EMAIL_FROM }}/" backend/.env
+            else
+              echo "EMAIL_FROM=${{ secrets.EMAIL_FROM }}" >> backend/.env
+            fi
+            
+            # EMAIL_FROM_NAME
+            if grep -q "^EMAIL_FROM_NAME=" backend/.env; then
+              sed -i "s/^EMAIL_FROM_NAME=.*/EMAIL_FROM_NAME=${{ secrets.EMAIL_FROM_NAME }}/" backend/.env
+            else
+              echo "EMAIL_FROM_NAME=${{ secrets.EMAIL_FROM_NAME }}" >> backend/.env
+            fi
+
             
             echo "Current .env content:"
             cat .env
