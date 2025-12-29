@@ -57,7 +57,7 @@ Write a warm welcome message in Korean (30-60 characters) based on the context.
         curator_comment = model_manager.generate(
             prompt=curation_prompt,
             theme=request.theme,
-            max_length=256,  # 넉넉하게 늘림 (잘림 방지)
+            max_length=128,  
             temperature=0.7,
             top_p=0.9,
             top_k=50
