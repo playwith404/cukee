@@ -1,6 +1,6 @@
-# PyTorch 공식 이미지 사용 (CUDA 12.8 지원)
-# T4 GPU는 CUDA 12.8 호환
-FROM pytorch/pytorch:2.5.1-cuda12.4-cudnn9-runtime
+# PyTorch 공식 이미지 사용 (CUDA 12.4 지원, PyTorch 2.6.0)
+# T4 GPU는 CUDA 12.4 호환, PyTorch 2.6.0 required for BGE-M3
+FROM pytorch/pytorch:2.6.0-cuda12.4-cudnn9-runtime
 
 # 작업 디렉토리 설정
 WORKDIR /app
