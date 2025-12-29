@@ -2,14 +2,14 @@ name: Frontend CI/CD
 
 on:
   push:
-    branches: [ "main", "dev" ]
+    branches: [ "main", "dev", "bugfix/frontend/CUK-86-curator-image" ]
     paths:
       - 'frontend/**'
       - 'docker-compose.yml'
       - '.github/workflows/ci-frontend.yml'
       - 'nginx/**'
   pull_request:
-    branches: [ "main", "dev" ]
+    branches: [ "main", "dev", "bugfix/frontend/CUK-86-curator-image" ]
     paths:
       - 'frontend/**'
       - 'docker-compose.yml'
