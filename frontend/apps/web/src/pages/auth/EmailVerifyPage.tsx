@@ -15,7 +15,7 @@ interface SignupState {
 export default function EmailVerifyPage() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { setAuthUser } = useAuth();
   const [code, setCode] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -70,7 +70,8 @@ export default function EmailVerifyPage() {
       if (verifyRes.success) {
         // 이메일 인증 완료 후 회원가입 진행
         const user = await signup(state.email, state.password, state.nickname);
-        login(user);
+        // 로그인 API 호출 없이, Context 상태만 업데이트
+        setAuthUser(user);
         alert("회원가입이 완료되었습니다!");
         navigate('/home');
       }

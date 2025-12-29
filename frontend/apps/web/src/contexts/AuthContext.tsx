@@ -20,6 +20,7 @@ interface AuthContextType {
     isLoading: boolean;
     login: (email: string, password: string) => Promise<void>;
     logout: () => Promise<void>;
+    setAuthUser: (user: User) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -65,6 +66,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const userData = await apiLogin(email, password);
         setUser(userData);
     };
+    // ✅ 추가: 이미 로그인 된 유저 정보(회원가입 직후 등)를 상태에 반영
+    const setAuthUser = (userData: User) => {
+        console.log("✅ [Auth] 사용자 상태 직접 업데이트 (회원가입 후)");
+        setUser(userData);
+    };
 
     const logout = async () => {
         if (USE_MOCK) {
@@ -88,7 +94,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             isAuthenticated: !!user,
             isLoading,
             login,
-            logout
+            logout,
+            setAuthUser
         }}>
             {children}
         </AuthContext.Provider>
