@@ -7,15 +7,20 @@ import EmailVerifyPage from "./pages/auth/EmailVerifyPage";
 import { AuthProvider } from './contexts/AuthContext';
 import { PrivateRoute } from './components/PrivateRoute';
 
+import { PublicRoute } from './components/PublicRoute';
+
 function App() {
   return (
     <AuthProvider>
       <Routes>
         <Route path="/" element={<Navigate to="/auth/login" replace />} />
 
-        {/* Public Routes */}
-        <Route path="/auth/login" element={<Login />} />
-        <Route path="/auth/signup" element={<Signup />} />
+        {/* Public Routes (로그인 상태면 /home으로 리다이렉트) */}
+        <Route element={<PublicRoute />}>
+          <Route path="/auth/login" element={<Login />} />
+          <Route path="/auth/signup" element={<Signup />} />
+        </Route>
+
         <Route path="/auth/email/verify" element={<EmailVerifyPage />} />
 
         {/* Private Routes */}
