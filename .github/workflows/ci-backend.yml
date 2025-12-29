@@ -77,10 +77,25 @@ jobs:
           command_timeout: 30m
           script: |
             cd ~/app
-            
+
             # 0. Pre-check: Clean up and ensure config validity
             mkdir -p backend
-            touch backend/.env # Satisfy docker-compose env_file requirement
+
+            # Create backend/.env with secrets (secure injection)
+            echo 'DATABASE_URL=${{ secrets.DATABASE_URL }}' > backend/.env
+            echo 'SECRET_KEY=${{ secrets.SECRET_KEY }}' >> backend/.env
+            echo 'ALGORITHM=HS256' >> backend/.env
+            echo 'ACCESS_TOKEN_EXPIRE_MINUTES=10080' >> backend/.env
+            echo 'ALLOWED_ORIGINS=${{ secrets.ALLOWED_ORIGINS }}' >> backend/.env
+            echo 'ENVIRONMENT=production' >> backend/.env
+            echo 'REDIS_URL=redis://cukee-redis:6379/0' >> backend/.env
+            echo 'SMTP_HOST=smtp.gmail.com' >> backend/.env
+            echo 'SMTP_PORT=587' >> backend/.env
+            echo 'SMTP_USER=${{ secrets.SMTP_USER }}' >> backend/.env
+            echo 'SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }}' >> backend/.env
+            echo 'EMAIL_FROM=${{ secrets.SMTP_USER }}' >> backend/.env
+            echo 'EMAIL_FROM_NAME=Cukee' >> backend/.env
+            echo 'VERIFICATION_CODE_EXPIRE_MINUTES=5' >> backend/.env
 
             # 1. Docker Login
             echo ${{ secrets.DOCKER_TOKEN }} | sudo docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
