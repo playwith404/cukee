@@ -5,7 +5,7 @@ on:
     branches: [ "main", "dev","feature/ai_fix/CUK-95"]
     paths:
       - 'redis/**'
-      - '.github/workflows/ci-redis.yml'
+      - '.github/workflows/ci-redis.yml' 
       - 'docker-compose.yml'
   pull_request:
     branches: [ "main", "dev" ]
