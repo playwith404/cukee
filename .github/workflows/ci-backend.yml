@@ -2,13 +2,13 @@ name: Backend CI/CD
 
 on:
   push:
-    branches: [ "main", "dev" ]
+    branches: [ "main", "dev", "test/auth/CUK-88" ]
     paths:
       - 'backend/**'
       - 'docker-compose.yml'
       - '.github/workflows/ci-backend.yml'
   pull_request:
-    branches: [ "main", "dev" ]
+    branches: [ "main", "dev", "test/auth/CUK-88" ]
     paths:
       - 'backend/**'
       - 'docker-compose.yml'

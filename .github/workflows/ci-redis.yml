@@ -2,13 +2,13 @@ name: Redis CI/CD
 
 on:
   push:
-    branches: [ "main", "dev" ]
+    branches: [ "main", "dev", "test/auth/CUK-88" ]
     paths:
       - 'redis/**'
       - '.github/workflows/ci-redis.yml'
       - 'docker-compose.yml'
   pull_request:
-    branches: [ "main", "dev" ]
+    branches: [ "main", "dev", "test/auth/CUK-88" ]
     paths:
       - 'redis/**'
       - '.github/workflows/ci-redis.yml'
