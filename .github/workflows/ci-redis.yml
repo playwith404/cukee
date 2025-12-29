@@ -2,7 +2,7 @@ name: Redis CI/CD
 
 on:
   push:
-    branches: [ "main", "dev",]
+    branches: [ "main", "dev", "bugfix/**" ]
     paths:
       - 'redis/**'
       - '.github/workflows/ci-redis.yml'
@@ -76,6 +76,7 @@ jobs:
           key: ${{ secrets.SSH_KEY_VM }}
           port: ${{ secrets.SSH_PORT || 22 }}
           script: |
+            set -e
             cd ~/app
             
             # Docker Login

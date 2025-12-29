@@ -3,7 +3,7 @@ name: Backend CI/CD
 on:
   workflow_dispatch:
   push:
-    branches: [ "main", "dev",  ]
+    branches: [ "main", "dev", "bugfix/**" ]
     paths:
       - 'backend/**'
       - 'docker-compose.yml'
@@ -77,6 +77,7 @@ jobs:
           port: ${{ secrets.SSH_PORT || 22 }}
           command_timeout: 30m
           script: |
+            set -e
             cd ~/app
 
             # 0. Pre-check: Clean up and ensure config validity
