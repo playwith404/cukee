@@ -48,12 +48,13 @@ export async function logout() {
   return res.data as { message: string };
 }
 
-// 내 정보 확인 (세션 체크)
-export async function checkAuth() {
-  const res = await api.get('/auth/me');
+// 현재 로그인한 사용자 정보 조회
+export async function getMe() {
+  const res = await api.get('/users/me');
   return res.data as {
     userId: number;
     email: string;
     nickname: string;
+    createdAt: string;
   };
 }

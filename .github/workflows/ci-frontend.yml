@@ -2,6 +2,7 @@ name: Frontend CI/CD
 
 on:
   push:
+    branches: [ "main", "dev", "bugfix/backend/auth-login-signup-2", "feature/frontend/CUK-92-nickname-lookup" ]
     branches: [ "main", "dev" ]
     paths:
       - 'frontend/**'
