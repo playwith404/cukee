@@ -43,25 +43,31 @@ export const ExhibitionGenerator = ({
       onSuccess(data);
       setPrompt(''); // 입력창 비우기
 
-    } catch (error: any) {
-      console.error("API Error Detail:", error); // 개발자 확인용 로그
+      } catch (error: any) {
+      console.error("API Error Detail:", error);
 
       let userMessage = "전시회를 생성하는 중에 문제가 생겼어요.";
+      
+      // 에러 상태 코드 추출 (편의상 변수에 담음)
+      const status = error.response?.status;
 
-      // 1. 서버가 명확한 에러 메시지를 보낸 경우 (예: "프롬프트가 너무 짧아요")
-      if (error.response?.data?.message) {
-        userMessage = error.response.data.message;
-      } 
-      // 2. 500 에러 (서버 내부 오류)인 경우 -> 친절하게 포장
-      else if (error.response?.status === 500) {
+      // 1. [신규] 504 에러 (시간 초과) 처리
+      if (status === 504) {
+        userMessage = "AI가 너무 깊게 고민하다가 응답 시간을 초과했어요. 다시 시도해주세요!";
+      }
+      // 2. 500 에러 (서버 내부 오류)
+      else if (status === 500) {
         userMessage = "AI 서버가 잠시 응답하지 않네요 ㅠㅠ 잠시 후 다시 시도해주세요.";
       }
-      // 3. 네트워크 연결 자체가 안 된 경우
+      // 3. 서버가 보낸 커스텀 메시지가 있는 경우
+      else if (error.response?.data?.message) {
+        userMessage = error.response.data.message;
+      }
+      // 4. 인터넷 연결 끊김
       else if (error.code === 'ERR_NETWORK') {
         userMessage = "인터넷 연결을 확인해주세요.";
       }
 
-      // 부모(큐레이터)에게 정제된 메시지 전달
       onError(userMessage);
     }
     // finally { setIsLoading(false) } -> 이것도 필요 없음 (부모가 상태 관리함)

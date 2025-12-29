@@ -49,6 +49,21 @@ export const Exhibition = () => {
   // === 4. (추가) AI 상태 및 에러 메시지 관리 ===
   const [aiStatus, setAiStatus] = useState<AIStatus>('idle');
   const [errorMessage, setErrorMessage] = useState('');
+  // [신규] 10초 지연 감지 타이머 로직
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout>; 
+
+    if (aiStatus === 'loading') {
+      timer = setTimeout(() => {
+        setAiStatus('delayed');
+      }, 10000); 
+    }
+
+    return () => {
+      // timer가 존재할 때만 clear하도록 안전장치 추가
+      if (timer) clearTimeout(timer);
+    };
+  }, [aiStatus]);
 
   // [신규] 상태에 따른 큐레이터 멘트 결정 함수
   const getCuratorMessage = () => {
@@ -67,7 +82,7 @@ export const Exhibition = () => {
         return ticketInfo?.curatorMessage || '안녕하세요! 당신을 위한 영화를 추천해드릴게요.';
     }
   };
-
+  
   useEffect(() => {
     const loadTicketInfo = async () => {
       try {
