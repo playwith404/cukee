@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 import styles from './Header.module.css';
-import { getMe } from '../../apis/auth';
 
 // === 데이터 상수 ===
 const TICKET_LIST = [
@@ -19,26 +20,23 @@ const TICKET_LIST = [
 
 // === 내부 컴포넌트: 드롭다운 메뉴 ===
 const DropdownMenu = () => {
-  const [nickname, setNickname] = useState('게스트');
+  const navigate = useNavigate();
+  // dev 브랜치의 AuthContext 사용 (API 직접 호출 대신 전역 상태 사용)
+  const { logout, user } = useAuth();
+  
+  // 닉네임 설정 (user가 있으면 닉네임, 없으면 기본값)
+  const nickname = user?.nickname || '게스트';
+
+  // UI 상태 관리
   const [showInfo, setShowInfo] = useState(false);
   const [showMore, setShowMore] = useState(false);
   
-  // 컴포넌트가 열릴 때 API 호출하여 닉네임 가져오기
-  useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        const userData = await getMe(); // auth.ts의 getMe 호출
-        if (userData && userData.nickname) {
-          setNickname(userData.nickname);
-        }
-      } catch (error) {
-        console.error("사용자 정보 로드 실패:", error);
-        // 로그인 안 된 상태라면 로그인 페이지로 보내거나 '게스트' 유지
-      }
-    };
+  // 로그아웃 핸들러 (dev 브랜치 로직)
+  const handleLogout = async () => {
+    await logout();
+    navigate('/auth/login');
+  };
 
-    fetchUserInfo();
-  }, []);
   return (
     <div className={styles.dropdownOuter}>
       <div className={styles.dropdownGlass}>
@@ -95,7 +93,8 @@ const DropdownMenu = () => {
                 ))}
               </ul>
             </div>
-            <div className={styles.dropFooter}>로그아웃</div>
+            {/* 로그아웃 버튼에 핸들러 연결 */}
+            <button className={styles.dropFooter} onClick={handleLogout}>로그아웃</button>
           </div>
 
         </div>
@@ -128,7 +127,7 @@ export const Header: React.FC<HeaderProps> = ({
         {/* 1. 햄버거 버튼 */}
         <div className={styles.menuWrapper}>
           <button className={styles.menuButton} onClick={toggleMenu}>
-             ☰ 
+              ☰ 
           </button>
         </div>
 
