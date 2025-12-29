@@ -21,10 +21,17 @@ const TICKET_LIST = [
 // === 내부 컴포넌트: 드롭다운 메뉴 ===
 const DropdownMenu = () => {
   const navigate = useNavigate();
+  // dev 브랜치의 AuthContext 사용 (API 직접 호출 대신 전역 상태 사용)
   const { logout, user } = useAuth();
-  const nickname = user?.nickname || '마길초';
+  
+  // 닉네임 설정 (user가 있으면 닉네임, 없으면 기본값)
+  const nickname = user?.nickname || '게스트';
+
+  // UI 상태 관리
   const [showInfo, setShowInfo] = useState(false);
   const [showMore, setShowMore] = useState(false);
+  
+  // 로그아웃 핸들러 (dev 브랜치 로직)
 
   const handleLogout = async () => {
     await logout();
@@ -120,7 +127,7 @@ export const Header: React.FC<HeaderProps> = ({
         {/* 1. 햄버거 버튼 */}
         <div className={styles.menuWrapper}>
           <button className={styles.menuButton} onClick={toggleMenu}>
-             ☰ 
+              ☰ 
           </button>
         </div>
 

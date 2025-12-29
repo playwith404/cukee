@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import styles from './Auth.module.css';
-import { login as apiLogin } from '../../apis/auth';
+//import { login as apiLogin } from '../../apis/auth';
 import { useAuth } from '../../contexts/AuthContext';
 
 export const Login = () => {
@@ -25,8 +25,10 @@ export const Login = () => {
     setIsLoading(true);
 
     try {
-      const user = await apiLogin(email, password);
-      login(user);
+      // ✅ 변경된 부분: API 호출 없이 바로 context의 login을 호출
+      // Context 내부에서 Mock인지 Real인지 판단해서 처리함
+      await login(email, password); 
+      
       navigate('/home');
     } catch (err: any) {
       const errorMessage = err.response?.data?.message || err.response?.data?.detail || '로그인에 실패했습니다';
