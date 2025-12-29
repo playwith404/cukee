@@ -106,46 +106,46 @@ jobs:
             # 3. Update backend/.env with SMTP configuration
             sudo chown $USER:$USER backend/.env
             
-            # SMTP_HOST
+            # SMTP_HOST (고정값)
             if grep -q "^SMTP_HOST=" backend/.env; then
-              sed -i "s/^SMTP_HOST=.*/SMTP_HOST=${{ secrets.SMTP_HOST }}/" backend/.env
+              sed -i "s/^SMTP_HOST=.*/SMTP_HOST=smtp.gmail.com/" backend/.env
             else
-              echo "SMTP_HOST=${{ secrets.SMTP_HOST }}" >> backend/.env
+              echo "SMTP_HOST=smtp.gmail.com" >> backend/.env
             fi
             
-            # SMTP_PORT
+            # SMTP_PORT (고정값)
             if grep -q "^SMTP_PORT=" backend/.env; then
-              sed -i "s/^SMTP_PORT=.*/SMTP_PORT=${{ secrets.SMTP_PORT }}/" backend/.env
+              sed -i "s/^SMTP_PORT=.*/SMTP_PORT=587/" backend/.env
             else
-              echo "SMTP_PORT=${{ secrets.SMTP_PORT }}" >> backend/.env
+              echo "SMTP_PORT=587" >> backend/.env
             fi
             
-            # SMTP_USER
+            # SMTP_USER (GitHub Secret)
             if grep -q "^SMTP_USER=" backend/.env; then
               sed -i "s/^SMTP_USER=.*/SMTP_USER=${{ secrets.SMTP_USER }}/" backend/.env
             else
               echo "SMTP_USER=${{ secrets.SMTP_USER }}" >> backend/.env
             fi
             
-            # SMTP_PASSWORD
+            # SMTP_PASSWORD (GitHub Secret)
             if grep -q "^SMTP_PASSWORD=" backend/.env; then
               sed -i "s|^SMTP_PASSWORD=.*|SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }}|" backend/.env
             else
               echo "SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }}" >> backend/.env
             fi
             
-            # EMAIL_FROM
+            # EMAIL_FROM (SMTP_USER와 동일)
             if grep -q "^EMAIL_FROM=" backend/.env; then
-              sed -i "s/^EMAIL_FROM=.*/EMAIL_FROM=${{ secrets.EMAIL_FROM }}/" backend/.env
+              sed -i "s/^EMAIL_FROM=.*/EMAIL_FROM=${{ secrets.SMTP_USER }}/" backend/.env
             else
-              echo "EMAIL_FROM=${{ secrets.EMAIL_FROM }}" >> backend/.env
+              echo "EMAIL_FROM=${{ secrets.SMTP_USER }}" >> backend/.env
             fi
             
-            # EMAIL_FROM_NAME
+            # EMAIL_FROM_NAME (고정값)
             if grep -q "^EMAIL_FROM_NAME=" backend/.env; then
-              sed -i "s/^EMAIL_FROM_NAME=.*/EMAIL_FROM_NAME=${{ secrets.EMAIL_FROM_NAME }}/" backend/.env
+              sed -i "s/^EMAIL_FROM_NAME=.*/EMAIL_FROM_NAME=Cukee/" backend/.env
             else
-              echo "EMAIL_FROM_NAME=${{ secrets.EMAIL_FROM_NAME }}" >> backend/.env
+              echo "EMAIL_FROM_NAME=Cukee" >> backend/.env
             fi
 
             
