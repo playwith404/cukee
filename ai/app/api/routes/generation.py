@@ -23,9 +23,9 @@ async def generate_exhibition(request: GenerateRequest, db: Session = Depends(ge
         
         logger.info(f"Generating for theme: {request.theme}")
         
-        # 1. PGVECTOR로 유사 영화 검색 (빠름, ~1초)
+        # 1. PGVECTOR로 유사 영화 검색 (빠름, ~1초) - 티켓별 필터링
         retrieved_movies = await RetrievalService.retrieve_similar_movies(
-            db, request.prompt, limit=5
+            db, request.prompt, request.ticketId, limit=5
         )
         
         if not retrieved_movies:

@@ -64,8 +64,8 @@ Write ONLY in Korean, 200-300 characters:"""
         detail = model_manager.generate(
             prompt=detail_prompt,
             theme=request.theme,
-            max_length=512,  # 상세 설명이므로 좀 더 길게
-            temperature=0.7,
+            max_length=256,  # 256 토큰
+            temperature=0.3,  # 더 일관된 출력
             top_p=0.9,
             top_k=50
         ).strip()

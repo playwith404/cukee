@@ -12,13 +12,14 @@ class RetrievalService:
     """PGVECTOR 기반 유사 영화 검색 서비스"""
 
     @staticmethod
-    async def retrieve_similar_movies(db_session, prompt: str, limit: int = 5):
+    async def retrieve_similar_movies(db_session, prompt: str, ticket_id: int, limit: int = 5):
         """
-        사용자 프롬프트와 유사한 영화 검색
+        사용자 프롬프트와 유사한 영화 검색 (티켓별 필터링)
         
         Args:
             db_session: DB 세션
             prompt: 사용자 입력 프롬프트
+            ticket_id: 티켓 ID (영화 필터링용)
             limit: 반환할 영화 개수
             
         Returns:
@@ -28,15 +29,15 @@ class RetrievalService:
             # 1. 프롬프트 임베딩 생성
             embedding = embedding_manager.encode(prompt)
             
-            # 2. PGVECTOR 코사인 유사도 검색
-            # embedding <=> vector : 코사인 거리 (작을수록 유사)
-            # 1 - (embedding <=> vector) : 코사인 유사도 (클수록 유사)
+            # 2. PGVECTOR 코사인 유사도 검색 (티켓별 필터링)
             query = text("""
                 SELECT m.id, m.title_ko, m.overview_ko, m.poster_path, 
                        1 - (me.embedding <=> :embedding) as similarity
                 FROM movies m
                 JOIN movie_embeddings me ON m.id = me.movie_id
+                JOIN ticket_group_movies tgm ON m.id = tgm.movie_id
                 WHERE me.embedding IS NOT NULL
+                  AND tgm.ticket_group_id = :ticket_id
                 ORDER BY me.embedding <=> :embedding ASC
                 LIMIT :limit
             """)
@@ -45,7 +46,11 @@ class RetrievalService:
             # 여기서는 리스트를 문자열로 변환 "[1.0, 0.5, ...]"
             embedding_str = str(embedding)
             
-            result = db_session.execute(query, {"embedding": embedding_str, "limit": limit})
+            result = db_session.execute(query, {
+                "embedding": embedding_str, 
+                "ticket_id": ticket_id,
+                "limit": limit
+            })
             rows = result.fetchall()
             
             movies = []

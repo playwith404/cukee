@@ -12,7 +12,7 @@ import { ExhibitionGenerator } from './components/ExhGenerator';
 
 // API 타입 import (경로는 프로젝트 구조에 맞게 수정)
 import type { AIExhibitionResponse } from '../../apis/ai';
-import { curateMovies } from '../../apis/ai'; // 영화 조회 API
+import { curateMovies, getMovieDetail } from '../../apis/ai'; // 영화 조회 API
 import { fetchTickets, type Ticket } from '../../apis/exhibition';
 
 // AI 진행 상태 타입 정의 
@@ -50,6 +50,11 @@ export const Exhibition = () => {
   // === 4. (추가) AI 상태 및 에러 메시지 관리 ===
   const [aiStatus, setAiStatus] = useState<AIStatus>('idle');
   const [errorMessage, setErrorMessage] = useState('');
+
+  // === 5. 영화 상세 정보 상태 ===
+  const [selectedMovieDetail, setSelectedMovieDetail] = useState<{ title: string; detail: string } | null>(null);
+  const [loadingDetail, setLoadingDetail] = useState(false);
+
   // [신규] 10초 지연 감지 타이머 로직
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>;
@@ -70,6 +75,14 @@ export const Exhibition = () => {
   // [신규] 상태에 따른 큐레이터 멘트 결정 함수
   const getCuratorMessage = () => {
     if (loadingTicket) return "티켓 정보를 불러오는 중입니다...";
+
+    // 영화 상세 정보가 로딩 중이면 표시
+    if (loadingDetail) return "영화 정보를 불러오는 중...";
+
+    // 영화 상세 정보가 있으면 표시
+    if (selectedMovieDetail) {
+      return `${selectedMovieDetail.title}\n\n${selectedMovieDetail.detail}`;
+    }
 
     switch (aiStatus) {
       case 'loading':
@@ -147,6 +160,40 @@ export const Exhibition = () => {
     }
   };
 
+  // === 영화 포스터 클릭 핸들러 ===
+  const handlePosterClick = async (frameId: number) => {
+    try {
+      setLoadingDetail(true);
+
+      const theme = ticketInfo?.curatorName || '일반';
+      const response = await getMovieDetail(frameId, theme);
+
+      setSelectedMovieDetail({
+        title: response.title,
+        detail: response.detail
+      });
+    } catch (error) {
+      console.error('영화 상세 정보 로드 실패:', error);
+      setSelectedMovieDetail({
+        title: '오류',
+        detail: '영화 정보를 불러오는데 실패했습니다.'
+      });
+    } finally {
+      setLoadingDetail(false);
+    }
+  };
+
+  // === 영화 고정 핸들러 ===
+  const handlePin = (frameId: number) => {
+    setFrames((prev) =>
+      prev.map((frame) =>
+        frame.id === frameId
+          ? { ...frame, isPinned: !frame.isPinned }
+          : frame
+      )
+    );
+  };
+
   const handleExhibitionCreated = (data: AIExhibitionResponse) => {
     setAiStatus('idle'); // ai 상태 초기화
     console.log("전시회 생성 완료:", data);
@@ -196,6 +243,8 @@ export const Exhibition = () => {
         onNext={handleNext}
         onSelect={setActiveIndex}
         onDelete={handleDelete}
+        onPosterClick={handlePosterClick}
+        onPin={handlePin}
       />
 
       <CuratorGuide
