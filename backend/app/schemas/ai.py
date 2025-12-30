@@ -32,6 +32,7 @@ class ExhibitionDesign(BaseModel):
 class RecommendedMovie(BaseModel):
     """추천 영화"""
     movieId: int
+    title: str  # [추가] 영화 제목
     curatorComment: str
 
     model_config = ConfigDict(

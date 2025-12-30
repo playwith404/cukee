@@ -284,7 +284,7 @@ export const Exhibition = () => {
 
     const newFrames: Frame[] = data.resultJson.movies.map((movie) => ({
       id: movie.movieId,
-      content: movie.curatorComment,
+      content: movie.title, // ✅ [수정] curatorComment 대신 title 사용
       imageUrl: movie.posterUrl ?? "https://via.placeholder.com/300x450?text=No+Image"
     }));
 
