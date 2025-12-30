@@ -143,25 +143,40 @@
     z-index: 1;
 }
 
+
+/* ... 기존 코드 ... */
+
+/* [수정] 왼쪽 끝으로 사라질 때 */
+.hiddenLeft {
+  width: 220px;
+  height: 310px;
+  /* 1. translateX: -510px(left2)보다 더 멀리(-700px 정도) 보냄 
+     2. scale: 0이 아니라 0.6~0.7 정도로 유지 (갑자기 쪼그라들지 않게)
+     3. rotateY: 각도를 조금 더 줌 (자연스러운 회전)
+  */
+  transform: translateX(-510px) scale(0.7) rotateY(40deg); 
+  opacity: 0;      /* 모습만 투명하게 */
+  z-index: -5;     /* 확실하게 뒤로 */
+  pointer-events: none;
+}
+
+/* [수정] 오른쪽 끝으로 사라질 때 */
+.hiddenRight {
+  width: 220px;
+  height: 310px;
+  /* 1. translateX: 510px(right2)보다 더 멀리(700px 정도) 보냄
+     2. scale: 0.7 유지
+  */
+  transform: translateX(510px) scale(0.7) rotateY(-40deg);
+  opacity: 0;
+  z-index: -5;
+  pointer-events: none;
+}
+
+/* ... 기존 코드 ... */
 /* 나머지 숨김  */
 .hidden {
     transform: scale(0);
     opacity: 0;
     z-index: -1;
-}
-
-/* [수정] 왼쪽 끝으로 사라질 때: left2보다 더 왼쪽으로 보내며 사라지게 함 */
-.hiddenLeft {
-  transform: translateX(-650px) scale(0) rotateY(40deg); /* 위치 유지/확장 + 회전 유지 */
-  opacity: 0;
-  z-index: -1;
-  pointer-events: none; /* 중요: 클릭 방지 */
-}
-
-/* [수정] 오른쪽 끝으로 사라질 때: right2보다 더 오른쪽으로 보내며 사라지게 함 */
-.hiddenRight {
-  transform: translateX(650px) scale(0) rotateY(-40deg);
-  opacity: 0;
-  z-index: -1;
-  pointer-events: none;
 }
