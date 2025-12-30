@@ -7,7 +7,7 @@ from contextlib import asynccontextmanager
 
 from app.models.model_loader import model_manager
 from app.models.embedding_loader import embedding_manager
-from app.api.routes import generation, curation, system
+from app.api.routes import generation, curation, system, movie_detail
 
 # 로깅 설정
 logging.basicConfig(
@@ -42,6 +42,7 @@ app = FastAPI(
 # 라우터 등록
 app.include_router(generation.router, prefix="/api/v1", tags=["AI"])
 app.include_router(curation.router, prefix="/api/v1", tags=["Curation"])
+app.include_router(movie_detail.router, prefix="/api/v1", tags=["Movie Detail"])
 app.include_router(system.router, tags=["System"])
 
 

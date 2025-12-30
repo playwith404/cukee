@@ -9,6 +9,9 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y \
     git \
     curl \
+    build-essential \
+    gcc \
+    g++ \
     && rm -rf /var/lib/apt/lists/*
 
 # Python 패키지 설치
