@@ -12,6 +12,6 @@ export const PublicRoute = () => {
         // 이미 로그인 된 상태라면 홈으로 리다이렉트
         return <Navigate to="/home" replace />;
     }
-
+    // outlet
     return <Outlet />;
 };
