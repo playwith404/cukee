@@ -8,9 +8,10 @@ from app.models.exhibition import (
     Exhibition, ExhibitionDesign, ExhibitionMovie, ExhibitionKeyword,
     UserSavedExhibition, UserPinnedExhibition
 )
+from app.models.movie import Movie
 
 __all__ = [
     "User", "Session", "TicketGroup", "TicketGroupMovie",
     "Exhibition", "ExhibitionDesign", "ExhibitionMovie", "ExhibitionKeyword",
-    "UserSavedExhibition", "UserPinnedExhibition"
+    "UserSavedExhibition", "UserPinnedExhibition", "Movie"
 ]
