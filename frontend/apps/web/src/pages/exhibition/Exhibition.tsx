@@ -110,6 +110,8 @@ export const Exhibition = () => {
           setLoadingTicket(true);
           const exhibition = await getExhibitionById(parseInt(exhibitionIdParam, 10));
 
+          console.log('전시회 로드된 데이터:', exhibition);
+
           // 전시회 제목 설정
           if (exhibition.title) {
             setExhibitionTitle(exhibition.title);
@@ -121,6 +123,7 @@ export const Exhibition = () => {
             const ticket = ticketsResponse.data.find((t: Ticket) => t.id === exhibition.ticketId);
             if (ticket) {
               setTicketInfo(ticket);
+              console.log('티켓 정보 설정:', ticket);
             }
           }
 
@@ -130,10 +133,12 @@ export const Exhibition = () => {
               id: movie.movieId || movie.id,
               content: `Movie ${movie.movieId || movie.id}`,
               isPinned: movie.isPinned || false,
-              imageUrl: movie.posterUrl ?? "https://via.placeholder.com/300x450?text=No+Image"
+              imageUrl: movie.posterUrl || "https://via.placeholder.com/300x450?text=No+Image",
+              title: movie.title || `영화 ${movie.movieId}`
             }));
             setFrames(exhibitionFrames);
             setActiveIndex(Math.floor(exhibitionFrames.length / 2));
+            console.log('영화 프레임 설정:', exhibitionFrames);
           }
 
           console.log('전시회 로드 성공:', exhibition);
