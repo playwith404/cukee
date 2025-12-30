@@ -29,21 +29,26 @@ def get_current_user_info(
     )
 
 
-@router.put("/me", response_model=UserResponse, response_model_by_alias=False, status_code=status.HTTP_200_OK)
+@router.patch("/me", response_model=UserResponse, response_model_by_alias=False, status_code=status.HTTP_200_OK)
 def update_user_info(
     update_data: UpdateUserRequest,
     current_user: User = Depends(get_current_user),
     db: DBSession = Depends(get_db)
 ):
     """
-    사용자 정보 수정 (닉네임)
+    사용자 정보 수정 (통합)
+    - 닉네임, 프로필 이미지 등 부분 수정 가능
     - HttpOnly Cookie 필요
     """
-    updated_user = AuthService.update_user_nickname(
-        db,
-        user_id=current_user.id,
-        nickname=update_data.nickname
-    )
+    updated_user = current_user
+    
+    # 1. 닉네임 변경 요청 시
+    if update_data.nickname:
+        updated_user = AuthService.update_user_nickname(
+            db,
+            user_id=current_user.id,
+            nickname=update_data.nickname
+        )
 
     return UserResponse(
         user_id=updated_user.id,

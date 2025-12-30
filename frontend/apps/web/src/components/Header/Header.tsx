@@ -19,46 +19,57 @@ const TICKET_LIST = [
 ];
 
 
-interface UserInfoModalProps {
-  onClose: () => void;
-  currentNickname: string;
-  email: string;
+onClose: () => void;
+currentNickname: string;
+email: string;
+onUpdate: (newName: string) => Promise<void>; // [추가] 업데이트 핸들러
 }
 
-const UserInfoModal: React.FC<UserInfoModalProps> = ({ onClose, currentNickname, email }) => {
+const UserInfoModal: React.FC<UserInfoModalProps> = ({ onClose, currentNickname, email, onUpdate }) => {
   const [nickname, setNickname] = useState(currentNickname);
 
-  const handleSave = () => {
-    console.log("변경된 닉네임 저장:", nickname);
-    // TODO: API 연동
-    onClose();
+  const handleSave = async () => {
+    if (!nickname.trim()) {
+      alert("닉네임을 입력해주세요.");
+      return;
+    }
+
+    try {
+      console.log("변경 요청:", nickname);
+      await onUpdate(nickname);
+      alert("닉네임이 변경되었습니다.");
+      onClose();
+    } catch (error) {
+      console.error("닉네임 변경 실패:", error);
+      alert("변경에 실패했습니다.");
+    }
   };
 
   return (
     // 1. 공통 배경 (modalOverlay)
     <div className={styles.modalOverlay} onClick={onClose}>
-      
+
       {/* 2. 공통 모달 박스 (glassModal) */}
-      <div 
-        className={styles.glassModal} 
-        onClick={(e) => e.stopPropagation()} 
+      <div
+        className={styles.glassModal}
+        onClick={(e) => e.stopPropagation()}
       >
         {/* 3. 공통 타이틀 (modalTitle) */}
         <h2 className={styles.modalTitle}>내 정보 설정</h2>
-        
+
         {/* 4. [차이점] 텍스트 대신 입력 폼 들어감 */}
         <div className={styles.formContainer}>
 
           {/* 닉네임 */}
           <div className={styles.formGroup}>
             <label className={styles.formLabel}>닉네임</label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               className={styles.inputUnderline} // 새로 만든 밑줄 스타일
               value={nickname}
               onChange={(e) => setNickname(e.target.value)}
               placeholder="닉네임을 입력하세요"
-              
+
             />
           </div>
           {/* 이메일 */}
@@ -67,7 +78,7 @@ const UserInfoModal: React.FC<UserInfoModalProps> = ({ onClose, currentNickname,
             <p className={styles.emailText}>{email}</p>
           </div>
         </div>
-        
+
         {/* 5. 공통 버튼 영역 (modalActions) */}
         <div className={styles.modalActions} style={{ marginTop: '10px' }}>
           <button className={styles.btnCancel} onClick={onClose}>
@@ -91,8 +102,8 @@ interface ConfirmModalProps {
 const ConfirmModal: React.FC<ConfirmModalProps> = ({ onClose, onConfirm }) => {
   return (
     <div className={styles.modalOverlay} onClick={onClose}>
-      <div 
-        className={styles.glassModal} 
+      <div
+        className={styles.glassModal}
         onClick={(e) => e.stopPropagation()} // 모달 내부 클릭 시 닫힘 방지
       >
         <h2 className={styles.modalTitle}>전시회 생성</h2>
@@ -100,7 +111,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({ onClose, onConfirm }) => {
           저장하지 않은 전시회 내용은 지워집니다.<br />
           <span className={styles.promptDesc}>새 전시회를 생성하러 갈까요?</span>
         </p>
-        
+
         <div className={styles.modalActions}>
           <button className={styles.btnCancel} onClick={onClose}>
             취소
@@ -132,7 +143,7 @@ const DeleteAccountModal: React.FC<DeleteAccountModalProps> = ({ onClose, nickna
       alert("비밀번호가 일치하지 않습니다.");
       return;
     }
-    
+
     // TODO: 실제 탈퇴 API 호출
     console.log("회원 탈퇴 처리됨");
     alert("탈퇴가 완료되었습니다.");
@@ -152,20 +163,20 @@ const DeleteAccountModal: React.FC<DeleteAccountModalProps> = ({ onClose, nickna
           {/* 비밀번호 입력 */}
           <div className={styles.formGroup}>
             <label className={styles.formLabel}>비밀번호 입력</label>
-            <input 
-              type="password" 
+            <input
+              type="password"
               className={styles.inputUnderline}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="비밀번호를 입력하세요"
             />
           </div>
-          
+
           {/* 비밀번호 재입력 */}
           <div className={styles.formGroup}>
             <label className={styles.formLabel}>비밀번호 재입력</label>
-            <input 
-              type="password" 
+            <input
+              type="password"
               className={styles.inputUnderline}
               value={passwordConfirm}
               onChange={(e) => setPasswordConfirm(e.target.value)}
@@ -173,7 +184,7 @@ const DeleteAccountModal: React.FC<DeleteAccountModalProps> = ({ onClose, nickna
             />
           </div>
         </div>
-        
+
         <div className={styles.modalActions} style={{ marginTop: '10px' }}>
           <button className={styles.btnCancel} onClick={onClose}>
             취소
@@ -190,20 +201,20 @@ const DeleteAccountModal: React.FC<DeleteAccountModalProps> = ({ onClose, nickna
 const DropdownMenu = () => {
   const navigate = useNavigate();
   // dev 브랜치의 AuthContext 사용
-  const { logout, user } = useAuth();
-  
+  const { logout, user, updateNickname } = useAuth();
+
   // 닉네임 설정
   const userNickname = user?.nickname || '게스트';
   const userEmail = user?.email || 'guest@cukee.com'; // user 객체에 email이 있다고 가정
 
   // UI 상태 관리
   const [showMore, setShowMore] = useState(false);
-  
+
   // ✅ [추가] 모달 표시 여부 상태
   const [showInfoModal, setShowInfoModal] = useState(false);     // 내 정보 모달 ✅
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  
+
 
   // 로그아웃 핸들러
   const handleLogout = async () => {
@@ -219,7 +230,7 @@ const DropdownMenu = () => {
   // 2. 모달에서 "확인" 클릭 시 실행
   const handleConfirmCreate = () => {
     setShowCreateModal(false);
-    navigate('/'); 
+    navigate('/');
   };
 
   // 3. 모달에서 "취소" 클릭 시 실행
@@ -235,103 +246,102 @@ const DropdownMenu = () => {
   const handleCloseDeleteModal = () => setShowDeleteModal(false);
   return (
     <>
-    <div className={styles.dropdownOuter}>
-      <div className={styles.dropdownGlass}>
-        <div className={styles.dropSplit}>
-          
-          {/* 1. [좌측] 메뉴 영역 */}
-          <div className={styles.dropLeft}>
-            <div className={styles.menuContainer}>
-              
-              {/* 내 정보 토글 */}
-              <div className={styles.menuGroup}>
-                <span 
-                className={styles.menuLabel}
-                onClick={handleOpenInfoModal}
-                >내 정보</span>
-                <div 
-                  className={styles.profileRow}
-                >
-                  <span className={styles.profileName}>{userNickname} 님</span>
-                  <img 
-                    src="/pencil.png" 
-                    alt="edit" 
-                    className={styles.pencilIcon} 
-                  />
-                </div>
-              </div>
+      <div className={styles.dropdownOuter}>
+        <div className={styles.dropdownGlass}>
+          <div className={styles.dropSplit}>
 
-              {/* 새 전시회 & 더보기 */}
-              <div className={styles.menuGroup}>
-                {/* ✅ [수정됨] onClick 이벤트 연결 */}
-                <button 
-                    className={styles.menuBtn} 
+            {/* 1. [좌측] 메뉴 영역 */}
+            <div className={styles.dropLeft}>
+              <div className={styles.menuContainer}>
+
+                {/* 내 정보 토글 */}
+                <div className={styles.menuGroup}>
+                  <span
+                    className={styles.menuLabel}
+                    onClick={handleOpenInfoModal}
+                  >내 정보</span>
+                  <div
+                    className={styles.profileRow}
+                  >
+                    <span className={styles.profileName}>{userNickname} 님</span>
+                    <img
+                      src="/pencil.png"
+                      alt="edit"
+                      className={styles.pencilIcon}
+                    />
+                  </div>
+                </div>
+
+                {/* 새 전시회 & 더보기 */}
+                <div className={styles.menuGroup}>
+                  {/* ✅ [수정됨] onClick 이벤트 연결 */}
+                  <button
+                    className={styles.menuBtn}
                     onClick={handleCreateClick}
                   >
-                  새 전시회 생성하기
-                </button>
-                
-                <hr className={styles.divider} />
-                <button 
-                  className={styles.menuBtnMore} 
-                  onClick={() => setShowMore(!showMore)}
-                >
-                  더보기 {showMore ? '▲' : '▼'}
-                </button>
-                
-                {showMore && (
-                  <div className={styles.subMenu}>
+                    새 전시회 생성하기
+                  </button>
+
+                  <hr className={styles.divider} />
+                  <button
+                    className={styles.menuBtnMore}
+                    onClick={() => setShowMore(!showMore)}
+                  >
+                    더보기 {showMore ? '▲' : '▼'}
+                  </button>
+
+                  {showMore && (
+                    <div className={styles.subMenu}>
                       {/* ✅ CSS 클래스 적용하여 호버 효과 추가 */}
                       <button className={styles.subMenuBtn}>
                         버그 제보
                       </button>
-                      <button 
+                      <button
                         className={styles.subMenuBtn}
                         onClick={handleOpenDeleteModal}
                       >
                         탈퇴하기
                       </button>
                     </div>
-                )}
+                  )}
+                </div>
+
               </div>
-
             </div>
-          </div>
 
-          {/* 2. [우측] 리스트 영역 */}
-          <div className={styles.dropRight}>
-            <h3 className={styles.listTitle}>나의 전시회 목록</h3>
-            <div className={styles.scrollList}>
-              <ul>
-                {TICKET_LIST.map((name, index) => (
-                  <li key={index}>{name}</li>
-                ))}
-              </ul>
+            {/* 2. [우측] 리스트 영역 */}
+            <div className={styles.dropRight}>
+              <h3 className={styles.listTitle}>나의 전시회 목록</h3>
+              <div className={styles.scrollList}>
+                <ul>
+                  {TICKET_LIST.map((name, index) => (
+                    <li key={index}>{name}</li>
+                  ))}
+                </ul>
+              </div>
+              <button className={styles.dropFooter} onClick={handleLogout}>로그아웃</button>
             </div>
-            <button className={styles.dropFooter} onClick={handleLogout}>로그아웃</button>
-          </div>
 
+          </div>
         </div>
       </div>
-    </div>
-    {/* ✅ [추가] 모달 컴포넌트 렌더링 (조건부) */}
+      {/* ✅ [추가] 모달 컴포넌트 렌더링 (조건부) */}
       {showCreateModal && (
-        <ConfirmModal 
-          onClose={handleCloseModal} 
-          onConfirm={handleConfirmCreate} 
+        <ConfirmModal
+          onClose={handleCloseModal}
+          onConfirm={handleConfirmCreate}
         />
       )}
       {/* ✅ 내 정보 수정 모달 */}
-      {showInfoModal && (
-        <UserInfoModal
-          onClose={handleCloseInfoModal}
-          currentNickname={userNickname}
-          email={userEmail}
-        />
-      )}
+      <UserInfoModal
+        onClose={handleCloseInfoModal}
+        currentNickname={userNickname}
+        email={userEmail}
+        onUpdate={updateNickname} // [추가] 핸들러 전달
+      />
       {/* ✅ 회원 탈퇴 모달 연결 */}
       {showDeleteModal && (
-        <DeleteAccountModal 
+        <DeleteAccountModal
           onClose={handleCloseDeleteModal}
           nickname={userNickname}
         />
@@ -347,9 +357,9 @@ interface HeaderProps {
   onBack?: () => void;         // 뒤로가기 (필요시 사용)
 }
 
-export const Header: React.FC<HeaderProps> = ({ 
-  currentSection, 
-  exhibitionTitle 
+export const Header: React.FC<HeaderProps> = ({
+  currentSection,
+  exhibitionTitle
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -360,22 +370,22 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <div className={styles.outerWrapper}>
       <header className={styles.header}>
-        
+
         {/* 1. 햄버거 버튼 */}
         <div className={styles.menuWrapper}>
           <button className={styles.menuButton} onClick={toggleMenu}>
-              ☰ 
+            ☰
           </button>
         </div>
 
         {/* 2. 쿠키 아이콘 + 타이틀 */}
         <div className={styles.container}>
           <div>
-            <img 
-                src="/cookie.png" 
-                alt="Cookie" 
-                className={styles.cookieIcon} 
-                onError={(e) => e.currentTarget.style.display='none'} 
+            <img
+              src="/cookie.png"
+              alt="Cookie"
+              className={styles.cookieIcon}
+              onError={(e) => e.currentTarget.style.display = 'none'}
             />
           </div>
           <span className={styles.title}>
@@ -386,7 +396,7 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* 3. 드롭다운 메뉴 (조건부 렌더링) */}
         {isMenuOpen && <DropdownMenu />}
-        
+
       </header>
     </div>
   );

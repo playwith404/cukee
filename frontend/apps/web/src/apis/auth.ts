@@ -68,3 +68,13 @@ export async function checkAuth() {
     nickname: string;
   };
 }
+// 사용자 정보 수정 (통합 Patch)
+export async function updateProfile(data: { nickname?: string }) {
+  const res = await api.patch('/users/me', data);
+  return res.data as {
+    userId: number;
+    email: string;
+    nickname: string;
+    createdAt: string;
+  };
+}
