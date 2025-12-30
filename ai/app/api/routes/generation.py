@@ -23,12 +23,28 @@ async def generate_exhibition(request: GenerateRequest, db: Session = Depends(ge
         
         logger.info(f"Generating for theme: {request.theme}")
         
-        # 1. PGVECTOR로 유사 영화 검색 (빠름, ~1초) - 티켓별 필터링
-        retrieved_movies = await RetrievalService.retrieve_similar_movies(
-            db, request.prompt, request.ticketId, limit=5
-        )
+        # 1. 고정된 영화 처리
+        pinned_movies = []
+        if request.pinnedMovieIds:
+            pinned_movies = await RetrievalService.get_movies_by_ids(db, request.pinnedMovieIds)
+            logger.info(f"Loaded {len(pinned_movies)} pinned movies")
+
+        # 2. PGVECTOR로 유사 영화 검색 (빠름, ~1초) - 티켓별 필터링
+        # 고정된 개수만큼 limit에서 차감
+        limit = max(0, 5 - len(pinned_movies))
         
-        if not retrieved_movies:
+        retrieved_movies = []
+        if limit > 0:
+            retrieved_movies = await RetrievalService.retrieve_similar_movies(
+                db, request.prompt, request.ticketId, limit=limit, exclude_ids=request.pinnedMovieIds
+            )
+        
+        logger.info(f"Retrieved {len(retrieved_movies)} movies from PGVECTOR")
+        
+        # 합치기: 고정된 영화 + 검색된 영화
+        final_movies = pinned_movies + retrieved_movies
+        
+        if not final_movies:
             logger.warning("No movies found from PGVECTOR search")
             raise HTTPException(status_code=404, detail="No similar movies found")
         
@@ -41,7 +57,7 @@ You are a friendly movie curator.
 [Context]
 - User Input: {request.prompt}
 - Theme: {request.theme}
-- Number of movies: {len(retrieved_movies)}
+- Number of movies: {len(final_movies)}
 
 [Task]
 Write a warm welcome message in Korean (30-60 characters) based on the context.
@@ -88,7 +104,7 @@ Write a warm welcome message in Korean (30-60 characters) based on the context.
         
         # 3. 영화 목록 구성 (PGVECTOR 결과 사용, 개별 코멘트 없음)
         movies_list = []
-        for movie in retrieved_movies:
+        for movie in final_movies:
             movies_list.append({
                 "movieId": movie['id'],
                 "posterUrl": f"https://image.tmdb.org/t/p/w500{movie['poster_path']}" if movie['poster_path'] else ""

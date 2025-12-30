@@ -8,6 +8,7 @@ import api from './index';
 export interface AIExhibitionRequest {
   prompt: string;
   ticketId: number;
+  pinnedMovieIds?: number[];
 }
 
 // 내부 상세 데이터
@@ -84,11 +85,13 @@ export const curateMovies = async (
  */
 export const generateExhibition = async (
   prompt: string,
-  ticketId: number
+  ticketId: number,
+  pinnedMovieIds: number[] = []
 ): Promise<AIExhibitionResponse> => {
   const response = await api.post<AIExhibitionResponse>('/ai/generate', {
     prompt,
     ticketId,
+    pinnedMovieIds
   });
   return response.data;
 };

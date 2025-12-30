@@ -6,48 +6,50 @@ import { generateExhibition, type AIExhibitionResponse } from '../../../apis/ai'
 interface ExhibitionGeneratorProps {
   currentTicketId: number;
   onSuccess: (data: AIExhibitionResponse) => void;
-  
+
   // ▼▼▼ [추가] 부모(Exhibition.tsx)와 소통하기 위한 함수들 ▼▼▼
   onLoadingStart: () => void;         // "나 로딩 시작해요" 알림
   onError: (message: string) => void; // "에러 났어요" 알림
   isLoading: boolean;                 // 부모가 알려주는 현재 상태 (로딩중인지)
+  pinnedMovieIds?: number[];          // [추가] 고정된 영화 ID 목록
 }
 
-export const ExhibitionGenerator = ({ 
-  currentTicketId, 
+export const ExhibitionGenerator = ({
+  currentTicketId,
   onSuccess,
   onLoadingStart, // [추가]
   onError,        // [추가]
-  isLoading       // [추가]
+  isLoading,       // [추가]
+  pinnedMovieIds = [] // [추가] 기본값 빈 배열
 }: ExhibitionGeneratorProps) => {
   const [prompt, setPrompt] = useState('');
-  
+
   // ❌ [삭제] 로딩 상태는 이제 부모가 관리하므로 로컬 state는 필요 없음
   // const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async () => {
     if (!prompt.trim()) {
       // 빈 값일 때는 그냥 에러 메시지 띄우거나 무시
-      onError("내용을 입력해주세요!"); 
+      onError("내용을 입력해주세요!");
       return;
     }
 
     // 1. 부모에게 "로딩 시작!" 알림 (이때 큐레이터가 말풍선 띄움 & 30초 타이머 시작)
-    onLoadingStart(); 
+    onLoadingStart();
 
     try {
-      // 2. API 호출
-      const data = await generateExhibition(prompt, currentTicketId);
+      // 2. API 호출 (pinnedMovieIds 추가)
+      const data = await generateExhibition(prompt, currentTicketId, pinnedMovieIds);
 
       // 3. 성공 시 부모에게 데이터 전달
       onSuccess(data);
       setPrompt(''); // 입력창 비우기
 
-      } catch (error: any) {
+    } catch (error: any) {
       console.error("API Error Detail:", error);
 
       let userMessage = "전시회를 생성하는 중에 문제가 생겼어요.";
-      
+
       // 에러 상태 코드 추출 (편의상 변수에 담음)
       const status = error.response?.status;
 
