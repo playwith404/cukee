@@ -133,7 +133,9 @@ export const Exhibition = () => {
               id: movie.movieId || movie.id,
               content: `Movie ${movie.movieId || movie.id}`,
               isPinned: movie.isPinned || false,
-              imageUrl: movie.posterUrl || "https://via.placeholder.com/300x450?text=No+Image",
+              imageUrl: movie.posterUrl
+                ? `https://image.tmdb.org/t/p/w500${movie.posterUrl}`
+                : "https://via.placeholder.com/300x450?text=No+Image",
               title: movie.title || `영화 ${movie.movieId}`
             }));
             setFrames(exhibitionFrames);
