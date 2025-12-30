@@ -18,27 +18,77 @@ const TICKET_LIST = [
   "마길초 큐레이션 12",
 ];
 
+// ✅ [신규] 커스텀 모달 컴포넌트
+interface ConfirmModalProps {
+  onClose: () => void;
+  onConfirm: () => void;
+}
+
+const ConfirmModal: React.FC<ConfirmModalProps> = ({ onClose, onConfirm }) => {
+  return (
+    <div className={styles.modalOverlay} onClick={onClose}>
+      <div 
+        className={styles.glassModal} 
+        onClick={(e) => e.stopPropagation()} // 모달 내부 클릭 시 닫힘 방지
+      >
+        <h2 className={styles.modalTitle}>전시회 생성</h2>
+        <p className={styles.modalDesc}>
+          저장하지 않은 전시회 내용은 지워집니다.<br />
+          <span className={styles.promptDesc}>새 전시회를 생성하러 갈까요?</span>
+        </p>
+        
+        <div className={styles.modalActions}>
+          <button className={styles.btnCancel} onClick={onClose}>
+            취소
+          </button>
+          <button className={styles.btnConfirm} onClick={onConfirm}>
+            확인
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // === 내부 컴포넌트: 드롭다운 메뉴 ===
 const DropdownMenu = () => {
   const navigate = useNavigate();
-  // dev 브랜치의 AuthContext 사용 (API 직접 호출 대신 전역 상태 사용)
+  // dev 브랜치의 AuthContext 사용
   const { logout, user } = useAuth();
   
-  // 닉네임 설정 (user가 있으면 닉네임, 없으면 기본값)
+  // 닉네임 설정
   const nickname = user?.nickname || '게스트';
 
   // UI 상태 관리
-  // const [showInfo, setShowInfo] = useState(false);
   const [showMore, setShowMore] = useState(false);
   
-  // 로그아웃 핸들러 (dev 브랜치 로직)
+  // ✅ [추가] 모달 표시 여부 상태
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
+  // 로그아웃 핸들러
   const handleLogout = async () => {
     await logout();
     navigate('/auth/login');
   };
 
+  // 1. "새 전시회 생성하기" 클릭 시 모달 열기
+  const handleCreateClick = () => {
+    setShowCreateModal(true);
+  };
+
+  // 2. 모달에서 "확인" 클릭 시 실행
+  const handleConfirmCreate = () => {
+    setShowCreateModal(false);
+    navigate('/'); 
+  };
+
+  // 3. 모달에서 "취소" 클릭 시 실행
+  const handleCloseModal = () => {
+    setShowCreateModal(false);
+  };
+
   return (
+    <>
     <div className={styles.dropdownOuter}>
       <div className={styles.dropdownGlass}>
         <div className={styles.dropSplit}>
@@ -65,7 +115,14 @@ const DropdownMenu = () => {
 
               {/* 새 전시회 & 더보기 */}
               <div className={styles.menuGroup}>
-                <button className={styles.menuBtn}>새 전시회 생성하기</button>
+                {/* ✅ [수정됨] onClick 이벤트 연결 */}
+                <button 
+                    className={styles.menuBtn} 
+                    onClick={handleCreateClick}
+                  >
+                  새 전시회 생성하기
+                </button>
+                
                 <hr className={styles.divider} />
                 <button 
                   className={styles.menuBtnMore} 
@@ -101,6 +158,14 @@ const DropdownMenu = () => {
         </div>
       </div>
     </div>
+    {/* ✅ [추가] 모달 컴포넌트 렌더링 (조건부) */}
+      {showCreateModal && (
+        <ConfirmModal 
+          onClose={handleCloseModal} 
+          onConfirm={handleConfirmCreate} 
+        />
+      )}
+    </>
   );
 };
 
