@@ -147,9 +147,13 @@ def get_exhibition_detail(
         for kw in exhibition.keywords
     ]
 
-    # 영화 정보 추가
-    response["movies"] = [
-        {
+    # 영화 정보 추가 (Movie 테이블과 조인)
+    response["movies"] = []
+    for movie in exhibition.movies:
+        if movie.is_removed:
+            continue
+        
+        movie_data = {
             "id": movie.id,
             "movieId": movie.movie_id,
             "displayOrder": movie.display_order,
@@ -157,9 +161,16 @@ def get_exhibition_detail(
             "isPinned": movie.is_pinned,
             "isRemoved": movie.is_removed
         }
-        for movie in exhibition.movies
-        if not movie.is_removed
-    ]
+        
+        # Movie 정보 추가 (movies 테이블에서 조회)
+        if movie.movie_id:
+            from app.models.movie import Movie
+            movie_detail = db.query(Movie).filter(Movie.id == movie.movie_id).first()
+            if movie_detail:
+                movie_data["posterUrl"] = movie_detail.poster_url
+                movie_data["title"] = movie_detail.title
+        
+        response["movies"].append(movie_data)
 
     return response
 
