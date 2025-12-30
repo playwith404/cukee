@@ -143,6 +143,9 @@
     cursor: pointer;
     color: #373431;
 }
+.menuBtn:hover {
+    font-weight: 500;
+}
 
 .menuLabel {
     font-size: 24px;
@@ -208,6 +211,9 @@
     color: #555;
     margin-top: 5px;
 }
+.menuBtnMore:hover {
+    font-weight: 500;
+}
 
 /* === Right Section === */
 
@@ -271,4 +277,105 @@
 
 .dropFooter:hover {
     color: #373431;
+}
+
+
+/* === [추가] 모달 스타일 === */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(214, 214, 214, 0.4);
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.2s ease-out;
+  letter-spacing: -0.03em;
+}
+
+.glassModal {
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 40px 30px; /* 내부 여백 살짝 조정 */
+  backdrop-filter: blur(5px); /* 블러 효과 강화 */
+  background-color: rgba(255, 255, 255, 0.35); 
+  border-radius: 26px; 
+  box-shadow: 35px 35px 68px 0px rgba(0, 0, 0, 0.15), inset -10px -10px 16px 0px rgba(0, 0, 0, 0.15), inset 0px 11px 28px 0px rgb(255, 255, 255);
+
+  width: 500px; /* 너무 넓지 않게 조정 (700 -> 500) */
+  max-width: 90%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  animation: slideUp 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.modalTitle {
+  font-size: 30px;
+  font-weight: 500;
+  color: #373431;
+  margin: 0;
+}
+
+.modalDesc {
+  font-size: 18px;
+  font-weight: 300;
+  color: #555;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.promptDesc {
+  display: block; /* 줄바꿈 효과 */
+  font-weight: 500;
+  color: #373431;
+  margin-top: 0px;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.btnCancel, .btnConfirm {
+  padding: 8px 25px;
+  border-radius: 9999px;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+}
+
+.btnCancel {
+  background-color: transparent;
+  border: 1px solid #8F8784;
+  color: #8F8784;
+}
+.btnCancel:hover {
+  background-color: rgba(143, 135, 132, 0.1);
+}
+
+.btnConfirm {
+  background-color: #8F8784;
+  color: white;
+  font-weight: 500;
+}
+.btnConfirm:hover {
+  background-color: #7a7370;
+  transform: translateY(-1px);
+}
+
+/* 애니메이션 */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
