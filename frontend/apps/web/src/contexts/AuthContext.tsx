@@ -3,9 +3,9 @@ import { checkAuth, login as apiLogin, logout as apiLogout } from '../apis/auth'
 const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true'; // 환경변수 확인
 
 const MOCK_USER = {
-  userId: 999,
-  email: 'mock@cukee.com',
-  nickname: '개발용',
+    userId: 999,
+    email: 'mock@cukee.com',
+    nickname: '개발용',
 };
 
 interface User {
@@ -21,6 +21,7 @@ interface AuthContextType {
     login: (email: string, password: string) => Promise<void>;
     logout: () => Promise<void>;
     setAuthUser: (user: User) => void;
+    updateNickname: (newNickname: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -36,7 +37,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 console.log("🛠️ [Mock Mode] 강제 로그인 처리됨");
                 setUser(MOCK_USER); // 무조건 로그인 상태로 시작
                 setIsLoading(false);
-            return; 
+                return;
             }
             //[모드2] 실제 웹 모드일때
             try {
@@ -72,6 +73,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUser(userData);
     };
 
+    // [신규] 닉네임 변경
+    const updateNickname = async (newNickname: string) => {
+        if (USE_MOCK) {
+            if (user) setUser({ ...user, nickname: newNickname });
+            return;
+        }
+
+        // 실제 API 호출 (apis/auth.ts에 updateProfile 추가 필요)
+        const { updateProfile } = await import('../apis/auth');
+        await updateProfile({ nickname: newNickname });
+
+        // 상태 업데이트 (화면 즉시 반영 - 응답값 의존 X, 요청값 사용)
+        setUser((prev) => prev ? { ...prev, nickname: newNickname } : null);
+    };
+
     const logout = async () => {
         if (USE_MOCK) {
             console.log("[Mock Mode] 로그아웃");
@@ -95,7 +111,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             isLoading,
             login,
             logout,
-            setAuthUser
+            setAuthUser,
+            updateNickname
         }}>
             {children}
         </AuthContext.Provider>

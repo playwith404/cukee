@@ -166,7 +166,7 @@ class UserResponse(BaseModel):
 
 class UpdateUserRequest(BaseModel):
     """사용자 정보 수정 요청"""
-    nickname: str = Field(..., min_length=1, max_length=20)
+    nickname: Optional[str] = Field(None, min_length=1, max_length=20)
 
     model_config = ConfigDict(
         json_schema_extra={
