@@ -19,10 +19,11 @@ const TICKET_LIST = [
 ];
 
 
-onClose: () => void;
-currentNickname: string;
-email: string;
-onUpdate: (newName: string) => Promise<void>; // [추가] 업데이트 핸들러
+interface UserInfoModalProps {
+  onClose: () => void;
+  currentNickname: string;
+  email: string;
+  onUpdate: (newName: string) => Promise<void>; // [추가] 업데이트 핸들러
 }
 
 const UserInfoModal: React.FC<UserInfoModalProps> = ({ onClose, currentNickname, email, onUpdate }) => {
@@ -333,12 +334,14 @@ const DropdownMenu = () => {
         />
       )}
       {/* ✅ 내 정보 수정 모달 */}
-      <UserInfoModal
-        onClose={handleCloseInfoModal}
-        currentNickname={userNickname}
-        email={userEmail}
-        onUpdate={updateNickname} // [추가] 핸들러 전달
-      />
+      {showInfoModal && (
+        <UserInfoModal
+          onClose={handleCloseInfoModal}
+          currentNickname={userNickname}
+          email={userEmail}
+          onUpdate={updateNickname} // [추가] 핸들러 전달
+        />
+      )}
       {/* ✅ 회원 탈퇴 모달 연결 */}
       {showDeleteModal && (
         <DeleteAccountModal
