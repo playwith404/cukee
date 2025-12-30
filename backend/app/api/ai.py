@@ -170,13 +170,16 @@ async def get_movie_detail(request_data: dict):
     - 인증 불필요
     """
     movie_id = request_data.get("movieId")
-    theme = request_data.get("theme", "일반")
+    ticket_id = request_data.get("ticketId")
     
     if not movie_id:
         raise BadRequestException(
             message="영화 ID를 입력해주세요.",
             details="movieId는 필수 항목입니다."
         )
+    
+    # ticketId로 테마 찾기 (큐레이션과 동일한 LORA 사용)
+    theme = TICKET_TO_THEME.get(ticket_id, "편안하고 잔잔한 감성 추구")  # 기본값
     
     try:
         # VM2 AI 서버 호출

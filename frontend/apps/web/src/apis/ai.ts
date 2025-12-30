@@ -99,11 +99,11 @@ export const generateExhibition = async (
  */
 export const getMovieDetail = async (
   movieId: number,
-  theme: string = '일반'
+  ticketId: number
 ): Promise<MovieDetailResponse> => {
   const response = await api.post<MovieDetailResponse>('/ai/movie-detail', {
     movieId,
-    theme,
+    ticketId,
   });
   return response.data;
 };
