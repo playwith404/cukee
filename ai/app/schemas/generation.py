@@ -1,6 +1,7 @@
 """Generation 관련 스키마"""
 from pydantic import BaseModel, Field
-from typing import Optional
+from pydantic import BaseModel, Field
+from typing import Optional, List
 
 class GenerateRequest(BaseModel):
     """AI 전시회 생성 요청"""

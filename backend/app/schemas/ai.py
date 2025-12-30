@@ -49,6 +49,7 @@ class AIGenerateRequest(BaseModel):
     """AI 전시회 생성 요청"""
     prompt: str
     ticketId: int
+    pinnedMovieIds: List[int] = []
 
     model_config = ConfigDict(
         json_schema_extra={

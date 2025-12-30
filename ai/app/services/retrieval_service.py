@@ -12,7 +12,43 @@ class RetrievalService:
     """PGVECTOR 기반 유사 영화 검색 서비스"""
 
     @staticmethod
-    async def retrieve_similar_movies(db_session, prompt: str, ticket_id: int, limit: int = 5):
+    async def get_movies_by_ids(db_session, movie_ids: list[int]):
+        """
+        영화 ID 목록으로 영화 상세 정보 조회
+        """
+        if not movie_ids:
+            return []
+            
+        try:
+            # ID 목록을 문자열로 변환 (SQL IN 절 사용을위해)
+            ids_str = ",".join(map(str, movie_ids))
+            
+            query = text(f"""
+                SELECT m.id, m.title_ko, m.overview_ko, m.poster_path
+                FROM movies m
+                WHERE m.id IN ({ids_str})
+            """)
+            
+            result = db_session.execute(query)
+            rows = result.fetchall()
+            
+            movies = []
+            for row in rows:
+                movies.append({
+                    "id": row.id,
+                    "title": row.title_ko,
+                    "overview": row.overview_ko or "설명 없음",
+                    "poster_path": row.poster_path,
+                    "similarity": 1.0 # 고정된 영화이므로 유사도 1.0 (임의값)
+                })
+                
+            return movies
+        except Exception as e:
+            logger.error(f"Failed to fetch movies by IDs: {e}")
+            return []
+
+    @staticmethod
+    async def retrieve_similar_movies(db_session, prompt: str, ticket_id: int, limit: int = 5, exclude_ids: list[int] = None):
         """
         사용자 프롬프트와 유사한 영화 검색 (티켓별 필터링)
         
@@ -30,7 +66,15 @@ class RetrievalService:
             embedding = embedding_manager.encode(prompt)
             
             # 2. PGVECTOR 코사인 유사도 검색 (티켓별 필터링)
-            query = text("""
+            # 2. PGVECTOR 코사인 유사도 검색 (티켓별 필터링)
+            
+            # 제외할 ID 조건 추가
+            exclude_condition = ""
+            if exclude_ids:
+                exclude_ids_str = ",".join(map(str, exclude_ids))
+                exclude_condition = f"AND m.id NOT IN ({exclude_ids_str})"
+
+            query = text(f"""
                 SELECT m.id, m.title_ko, m.overview_ko, m.poster_path, 
                        1 - (me.embedding <=> :embedding) as similarity
                 FROM movies m
@@ -38,6 +82,7 @@ class RetrievalService:
                 JOIN ticket_group_movies tgm ON m.id = tgm.movie_id
                 WHERE me.embedding IS NOT NULL
                   AND tgm.ticket_group_id = :ticket_id
+                {exclude_condition}
                 ORDER BY me.embedding <=> :embedding ASC
                 LIMIT :limit
             """)

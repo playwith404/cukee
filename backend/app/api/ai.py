@@ -70,6 +70,7 @@ async def generate_exhibition(
                     "prompt": request_data.prompt,
                     "theme": theme,
                     "ticketId": request_data.ticketId,
+                    "pinnedMovieIds": request_data.pinnedMovieIds,
                     "max_length": 2048,
                     "temperature": 0.7,
                     "top_p": 0.9,

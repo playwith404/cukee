@@ -70,7 +70,7 @@ export const Exhibition = () => {
       if (timer) clearTimeout(timer);
     };
   }, [aiStatus]);
-  
+
 
   // [신규] 상태에 따른 큐레이터 멘트 결정 함수
   const getCuratorMessage = () => {
@@ -148,6 +148,9 @@ export const Exhibition = () => {
     loadMovies();
   }, [currentTicketId]);
 
+  // === 고정된 영화 ID 목록 계산 ===
+  const pinnedMovieIds = frames.filter(f => f.isPinned).map(f => f.id);
+
   // === 4. 핸들러들 ===
   const maxIndex = frames.length - 1;
   const handlePrev = () => setActiveIndex((prev) => (prev > 0 ? prev - 1 : prev));
@@ -199,7 +202,6 @@ export const Exhibition = () => {
     console.log("전시회 생성 완료:", data);
 
     setExhibitionTitle(data.resultJson.title);
-    // [수정] 값이 있든 없든 무조건 업데이트 (이전 멘트가 남는 현상 방지)
     setAiCuratorComment(data.resultJson.curatorComment || "");
 
     const newFrames: Frame[] = data.resultJson.movies.map((movie) => ({
@@ -209,7 +211,26 @@ export const Exhibition = () => {
     }));
 
     if (newFrames.length > 0) {
-      setFrames(newFrames);
+      // 🚨 [핵심 로직] 고정된 영화는 유지하고, 새로운 결과와 합치기 (Merge)
+      setFrames((prevFrames) => {
+        const pinnedFrames = prevFrames.filter((f) => f.isPinned);
+
+        // 고정된 영화들의 ID 집합
+        const pinnedIds = new Set(pinnedMovieIds);
+
+        // AI가 준 결과 중, 이미 고정된 영화와 중복되는게 있다면 제외 (중복 방지)
+        const pureNewFrames = newFrames.filter(nf => !pinnedIds.has(nf.id));
+
+        // 최종 합치기: [고정된 영화들] + [AI가 새로 준 영화들]
+        // 순서는 고정된 게 먼저 오게 하거나, AI 결과를 뒤에 붙이는 식 등 기획에 따라 조정 가능
+        // 여기서는 "고정된 것 먼저 + 나머지 채우기"로 구현
+        const mergedFrames = [...pinnedFrames, ...pureNewFrames];
+
+        // 만약 합쳤는데 5개가 넘으면? (혹시 모를 에러 방지)
+        return mergedFrames.slice(0, 5);
+      });
+
+      // 인덱스 초기화 (처음이나 중간으로)
       setActiveIndex(Math.floor(newFrames.length / 2));
     } else {
       alert("추천된 영화가 없습니다.");
@@ -273,6 +294,7 @@ export const Exhibition = () => {
         onLoadingStart={() => setAiStatus('loading')}
         onError={handleAIError}
         isLoading={aiStatus === 'loading' || aiStatus === 'delayed'}
+        pinnedMovieIds={pinnedMovieIds} // [추가] 고정된 영화 목록 전달
       />
     </div>
   );
