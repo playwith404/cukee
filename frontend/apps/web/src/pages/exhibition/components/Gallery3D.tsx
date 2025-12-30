@@ -33,8 +33,13 @@ export const Gallery3D = ({
     if (diff === 1) return styles.right1;
     if (diff === -2) return styles.left2;
     if (diff === 2) return styles.right2;
+    
+    // [수정된 부분]
+    // 단순히 hidden이 아니라, 방향에 따라 분기 처리
+    if (diff < -2) return styles.hiddenLeft; // 왼쪽 저편으로 사라짐
+    if (diff > 2) return styles.hiddenRight; // 오른쪽 저편으로 사라짐
 
-    return styles.hidden;
+    return styles.hidden; // 혹시 모를 예외 처리 
   };
 
   return (
