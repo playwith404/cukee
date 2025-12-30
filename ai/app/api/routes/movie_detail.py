@@ -65,9 +65,11 @@ async def generate_movie_detail(
             top_k=50
         ).strip()
         
-        # "소개:" 접두사 제거 (있을 경우)
-        if detail.startswith("소개:"):
-            detail = detail[3:].strip()
+        # "소개:" 이후의 내용만 추출 (프롬프트 제거)
+        if "소개:" in detail:
+            detail = detail.split("소개:")[-1].strip()
+        
+        # 첫 번째 완성된 문장들만 추출 (최대 2-3문장)
         
         logger.info(f"Successfully generated detail for movie {request.movieId}")
         
