@@ -78,3 +78,12 @@ export async function updateProfile(data: { nickname?: string }) {
     createdAt: string;
   };
 }
+
+// 회원 탈퇴
+export async function withdrawUser(password: string) {
+  // DELETE 메서드에 body를 보낼 때는 data 속성을 사용해야 함
+  const res = await api.delete('/users/me', {
+    data: { password }
+  });
+  return res.data;
+}

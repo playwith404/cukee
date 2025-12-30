@@ -21,6 +21,19 @@ class AuthService:
         # 이메일 중복 체크
         existing_user = db.query(User).filter(User.email == signup_data.email).first()
         if existing_user:
+            # 탈퇴한 유저인 경우 -> 재활성화 (Reactivation)
+            if existing_user.is_deleted:
+                hashed_password = get_password_hash(signup_data.password)
+                
+                existing_user.is_deleted = False
+                existing_user.deleted_at = None
+                existing_user.nickname = signup_data.nickname
+                existing_user.hashed_password = hashed_password
+                
+                db.commit()
+                db.refresh(existing_user)
+                return existing_user
+
             raise ConflictException(
                 message="이미 등록된 이메일입니다.",
                 details=f"이메일 '{signup_data.email}'은(는) 이미 사용 중입니다."

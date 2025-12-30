@@ -175,3 +175,16 @@ class UpdateUserRequest(BaseModel):
             }
         }
     )
+
+
+class WithdrawRequest(BaseModel):
+    """회원 탈퇴 요청"""
+    password: str
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "password": "password123"
+            }
+        }
+    )

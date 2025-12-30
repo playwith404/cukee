@@ -22,6 +22,7 @@ interface AuthContextType {
     logout: () => Promise<void>;
     setAuthUser: (user: User) => void;
     updateNickname: (newNickname: string) => Promise<void>;
+    withdraw: (password: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -104,6 +105,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
     };
 
+    // [신규] 회원 탈퇴
+    const withdraw = async (password: string) => {
+        if (USE_MOCK) {
+            console.log(`[Mock Mode] 회원 탈퇴 처리됨 (비밀번호: ${password})`);
+            setUser(null);
+            return;
+        }
+
+        // 1. API 호출 (비밀번호 전달)
+        const { withdrawUser } = await import('../apis/auth');
+        await withdrawUser(password);
+
+        // 2. 로그아웃 처리 (로컬 상태 초기화)
+        // 백엔드에서 이미 쿠키를 삭제했으므로 클라이언트 상태만 비우면 됨.
+        // 안전을 위해 logout() 호출하여 확실히 처리
+        await logout();
+    };
+
     return (
         <AuthContext.Provider value={{
             user,
@@ -112,7 +131,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             login,
             logout,
             setAuthUser,
-            updateNickname
+            updateNickname,
+            withdraw
         }}>
             {children}
         </AuthContext.Provider>
