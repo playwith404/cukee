@@ -167,6 +167,12 @@ export const getMyExhibitions = async (page = 1, limit = 20): Promise<Exhibition
   return response.data;
 };
 
+// 전시회 상세 조회
+export const getExhibitionById = async (exhibitionId: number) => {
+  const response = await api.get(`/exhibitions_new/${exhibitionId}`);
+  return response.data;
+};
+
 // =============================================================================
 // [API Functions] 티켓
 // =============================================================================
