@@ -125,6 +125,48 @@ export const getExhibitionDetail = async (id: number): Promise<ExhibitionDetailR
   return response.data;
 };
 
+/**
+ * 전시회 생성
+ * POST /exhibitions_new
+ */
+export interface CreateExhibitionRequest {
+  title: string;
+  isPublic?: boolean;
+  movies?: Array<{
+    movieId: number;
+    displayOrder: number;
+    isPinned?: boolean;
+  }>;
+}
+
+export interface CreateExhibitionResponse {
+  id: number;
+  userId: number;
+  title: string;
+  isPublic: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export const createExhibition = async (
+  data: CreateExhibitionRequest
+): Promise<CreateExhibitionResponse> => {
+  const response = await api.post<CreateExhibitionResponse>('/exhibitions_new', data);
+  return response.data;
+};
+
+/**
+ * 내 전시회 목록 조회 (user_id 필터링)
+ * GET /exhibitions_new?user_id={current_user}
+ */
+export const getMyExhibitions = async (page = 1, limit = 20): Promise<ExhibitionListResponse> => {
+  // user_id는 백엔드에서 인증 토큰으로 자동 판별하므로 따로 전달 안 함
+  const response = await api.get<ExhibitionListResponse>('/exhibitions_new', {
+    params: { page, limit },
+  });
+  return response.data;
+};
+
 // =============================================================================
 // [API Functions] 티켓
 // =============================================================================

@@ -13,7 +13,7 @@ import { ExhibitionGenerator } from './components/ExhGenerator';
 // API 타입 import (경로는 프로젝트 구조에 맞게 수정)
 import type { AIExhibitionResponse } from '../../apis/ai';
 import { curateMovies, getMovieDetail } from '../../apis/ai'; // 영화 조회 API
-import { fetchTickets, type Ticket } from '../../apis/exhibition';
+import { fetchTickets, type Ticket, createExhibition } from '../../apis/exhibition';
 
 // AI 진행 상태 타입 정의 
 type AIStatus = 'idle' | 'loading' | 'delayed' | 'error';
@@ -186,6 +186,28 @@ export const Exhibition = () => {
     }
   };
 
+  // === 전시회 저장 핸들러 ===
+  const handleSave = async () => {
+    try {
+      const exhibitionData = {
+        title: exhibitionTitle || `전시회 ${new Date().toLocaleDateString()}`,
+        isPublic: true,
+        movies: frames.map((frame: Frame, index: number) => ({
+          movieId: frame.id,
+          displayOrder: index,
+          isPinned: frame.isPinned || false
+        }))
+      };
+
+      const result = await createExhibition(exhibitionData);
+      console.log('전시회 저장 성공:', result);
+      alert('전시회가 저장되었습니다!');
+    } catch (error) {
+      console.error('전시회 저장 실패:', error);
+      alert('전시회 저장에 실패했습니다. 로그인이 필요할 수 있습니다.');
+    }
+  };
+
   // === 영화 고정 핸들러 ===
   const handlePin = (frameId: number) => {
     setFrames((prev) =>
@@ -253,7 +275,7 @@ export const Exhibition = () => {
       />
 
       <TopControls
-        onSave={() => console.log('Save')}
+        onSave={handleSave}
         onDecorate={() => console.log('Decorate')}
       />
 
