@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { getMyExhibitions, type Exhibition } from '../../apis/exhibition';
 import styles from './Header.module.css';
 
 // === 데이터 상수 ===
@@ -215,6 +216,32 @@ const DropdownMenu = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
+  // ✅ [추가] 전시회 목록 상태
+  const [exhibitions, setExhibitions] = useState<{ id: number; title: string }[]>([]);
+  const [loadingExhibitions, setLoadingExhibitions] = useState(true);
+
+  // 전시회 목록 로드
+  useEffect(() => {
+    const loadExhibitions = async () => {
+      try {
+        setLoadingExhibitions(true);
+        const response = await getMyExhibitions(1, 20);
+        const exhibitionList = response.data.map((ex: Exhibition) => ({
+          id: ex.id,
+          title: ex.title
+        }));
+        setExhibitions(exhibitionList);
+      } catch (error) {
+        console.error('전시회 목록 로드 실패:', error);
+        setExhibitions([]);
+      } finally {
+        setLoadingExhibitions(false);
+      }
+    };
+
+    loadExhibitions();
+  }, []);
+
 
   // 로그아웃 핸들러
   const handleLogout = async () => {
@@ -313,11 +340,17 @@ const DropdownMenu = () => {
             <div className={styles.dropRight}>
               <h3 className={styles.listTitle}>나의 전시회 목록</h3>
               <div className={styles.scrollList}>
-                <ul>
-                  {TICKET_LIST.map((name, index) => (
-                    <li key={index}>{name}</li>
-                  ))}
-                </ul>
+                {loadingExhibitions ? (
+                  <p style={{ padding: '20px', textAlign: 'center', color: '#999' }}>로딩 중...</p>
+                ) : exhibitions.length > 0 ? (
+                  <ul>
+                    {exhibitions.map((ex) => (
+                      <li key={ex.id}>{ex.title}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p style={{ padding: '20px', textAlign: 'center', color: '#999' }}>저장된 전시회가 없습니다.</p>
+                )}
               </div>
               <button className={styles.dropFooter} onClick={handleLogout}>로그아웃</button>
             </div>
