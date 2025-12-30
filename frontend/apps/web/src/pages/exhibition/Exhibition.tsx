@@ -115,6 +115,15 @@ export const Exhibition = () => {
             setExhibitionTitle(exhibition.title);
           }
 
+          // 티켓 정보 로드 (exhibition의 ticketId 사용)
+          if (exhibition.ticketId) {
+            const ticketsResponse = await fetchTickets();
+            const ticket = ticketsResponse.data.find((t: Ticket) => t.id === exhibition.ticketId);
+            if (ticket) {
+              setTicketInfo(ticket);
+            }
+          }
+
           // 영화 데이터 설정 (movies 배열이 있을 경우)
           if (exhibition.movies && exhibition.movies.length > 0) {
             const exhibitionFrames = exhibition.movies.map((movie: any) => ({
@@ -231,6 +240,7 @@ export const Exhibition = () => {
       const exhibitionData = {
         title: exhibitionTitle || `전시회 ${new Date().toLocaleDateString()}`,
         isPublic: true,
+        ticketId: currentTicketId, // 티켓 ID 추가
         movies: frames.map((frame: Frame, index: number) => ({
           movieId: frame.id,
           displayOrder: index,
