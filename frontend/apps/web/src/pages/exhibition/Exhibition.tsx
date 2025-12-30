@@ -165,8 +165,8 @@ export const Exhibition = () => {
     try {
       setLoadingDetail(true);
 
-      const theme = ticketInfo?.curatorName || '일반';
-      const response = await getMovieDetail(frameId, theme);
+      // 티켓 ID를 전달하여 해당 티켓의 LORA 테마 사용
+      const response = await getMovieDetail(frameId, currentTicketId);
 
       setSelectedMovieDetail({
         title: response.title,
