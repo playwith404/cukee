@@ -47,6 +47,18 @@ export interface CurateMoviesResponse {
   }[];
 }
 
+// 영화 상세 요청/응답 타입
+export interface MovieDetailRequest {
+  movieId: number;
+  theme: string;
+}
+
+export interface MovieDetailResponse {
+  movieId: number;
+  title: string;
+  detail: string;
+}
+
 // ==========================================
 // 2. API 호출 함수 (Service Logic)
 // ==========================================
@@ -76,6 +88,21 @@ export const generateExhibition = async (
 ): Promise<AIExhibitionResponse> => {
   const response = await api.post<AIExhibitionResponse>('/ai/generate', {
     prompt,
+    ticketId,
+  });
+  return response.data;
+};
+
+/**
+ * 영화 상세 설명 생성 (포스터 클릭 시)
+ * nginx 프록시 경로: /api/ai/movie-detail -> /api/v1/ai/movie-detail
+ */
+export const getMovieDetail = async (
+  movieId: number,
+  ticketId: number
+): Promise<MovieDetailResponse> => {
+  const response = await api.post<MovieDetailResponse>('/ai/movie-detail', {
+    movieId,
     ticketId,
   });
   return response.data;

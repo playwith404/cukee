@@ -4,6 +4,7 @@ export interface Frame {
   id: number;
   content?: string;
   imageUrl?: string;
+  isPinned?: boolean;
 }
 
 interface Gallery3DProps {
@@ -13,6 +14,8 @@ interface Gallery3DProps {
   onNext: () => void;
   onDelete: (id: number, index: number) => void;
   onSelect: (index: number) => void;
+  onPosterClick?: (id: number) => void;
+  onPin?: (id: number) => void;
 }
 
 export const Gallery3D = ({
@@ -21,7 +24,9 @@ export const Gallery3D = ({
   onPrev,
   onNext,
   onDelete,
-  onSelect
+  onSelect,
+  onPosterClick,
+  onPin
 }: Gallery3DProps) => {
   const maxIndex = frames.length - 1;
 
@@ -59,7 +64,13 @@ export const Gallery3D = ({
                 <img
                   src={frame.imageUrl}
                   alt={`Movie ${frame.id}`}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px', cursor: onPosterClick ? 'pointer' : 'default' }}
+                  onClick={(e) => {
+                    if (onPosterClick) {
+                      e.stopPropagation();
+                      onPosterClick(frame.id);
+                    }
+                  }}
                 />
               ) : (
                 <div style={{ padding: '20px', color: '#fff', textAlign: 'center' }}>
@@ -72,9 +83,15 @@ export const Gallery3D = ({
             <div className={styles.actions}>
               <button
                 type="button"
-                className={styles.actionBtn}
+                className={`${styles.actionBtn} ${frame.isPinned ? styles.pinned : ''}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (onPin) {
+                    onPin(frame.id);
+                  }
+                }}
               >
-                고정하기
+                {frame.isPinned ? '풀기' : '고정하기'}
               </button>
               <span className={styles.divider}>|</span>
               <button

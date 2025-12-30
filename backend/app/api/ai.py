@@ -69,6 +69,7 @@ async def generate_exhibition(
                 json={
                     "prompt": request_data.prompt,
                     "theme": theme,
+                    "ticketId": request_data.ticketId,
                     "max_length": 2048,
                     "temperature": 0.7,
                     "top_p": 0.9,
@@ -134,7 +135,7 @@ async def curate_movies(
             ORDER BY RANDOM()
             LIMIT :limit
         """)
-
+        
         result = db.execute(query, {"ticket_id": ticket_id, "limit": limit})
         movies = result.fetchall()
 
@@ -158,5 +159,51 @@ async def curate_movies(
         logger.error(f"영화 조회 오류: {e}")
         raise InternalServerErrorException(
             message="영화 조회 중 오류가 발생했습니다.",
+            details=str(e)
+        )
+
+
+@router.post("/movie-detail", status_code=status.HTTP_200_OK)
+async def get_movie_detail(request_data: dict):
+    """
+    영화 상세 정보 조회 (AI 서버 프록시)
+    - 인증 불필요
+    """
+    movie_id = request_data.get("movieId")
+    ticket_id = request_data.get("ticketId")
+    
+    if not movie_id:
+        raise BadRequestException(
+            message="영화 ID를 입력해주세요.",
+            details="movieId는 필수 항목입니다."
+        )
+    
+    # ticketId로 테마 찾기 (큐레이션과 동일한 LORA 사용)
+    theme = TICKET_TO_THEME.get(ticket_id, "편안하고 잔잔한 감성 추구")  # 기본값
+    
+    try:
+        # VM2 AI 서버 호출
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            response = await client.post(
+                f"{AI_SERVER_URL}/api/v1/movie-detail",
+                json={
+                    "movieId": movie_id,
+                    "theme": theme
+                }
+            )
+            
+            if response.status_code != 200:
+                logger.error(f"AI Server error: {response.status_code} - {response.text}")
+                raise InternalServerErrorException(
+                    message="영화 정보를 가져오는데 실패했습니다.",
+                    details=f"AI Server returned {response.status_code}"
+                )
+            
+            return response.json()
+            
+    except httpx.RequestError as e:
+        logger.error(f"AI server connection failed: {e}")
+        raise InternalServerErrorException(
+            message="AI 서버에 연결할 수 없습니다.",
             details=str(e)
         )

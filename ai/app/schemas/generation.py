@@ -6,6 +6,7 @@ class GenerateRequest(BaseModel):
     """AI 전시회 생성 요청"""
     prompt: str = Field(..., description="사용자 프롬프트")
     theme: str = Field(..., description="테마")
+    ticketId: int = Field(..., description="Ticket ID for filtering movies")
     max_length: Optional[int] = Field(2048, description="최대 생성 길이")
     temperature: Optional[float] = Field(0.7, description="Temperature")
     top_p: Optional[float] = Field(0.9, description="Top-p")

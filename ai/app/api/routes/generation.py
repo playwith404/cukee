@@ -23,9 +23,9 @@ async def generate_exhibition(request: GenerateRequest, db: Session = Depends(ge
         
         logger.info(f"Generating for theme: {request.theme}")
         
-        # 1. PGVECTOR로 유사 영화 검색 (빠름, ~1초)
+        # 1. PGVECTOR로 유사 영화 검색 (빠름, ~1초) - 티켓별 필터링
         retrieved_movies = await RetrievalService.retrieve_similar_movies(
-            db, request.prompt, limit=5
+            db, request.prompt, request.ticketId, limit=5
         )
         
         if not retrieved_movies:
@@ -58,7 +58,7 @@ Write a warm welcome message in Korean (30-60 characters) based on the context.
             prompt=curation_prompt,
             theme=request.theme,
             max_length=180,  
-            temperature=0.7,
+            temperature=0.3,
             top_p=0.9,
             top_k=50
         ).strip()
