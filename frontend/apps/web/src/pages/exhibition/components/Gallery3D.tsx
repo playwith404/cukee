@@ -23,22 +23,23 @@ interface Gallery3DProps {
 interface DeleteModalProps {
   onClose: () => void;
   onConfirm: () => void;
+  movieTitle: string; // [추가] 영화 제목
 }
 
-const DeleteModal: React.FC<DeleteModalProps> = ({ onClose, onConfirm }) => {
+const DeleteModal: React.FC<DeleteModalProps> = ({ onClose, onConfirm, movieTitle }) => {
   return (
     <div className={styles.modalOverlay} onClick={onClose}>
-      <div 
-        className={styles.glassModal} 
-        onClick={(e) => e.stopPropagation()} 
+      <div
+        className={styles.glassModal}
+        onClick={(e) => e.stopPropagation()}
       >
-        <h2 className={styles.modalTitle}>삭제하기</h2>
+        <h2 className={styles.modalTitle}>{movieTitle} 삭제하기</h2>
         <p className={styles.modalDesc}>
           영화를 삭제하면 되돌릴 수 없으며,<br />
           해당 영화는 재추천되지 않습니다.<br />
           <span className={styles.promptDesc}>계속 진행하시겠습니까?</span>
         </p>
-        
+
         <div className={styles.modalActions}>
           <button className={styles.btnCancel} onClick={onClose}>
             취소
@@ -75,7 +76,7 @@ export const Gallery3D = ({
     if (diff === 1) return styles.right1;
     if (diff === -2) return styles.left2;
     if (diff === 2) return styles.right2;
-    
+
     if (diff < -2) return styles.hiddenLeft;
     if (diff > 2) return styles.hiddenRight;
 
@@ -148,7 +149,7 @@ export const Gallery3D = ({
                   {frame.isPinned ? '풀기' : '고정하기'}
                 </button>
                 <span className={styles.divider}>|</span>
-                
+
                 {/* ✅ [수정] 삭제 버튼에 handleDeleteClick 연결 */}
                 <button
                   type="button"
@@ -186,9 +187,10 @@ export const Gallery3D = ({
 
       {/* ✅ [렌더링] 삭제 모달 (deleteTarget에 값이 있을 때만 표시) */}
       {deleteTarget && (
-        <DeleteModal 
-          onClose={handleCloseModal} 
-          onConfirm={handleConfirmDelete} 
+        <DeleteModal
+          onClose={handleCloseModal}
+          onConfirm={handleConfirmDelete}
+          movieTitle={frames[deleteTarget.index]?.content || "영화"} // [추가] 제목 전달
         />
       )}
     </>
