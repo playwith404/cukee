@@ -330,7 +330,13 @@ const DropdownMenu = () => {
                 ) : exhibitions.length > 0 ? (
                   <ul>
                     {exhibitions.map((ex) => (
-                      <li key={ex.id}>{ex.title}</li>
+                      <li
+                        key={ex.id}
+                        onClick={() => navigate(`/exhibition?exhibitionId=${ex.id}`)}
+                        style={{ cursor: 'pointer' }}
+                      >
+                        {ex.title}
+                      </li>
                     ))}
                   </ul>
                 ) : (
