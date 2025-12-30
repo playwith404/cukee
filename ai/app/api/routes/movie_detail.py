@@ -44,14 +44,11 @@ async def generate_movie_detail(
         
         logger.info(f"Generating detail for movie: {movie.title_ko}")
         
-        # 2. LLM으로 상세 소개 생성
+        # 2. LLM으로 상세 소개 생성 (영화 제목과 줄거리만 사용)
         detail_prompt = f"""Write a detailed movie introduction in Korean (200-300 characters).
 
 Movie Title: {movie.title_ko}
 Overview: {movie.overview_ko or '정보 없음'}
-Director: {', '.join(movie.directors) if movie.directors else '정보 없음'}
-Release Date: {movie.release_date_kr or '정보 없음'}
-Runtime: {movie.runtime or '정보 없음'}분
 Theme: {request.theme}
 
 Write a compelling introduction for {request.theme} theme audience. Include:
@@ -64,7 +61,7 @@ Write ONLY in Korean, 200-300 characters:"""
         detail = model_manager.generate(
             prompt=detail_prompt,
             theme=request.theme,
-            max_length=256,  # 256 토큰
+            max_new_tokens=150,  # 입력과 별도로 150 토큰 생성
             temperature=0.3,  # 더 일관된 출력
             top_p=0.9,
             top_k=50
