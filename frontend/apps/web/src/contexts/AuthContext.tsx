@@ -82,10 +82,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         // 실제 API 호출 (apis/auth.ts에 updateProfile 추가 필요)
         const { updateProfile } = await import('../apis/auth');
-        const updatedUser = await updateProfile({ nickname: newNickname });
+        await updateProfile({ nickname: newNickname });
 
-        // 상태 업데이트 (화면 즉시 반영)
-        setUser((prev) => prev ? { ...prev, nickname: updatedUser.nickname } : null);
+        // 상태 업데이트 (화면 즉시 반영 - 응답값 의존 X, 요청값 사용)
+        setUser((prev) => prev ? { ...prev, nickname: newNickname } : null);
     };
 
     const logout = async () => {
