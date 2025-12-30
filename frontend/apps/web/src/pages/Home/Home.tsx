@@ -4,7 +4,7 @@ import { MainLayout } from '@repo/ui';
 import { MainCarousel } from './MainCarousel';
 import { Header } from '../../components/Header/Header';
 import { fetchTickets, type Ticket } from '../../apis/exhibition';
-import { getMe } from '../../apis/auth';
+import { useAuth } from '../../contexts/AuthContext'; // ✅ [변경] useAuth 사용
 import styles from './Home.module.css';
 
 // ✅ [변경] 방금 만든 파일에서 데이터를 가져옵니다.
@@ -16,10 +16,12 @@ const curatorIntroText = "안녕하세요. MZ 큐레이터 김엠지예요. 밝�
 
 export default function HomePage() {
   const navigate = useNavigate();
+  const { user } = useAuth(); // ✅ [변경] Context에서 user 정보 가져오기
   const [currentIndex, setCurrentIndex] = useState(0);
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(true);
-  const [nickname, setNickname] = useState<string>('');
+
+  const nickname = user?.nickname;
 
   // 에러 로깅/표시용
   const [error, setError] = useState<string | null>(null);
@@ -33,16 +35,8 @@ export default function HomePage() {
         setLoading(true);
         setError(null);
 
-        // 사용자 정보와 티켓을 병렬로 가져오기
-        const [userResponse, ticketResponse] = await Promise.all([
-          getMe().catch(() => null),
-          fetchTickets()
-        ]);
-
-        // 사용자 닉네임 설정
-        if (userResponse?.nickname) {
-          setNickname(userResponse.nickname);
-        }
+        // 티켓 데이터만 가져오기 (사용자 정보는 Context가 관리)
+        const ticketResponse = await fetchTickets();
 
         // 티켓 데이터 설정
         if (ticketResponse.data && ticketResponse.data.length > 0) {
