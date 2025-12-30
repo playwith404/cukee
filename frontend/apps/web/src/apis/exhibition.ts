@@ -151,17 +151,17 @@ export interface CreateExhibitionResponse {
 export const createExhibition = async (
   data: CreateExhibitionRequest
 ): Promise<CreateExhibitionResponse> => {
-  const response = await api.post<CreateExhibitionResponse>('/exhibitions_new', data);
+  const response = await api.post<CreateExhibitionResponse>('/exhibitions', data);
   return response.data;
 };
 
 /**
  * 내 전시회 목록 조회 (user_id 필터링)
- * GET /exhibitions_new?user_id={current_user}
+ * GET /exhibitions?user_id={current_user}
  */
 export const getMyExhibitions = async (page = 1, limit = 20): Promise<ExhibitionListResponse> => {
   // user_id는 백엔드에서 인증 토큰으로 자동 판별하므로 따로 전달 안 함
-  const response = await api.get<ExhibitionListResponse>('/exhibitions_new', {
+  const response = await api.get<ExhibitionListResponse>('/exhibitions', {
     params: { page, limit },
   });
   return response.data;
@@ -169,7 +169,7 @@ export const getMyExhibitions = async (page = 1, limit = 20): Promise<Exhibition
 
 // 전시회 상세 조회
 export const getExhibitionById = async (exhibitionId: number) => {
-  const response = await api.get(`/exhibitions_new/${exhibitionId}`);
+  const response = await api.get(`/exhibitions/${exhibitionId}`);
   return response.data;
 };
 
