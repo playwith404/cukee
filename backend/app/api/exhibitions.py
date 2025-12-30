@@ -57,12 +57,16 @@ def get_exhibitions(
     전시회 목록 조회
     - 인증 선택적
     - 페이지네이션 지원
+    - 인증된 사용자의 경우 자동으로 본인 전시회만 필터링
     """
     skip = (page - 1) * limit
+    
+    # 인증된 사용자는 자동으로 본인의 전시회만 조회
+    filter_user_id = current_user.id if current_user else user_id
 
     exhibitions, total = exhibition_service.get_exhibitions(
         db=db,
-        user_id=user_id,
+        user_id=filter_user_id,
         is_public=is_public,
         skip=skip,
         limit=limit
@@ -119,6 +123,7 @@ def get_exhibition_detail(
     response = {
         "id": exhibition.id,
         "userId": exhibition.user_id,
+        "ticketId": exhibition.ticket_group_id,  # 티켓 그룹 ID
         "title": exhibition.title,
         "isPublic": exhibition.is_public,
         "createdAt": exhibition.created_at,
@@ -142,8 +147,19 @@ def get_exhibition_detail(
         for kw in exhibition.keywords
     ]
 
-    # 영화 정보 추가 (현재는 빈 배열, 영화 데이터가 있을 때 사용)
-    response["movies"] = []
+    # 영화 정보 추가
+    response["movies"] = [
+        {
+            "id": movie.id,
+            "movieId": movie.movie_id,
+            "displayOrder": movie.display_order,
+            "curatorComment": movie.curator_comment,
+            "isPinned": movie.is_pinned,
+            "isRemoved": movie.is_removed
+        }
+        for movie in exhibition.movies
+        if not movie.is_removed
+    ]
 
     return response
 
