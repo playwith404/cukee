@@ -135,7 +135,7 @@ async def curate_movies(
             ORDER BY RANDOM()
             LIMIT :limit
         """)
-ㄱ
+        
         result = db.execute(query, {"ticket_id": ticket_id, "limit": limit})
         movies = result.fetchall()
 
