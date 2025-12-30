@@ -275,7 +275,7 @@ def verify_email_code(request_data: VerifyCodeRequest):
     )
 
 
-@router.get("/me", response_model=LoginResponse, status_code=status.HTTP_200_OK)
+@router.get("/me", response_model=LoginResponse, response_model_by_alias=False, status_code=status.HTTP_200_OK)
 def get_current_user_info(
     current_user=Depends(get_current_user)
 ):
