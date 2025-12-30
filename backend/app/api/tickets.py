@@ -13,7 +13,6 @@ from app.models import User
 
 router = APIRouter(prefix="/api/v1/tickets", tags=["Tickets"])
 
-
 def ticket_to_response(ticket: TicketGroup) -> dict:
     """TicketGroup 모델을 TicketResponse 형식으로 변환"""
     return {
