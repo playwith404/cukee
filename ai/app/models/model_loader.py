@@ -139,6 +139,7 @@ class ModelManager:
         prompt: str,
         theme: str,
         max_length: Optional[int] = None,
+        max_new_tokens: Optional[int] = None,
         temperature: Optional[float] = None,
         top_p: Optional[float] = None,
         top_k: Optional[int] = None
@@ -179,9 +180,8 @@ class ModelManager:
                 max_length=max_length
             ).to(self.device)
             
-            # 생성 파라미터
+            # 생성 파라미터 설정
             gen_kwargs = {
-                "max_length": max_length,
                 "temperature": temperature,
                 "top_p": top_p,
                 "top_k": top_k,
@@ -189,6 +189,12 @@ class ModelManager:
                 "pad_token_id": self.tokenizer.pad_token_id,
                 "eos_token_id": self.tokenizer.eos_token_id,
             }
+            
+            # max_new_tokens 우선, 없으면 max_length 사용
+            if max_new_tokens is not None:
+                gen_kwargs["max_new_tokens"] = max_new_tokens
+            else:
+                gen_kwargs["max_length"] = max_length
             
             # 텍스트 생성
             with torch.no_grad():

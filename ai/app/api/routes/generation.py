@@ -58,7 +58,7 @@ Write a warm welcome message in Korean (30-60 characters) based on the context.
             prompt=curation_prompt,
             theme=request.theme,
             max_length=180,  
-            temperature=0.7,
+            temperature=0.3,
             top_p=0.9,
             top_k=50
         ).strip()
