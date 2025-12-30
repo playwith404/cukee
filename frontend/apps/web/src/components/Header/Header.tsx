@@ -201,7 +201,6 @@ const DeleteAccountModal: React.FC<DeleteAccountModalProps> = ({ onClose, nickna
 // === 내부 컴포넌트: 드롭다운 메뉴 ===
 const DropdownMenu = () => {
   const navigate = useNavigate();
-  // dev 브랜치의 AuthContext 사용
   const { logout, user, updateNickname } = useAuth();
 
   // 닉네임 설정
