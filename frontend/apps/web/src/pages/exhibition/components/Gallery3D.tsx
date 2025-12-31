@@ -102,43 +102,23 @@ export const Gallery3D = ({
   };
 
   return (
-    <>
-      <div className={styles.container}>
-        {frames.map((frame, index) => {
-          const positionClass = getFrameStyle(index);
+    <div className={styles.container}>
+      {frames.map((frame, index) => {
+        const positionClass = getFrameStyle(index);
 
-          return (
-            <div
-              key={frame.id}
-              className={`${styles.frame} ${positionClass}`}
-              onClick={() => onSelect(index)}
-            >
-              {/* 내부 콘텐츠 */}
-              <div className={styles.content}>
-                {frame.imageUrl ? (
-                  <img
-                    src={frame.imageUrl}
-                    alt={`Movie ${frame.id}`}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px', cursor: onPosterClick ? 'pointer' : 'default' }}
-                    onClick={(e) => {
-                      if (onPosterClick) {
-                        e.stopPropagation();
-                        onPosterClick(frame.id);
-                      }
-                    }}
-                  />
-                ) : (
-                  <div style={{ padding: '20px', color: '#fff', textAlign: 'center' }}>
-                    {frame.content || `영화 ID: ${frame.id}`}
-                  </div>
-                )}
-              </div>
-
-              {/* 하단 액션 버튼 */}
-              <div className={styles.actions}>
-                <button
-                  type="button"
-                  className={`${styles.actionBtn} ${frame.isPinned ? styles.pinned : ''}`}
+        return (
+          <div
+            key={frame.id}
+            className={`${styles.frame} ${positionClass}`}
+            onClick={() => onSelect(index)}
+          >
+            {/* 내부 콘텐츠 */}
+            <div className={styles.content}>
+              {frame.imageUrl ? (
+                <img
+                  src={frame.imageUrl}
+                  alt={`Movie ${frame.id}`}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', cursor: onPosterClick ? 'pointer' : 'default' }}
                   onClick={(e) => {
                     e.stopPropagation();
                     if (onPin) {

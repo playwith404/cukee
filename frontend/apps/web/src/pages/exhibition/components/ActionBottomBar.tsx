@@ -78,9 +78,9 @@ export const ActionBottomBar = ({ promptValue, setPromptValue, onSubmit, isLoadi
           </button>
           <button
             className={styles.chip}
-            onClick={() => handleChipClick("영화 개수를 좀 더 늘려줘!")}
+            onClick={() => handleChipClick("러닝 타임이 짧은 영화를 원해!")}
           >
-            영화 개수를 좀 더 늘려줘!
+            러닝 타임이 짧은 영화를 원해!
           </button>
         </div>
       </div>
