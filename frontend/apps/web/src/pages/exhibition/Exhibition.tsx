@@ -369,7 +369,11 @@ export const Exhibition = () => {
         currentTicketId={currentTicketId}
         onSuccess={handleExhibitionCreated}
         // [신규] 하위 컴포넌트가 부모 상태를 바꿀 수 있게 props 전달
-        onLoadingStart={() => setAiStatus('loading')}
+        onLoadingStart={() => {
+          setAiStatus('loading');
+          setSelectedMovieDetail(null);
+          setAiCuratorComment("");
+        }}
         onError={handleAIError}
         isLoading={aiStatus === 'loading' || aiStatus === 'delayed'}
         pinnedMovieIds={pinnedMovieIds} // [추가] 고정된 영화 목록 전달
