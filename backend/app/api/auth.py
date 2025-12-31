@@ -208,7 +208,8 @@ def send_verification_code(
 
     # 이메일 중복 체크
     existing_user = db.query(User).filter(User.email == request_data.email).first()
-    if existing_user:
+    # 이미 존재하고, 활동 중인 유저인 경우에만 에러 발생 (탈퇴 유저는 인증 허용)
+    if existing_user and not existing_user.is_deleted:
         raise BadRequestException(
             message="이미 등록된 이메일입니다.",
             details="다른 이메일을 사용해주세요."

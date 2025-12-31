@@ -118,10 +118,12 @@ interface DeleteAccountModalProps {
 }
 
 const DeleteAccountModal: React.FC<DeleteAccountModalProps> = ({ onClose, nickname }) => {
+  const { withdraw } = useAuth(); // [추가] withdraw 함수 가져오기
+  const navigate = useNavigate(); // [추가] navigate 가져오기
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (!password || !passwordConfirm) {
       alert("비밀번호를 입력해주세요.");
       return;
@@ -131,11 +133,18 @@ const DeleteAccountModal: React.FC<DeleteAccountModalProps> = ({ onClose, nickna
       return;
     }
 
-    // TODO: 실제 탈퇴 API 호출
-    console.log("회원 탈퇴 처리됨");
-    alert("탈퇴가 완료되었습니다.");
-    onClose();
-    // 필요 시 여기서 로그아웃 처리 또는 홈으로 이동
+    try {
+      // 실제 탈퇴 API 호출 (비밀번호 전달)
+      await withdraw(password);
+
+      alert("탈퇴가 완료되었습니다.");
+      onClose();
+      navigate('/'); // 홈으로 이동
+    } catch (error) {
+      console.error("회원 탈퇴 실패:", error);
+      // 에러 메시지 처리는 API 응답에 따라 다를 수 있으나, 여기서는 일반적인 실패 메시지
+      alert("탈퇴 실패: 비밀번호가 올바르지 않거나 오류가 발생했습니다.");
+    }
   };
 
   return (
