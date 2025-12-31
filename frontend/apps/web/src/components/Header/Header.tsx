@@ -1,22 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { getMyExhibitions, type Exhibition } from '../../apis/exhibition';
 import styles from './Header.module.css';
-
-// === 데이터 상수 ===
-const TICKET_LIST = [
-  "짧고 굵게 로맨스 전시회",
-  "조금은 감동적인 MZ 전시회",
-  "영화로 배우는 인생 수업",
-  "비 오는 날의 명화 컬렉션",
-  "여름밤의 스릴러 모음",
-  "1990년대 레트로 명작",
-  "숨겨진 유럽 독립 영화",
-  "SF 블록버스터 베스트",
-  "아이들이 좋아하는 애니메이션",
-  "마길초 큐레이션 11",
-  "마길초 큐레이션 12",
-];
 
 
 interface UserInfoModalProps {
@@ -201,7 +187,6 @@ const DeleteAccountModal: React.FC<DeleteAccountModalProps> = ({ onClose, nickna
 // === 내부 컴포넌트: 드롭다운 메뉴 ===
 const DropdownMenu = () => {
   const navigate = useNavigate();
-  // dev 브랜치의 AuthContext 사용
   const { logout, user, updateNickname } = useAuth();
 
   // 닉네임 설정
@@ -215,6 +200,32 @@ const DropdownMenu = () => {
   const [showInfoModal, setShowInfoModal] = useState(false);     // 내 정보 모달 ✅
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  // ✅ [추가] 전시회 목록 상태
+  const [exhibitions, setExhibitions] = useState<{ id: number; title: string }[]>([]);
+  const [loadingExhibitions, setLoadingExhibitions] = useState(true);
+
+  // 전시회 목록 로드
+  useEffect(() => {
+    const loadExhibitions = async () => {
+      try {
+        setLoadingExhibitions(true);
+        const response = await getMyExhibitions(1, 20);
+        const exhibitionList = response.data.map((ex: Exhibition) => ({
+          id: ex.id,
+          title: ex.title
+        }));
+        setExhibitions(exhibitionList);
+      } catch (error) {
+        console.error('전시회 목록 로드 실패:', error);
+        setExhibitions([]);
+      } finally {
+        setLoadingExhibitions(false);
+      }
+    };
+
+    loadExhibitions();
+  }, []);
 
 
   // 로그아웃 핸들러
@@ -314,11 +325,23 @@ const DropdownMenu = () => {
             <div className={styles.dropRight}>
               <h3 className={styles.listTitle}>나의 전시회 목록</h3>
               <div className={styles.scrollList}>
-                <ul>
-                  {TICKET_LIST.map((name, index) => (
-                    <li key={index}>{name}</li>
-                  ))}
-                </ul>
+                {loadingExhibitions ? (
+                  <p style={{ padding: '20px', textAlign: 'center', color: '#999' }}>로딩 중...</p>
+                ) : exhibitions.length > 0 ? (
+                  <ul>
+                    {exhibitions.map((ex) => (
+                      <li
+                        key={ex.id}
+                        onClick={() => navigate(`/exhibition?exhibitionId=${ex.id}`)}
+                        style={{ cursor: 'pointer' }}
+                      >
+                        {ex.title}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p style={{ padding: '20px', textAlign: 'center', color: '#999' }}>저장된 전시회가 없습니다.</p>
+                )}
               </div>
               <button className={styles.dropFooter} onClick={handleLogout}>로그아웃</button>
             </div>

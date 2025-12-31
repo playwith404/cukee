@@ -22,6 +22,7 @@ def create_exhibition(
     # 전시회 생성
     exhibition = Exhibition(
         user_id=user_id,
+        ticket_group_id=exhibition_data.ticketId,  # 티켓 그룹 ID 저장
         title=exhibition_data.title,
         is_public=exhibition_data.isPublic
     )

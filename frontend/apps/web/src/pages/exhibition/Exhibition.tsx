@@ -13,7 +13,7 @@ import { ExhibitionGenerator } from './components/ExhGenerator';
 // API 타입 import (경로는 프로젝트 구조에 맞게 수정)
 import type { AIExhibitionResponse } from '../../apis/ai';
 import { curateMovies, getMovieDetail } from '../../apis/ai'; // 영화 조회 API
-import { fetchTickets, type Ticket } from '../../apis/exhibition';
+import { fetchTickets, type Ticket, createExhibition, getExhibitionById } from '../../apis/exhibition';
 
 // AI 진행 상태 타입 정의 
 type AIStatus = 'idle' | 'loading' | 'delayed' | 'error';
@@ -37,6 +37,7 @@ export const Exhibition = () => {
   // === 2. URL 파라미터 (React Router 방식) ===
   const [searchParams] = useSearchParams(); // 👈 변경 포인트 2 (배열 반환됨)
   const ticketIdParam = searchParams.get('ticket');
+  const exhibitionIdParam = searchParams.get('exhibitionId'); // 전시회 ID 파라미터
   const currentTicketId = ticketIdParam ? parseInt(ticketIdParam, 10) : 1;
   // 예: ticket=1 -> /cara/cara1.png
   // 예: ticket=2 -> /cara/cara2.png
@@ -100,31 +101,85 @@ export const Exhibition = () => {
     }
   };
 
+  // [신규] 티켓 정보를 불러오는 useEffect
   useEffect(() => {
     const loadTicketInfo = async () => {
-      try {
-        setLoadingTicket(true);
-        // API 호출 (가짜 데이터나 실제 API)
-        const response = await fetchTickets();
-        // response구조에 따라 .data가 없을수도 있으니 확인 필요
-        const ticket = response.data?.find((t: Ticket) => t.id === currentTicketId);
+      if (exhibitionIdParam) {
+        // 전시회 ID가 있으면 전시회 데이터 로드
+        try {
+          setLoadingTicket(true);
+          const exhibition = await getExhibitionById(parseInt(exhibitionIdParam, 10));
 
-        if (ticket) {
-          setTicketInfo(ticket);
+          console.log('전시회 로드된 데이터:', exhibition);
+
+          // 전시회 제목 설정
+          if (exhibition.title) {
+            setExhibitionTitle(exhibition.title);
+          }
+
+          // 티켓 정보 로드 (exhibition의 ticketId 사용)
+          if (exhibition.ticketId) {
+            const ticketsResponse = await fetchTickets();
+            const ticket = ticketsResponse.data.find((t: Ticket) => t.id === exhibition.ticketId);
+            if (ticket) {
+              setTicketInfo(ticket);
+              console.log('티켓 정보 설정:', ticket);
+            }
+          }
+
+          // 영화 데이터 설정 (movies 배열이 있을 경우)
+          if (exhibition.movies && exhibition.movies.length > 0) {
+            const exhibitionFrames = exhibition.movies.map((movie: any) => ({
+              id: movie.movieId || movie.id,
+              content: `Movie ${movie.movieId || movie.id}`,
+              isPinned: movie.isPinned || false,
+              imageUrl: movie.posterUrl
+                ? `https://image.tmdb.org/t/p/w500${movie.posterUrl}`
+                : "https://via.placeholder.com/300x450?text=No+Image",
+              title: movie.title || `영화 ${movie.movieId}`
+            }));
+            setFrames(exhibitionFrames);
+            setActiveIndex(Math.floor(exhibitionFrames.length / 2));
+            console.log('영화 프레임 설정:', exhibitionFrames);
+          }
+
+          console.log('전시회 로드 성공:', exhibition);
+        } catch (error) {
+          console.error('전시회 로드 실패:', error);
+        } finally {
+          setLoadingTicket(false);
         }
-      } catch (error) {
-        console.error('티켓 정보 로드 실패:', error);
-      } finally {
-        setLoadingTicket(false);
+      } else if (currentTicketId) {
+        // 티켓 ID만 있으면 티켓 정보 로드 (기존 로직)
+        try {
+          setLoadingTicket(true);
+          const response = await fetchTickets();
+          const tickets = response.data;
+          const ticket = tickets.find((t: Ticket) => t.id === currentTicketId);
+
+          if (ticket) {
+            setTicketInfo(ticket);
+          } else {
+            console.warn(`Ticket with id ${currentTicketId} not found, using default`);
+            setTicketInfo(tickets[0] || null);
+          }
+        } catch (error) {
+          console.error('티켓 정보 불러오기 실패:', error);
+        } finally {
+          setLoadingTicket(false);
+        }
       }
     };
 
     loadTicketInfo();
-  }, [currentTicketId]);
+  }, [currentTicketId, exhibitionIdParam]);
 
   // === 티켓 선택 시 영화 자동 로드 ===
   useEffect(() => {
     const loadMovies = async () => {
+      // 전시회 ID가 있으면 영화를 자동으로 로드하지 않음 (이미 위에서 로드했으므로)
+      if (exhibitionIdParam) return;
+
       try {
         const response = await curateMovies(currentTicketId, 5);
 
@@ -183,6 +238,29 @@ export const Exhibition = () => {
       });
     } finally {
       setLoadingDetail(false);
+    }
+  };
+
+  // === 전시회 저장 핸들러 ===
+  const handleSave = async () => {
+    try {
+      const exhibitionData = {
+        title: exhibitionTitle || `전시회 ${new Date().toLocaleDateString()}`,
+        isPublic: true,
+        ticketId: currentTicketId, // 티켓 ID 추가
+        movies: frames.map((frame: Frame, index: number) => ({
+          movieId: frame.id,
+          displayOrder: index,
+          isPinned: frame.isPinned || false
+        }))
+      };
+
+      const result = await createExhibition(exhibitionData);
+      console.log('전시회 저장 성공:', result);
+      alert('전시회가 저장되었습니다!');
+    } catch (error) {
+      console.error('전시회 저장 실패:', error);
+      alert('전시회 저장에 실패했습니다. 로그인이 필요할 수 있습니다.');
     }
   };
 
@@ -253,7 +331,7 @@ export const Exhibition = () => {
       />
 
       <TopControls
-        onSave={() => console.log('Save')}
+        onSave={handleSave}
         onDecorate={() => console.log('Decorate')}
       />
 

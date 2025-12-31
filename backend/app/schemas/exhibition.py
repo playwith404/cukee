@@ -142,11 +142,12 @@ class ExhibitionKeywordCreate(BaseModel):
 
 class ExhibitionCreate(BaseModel):
     """전시회 생성 요청"""
-    title: str = Field(..., max_length=200, description="전시회 제목")
-    isPublic: bool = Field(True, description="공개 여부")
-    design: Optional[ExhibitionDesignCreate] = Field(None, description="디자인 설정")
-    movies: Optional[List[ExhibitionMovieCreate]] = Field(default_factory=list, description="영화 목록")
-    keywords: Optional[List[ExhibitionKeywordCreate]] = Field(default_factory=list, description="키워드 목록")
+    title: str = Field(..., min_length=1, max_length=200, description="전시회 제목")
+    isPublic: bool = Field(default=True, description="공개 여부")
+    ticketId: Optional[int] = Field(default=None, description="티켓 ID (큐레이터 정보)")
+    movies: List[ExhibitionMovieCreate] = Field(default_factory=list, description="영화 목록")
+    keywords: List[ExhibitionKeywordCreate] = Field(default_factory=list, description="키워드 목록")
+    design: Optional[ExhibitionDesignCreate] = Field(default=None, description="디자인 설정")
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -154,17 +155,12 @@ class ExhibitionCreate(BaseModel):
             "example": {
                 "title": "나만의 영화 전시회",
                 "isPublic": True,
-                "design": {
-                    "font": "Pretendard",
-                    "colorScheme": "dark",
-                    "layoutType": "grid",
-                    "frameStyle": "modern",
-                    "background": "#1a1a1a"
-                },
-                "movies": [],
+                "ticketId": 1,
+                "movies": [
+                    {"movieId": 123, "displayOrder": 0, "curatorComment": "추천 영화", "isPinned": True}
+                ],
                 "keywords": [
-                    {"keyword": "감성", "weight": 0.9},
-                    {"keyword": "힐링", "weight": 0.8}
+                    {"keyword": "로맨스", "weight": 0.8}
                 ]
             }
         }
