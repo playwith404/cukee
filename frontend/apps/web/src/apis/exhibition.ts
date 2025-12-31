@@ -156,6 +156,18 @@ export const createExhibition = async (
 };
 
 /**
+ * 전시회 수정
+ * PUT /exhibitions/{id}
+ */
+export const updateExhibition = async (
+  id: number,
+  data: CreateExhibitionRequest
+): Promise<CreateExhibitionResponse> => {
+  const response = await api.put<CreateExhibitionResponse>(`/exhibitions/${id}`, data);
+  return response.data;
+};
+
+/**
  * 내 전시회 목록 조회 (user_id 필터링)
  * GET /exhibitions?user_id={current_user}
  */

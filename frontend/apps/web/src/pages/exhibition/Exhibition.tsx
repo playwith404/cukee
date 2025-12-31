@@ -13,7 +13,7 @@ import { ExhibitionGenerator } from './components/ExhGenerator';
 // API 타입 import (경로는 프로젝트 구조에 맞게 수정)
 import type { AIExhibitionResponse } from '../../apis/ai';
 import { curateMovies, getMovieDetail } from '../../apis/ai'; // 영화 조회 API
-import { fetchTickets, type Ticket, createExhibition, getExhibitionById } from '../../apis/exhibition';
+import { fetchTickets, type Ticket, createExhibition, updateExhibition, getExhibitionById } from '../../apis/exhibition';
 
 // AI 진행 상태 타입 정의 
 type AIStatus = 'idle' | 'loading' | 'delayed' | 'error';
@@ -131,7 +131,7 @@ export const Exhibition = () => {
           if (exhibition.movies && exhibition.movies.length > 0) {
             const exhibitionFrames = exhibition.movies.map((movie: any) => ({
               id: movie.movieId || movie.id,
-              content: `Movie ${movie.movieId || movie.id}`,
+              content: movie.title || `영화 ${movie.movieId || movie.id}`, // ✅ [수정] 제목이 있으면 제목 사용
               isPinned: movie.isPinned || false,
               imageUrl: movie.posterUrl
                 ? `https://image.tmdb.org/t/p/w500${movie.posterUrl}`
@@ -255,11 +255,19 @@ export const Exhibition = () => {
         }))
       };
 
-      const result = await createExhibition(exhibitionData);
-      console.log('전시회 저장 성공:', result);
-      alert('전시회가 저장되었습니다!');
+      if (exhibitionIdParam) {
+        // ✅ [수정] 기존 전시회 업데이트 (PUT)
+        const result = await updateExhibition(parseInt(exhibitionIdParam, 10), exhibitionData);
+        console.log('전시회 업데이트 성공:', result);
+        alert('전시회가 업데이트되었습니다!');
+      } else {
+        // [기존] 새 전시회 생성 (POST)
+        const result = await createExhibition(exhibitionData);
+        console.log('전시회 저장 성공:', result);
+        alert('전시회가 저장되었습니다!');
+      }
     } catch (error) {
-      console.error('전시회 저장 실패:', error);
+      console.error('전시회 저장(수정) 실패:', error);
       alert('전시회 저장에 실패했습니다. 로그인이 필요할 수 있습니다.');
     }
   };
@@ -366,7 +374,8 @@ export const Exhibition = () => {
       </div>
 
       <ExhibitionGenerator
-        currentTicketId={currentTicketId}
+        // ✅ [수정] 티켓 정보가 로드되었다면 그 ID를 우선 사용 (저장된 전시회의 테마 유지)
+        currentTicketId={ticketInfo?.id || currentTicketId}
         onSuccess={handleExhibitionCreated}
         // [신규] 하위 컴포넌트가 부모 상태를 바꿀 수 있게 props 전달
         onLoadingStart={() => {
