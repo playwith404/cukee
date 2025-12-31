@@ -1,7 +1,7 @@
 // src/apis/auth.ts
 import api from './index';
 
-// 이메일 인증번호 발송
+// 이메일 인증번호 발송 
 export async function sendVerificationCode(email: string) {
   const res = await api.post('/auth/email/send', { email });
   return res.data as {

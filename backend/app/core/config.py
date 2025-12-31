@@ -1,5 +1,5 @@
 """
-애플리케이션 설정 관리
+애플리케이션 설정 관리 
 """
 from pydantic_settings import BaseSettings
 from typing import List, Optional
