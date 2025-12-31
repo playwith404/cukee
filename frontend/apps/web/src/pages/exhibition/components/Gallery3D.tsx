@@ -64,7 +64,7 @@ export const Gallery3D = ({
                 <img
                   src={frame.imageUrl}
                   alt={`Movie ${frame.id}`}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px', cursor: onPosterClick ? 'pointer' : 'default' }}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', cursor: onPosterClick ? 'pointer' : 'default' }}
                   onClick={(e) => {
                     if (onPosterClick) {
                       e.stopPropagation();
