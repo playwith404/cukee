@@ -2,7 +2,7 @@ name: Frontend CI/CD
 
 on:
   push:
-    branches: [ "main", "dev" ]
+    branches: [ "main", "dev", "bugfix/frontend/closing-tag" ]
     paths: 
       - 'frontend/**'
       - 'docker-compose.yml'
