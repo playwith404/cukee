@@ -102,105 +102,106 @@ export const Gallery3D = ({
   };
 
   return (
-    <div className={styles.container}>
-      {frames.map((frame, index) => {
-        const positionClass = getFrameStyle(index);
+    <>
+      <div className={styles.container}>
+        {frames.map((frame, index) => {
+          const positionClass = getFrameStyle(index);
 
-        return (
-          <div
-            key={frame.id}
-            className={`${styles.frame} ${positionClass}`}
-            onClick={() => onSelect(index)}
-          >
-            {/* 내부 콘텐츠 */}
-            <div className={styles.content}>
-              {frame.imageUrl ? (
-                <>
-                  <img
-                    src={frame.imageUrl}
-                    alt={`Movie ${frame.id}`}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover', cursor: onPosterClick ? 'pointer' : 'default' }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (onPosterClick) {
-                        onPosterClick(frame.id);
-                      }
-                    }}
-                  />
+          return (
+            <div
+              key={frame.id}
+              className={`${styles.frame} ${positionClass}`}
+              onClick={() => onSelect(index)}
+            >
+              {/* 내부 콘텐츠 */}
+              <div className={styles.content}>
+                {frame.imageUrl ? (
+                  <>
+                    <img
+                      src={frame.imageUrl}
+                      alt={`Movie ${frame.id}`}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', cursor: onPosterClick ? 'pointer' : 'default' }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (onPosterClick) {
+                          onPosterClick(frame.id);
+                        }
+                      }}
+                    />
 
-                  {/* 핀 버튼 */}
-                  <button
-                    className={styles.pinButton} // 스타일 클래스가 필요할 수 있음 (확인 필요) 혹은 인라인 스타일
-                    style={{
-                      position: 'absolute',
-                      top: '10px',
-                      right: '10px',
-                      zIndex: 10,
-                      background: 'rgba(0,0,0,0.5)',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '4px',
-                      padding: '4px 8px',
-                      cursor: 'pointer'
-                    }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (onPin) {
-                        onPin(frame.id);
-                      }
-                    }}
-                  >
-                    {frame.isPinned ? '풀기' : '고정하기'}
-                  </button>
-                  <span className={styles.divider}>|</span>
+                    {/* 핀 버튼 */}
+                    <button
+                      className={styles.pinButton} // 스타일 클래스가 필요할 수 있음 (확인 필요) 혹은 인라인 스타일
+                      style={{
+                        position: 'absolute',
+                        top: '10px',
+                        right: '10px',
+                        zIndex: 10,
+                        background: 'rgba(0,0,0,0.5)',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '4px',
+                        padding: '4px 8px',
+                        cursor: 'pointer'
+                      }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (onPin) {
+                          onPin(frame.id);
+                        }
+                      }}
+                    >
+                      {frame.isPinned ? '풀기' : '고정하기'}
+                    </button>
+                    <span className={styles.divider}>|</span>
 
-                  {/* ✅ [수정] 삭제 버튼에 handleDeleteClick 연결 */}
-                  <button
-                    type="button"
-                    className={`${styles.actionBtn} ${styles.deleteBtn}`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      console.log('삭제 버튼 클릭됨 -> 모달 오픈');
-                      handleDeleteClick(frame.id, index);
-                    }}
-                  >
-                    삭제하기
-                  </button>
-                </>
-              ) : null}
+                    {/* ✅ [수정] 삭제 버튼에 handleDeleteClick 연결 */}
+                    <button
+                      type="button"
+                      className={`${styles.actionBtn} ${styles.deleteBtn}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        console.log('삭제 버튼 클릭됨 -> 모달 오픈');
+                        handleDeleteClick(frame.id, index);
+                      }}
+                    >
+                      삭제하기
+                    </button>
+                  </>
+                ) : null}
+              </div>
             </div>
-          </div>
-        );
-      })}
+          );
+        })}
 
-      {/* 네비게이션 화살표 */}
-      <button
-        className={`${styles.arrow} ${styles.prev}`}
-        onClick={onPrev}
-        disabled={activeIndex === 0}
-      >
-        &lt;
-      </button>
+        {/* 네비게이션 화살표 */}
+        <button
+          className={`${styles.arrow} ${styles.prev}`}
+          onClick={onPrev}
+          disabled={activeIndex === 0}
+        >
+          &lt;
+        </button>
 
-      <button
-        className={`${styles.arrow} ${styles.next}`}
-        onClick={onNext}
-        disabled={activeIndex === maxIndex || frames.length === 0}
-      >
-        &gt;
-      </button>
-    </div>
+        <button
+          className={`${styles.arrow} ${styles.next}`}
+          onClick={onNext}
+          disabled={activeIndex === maxIndex || frames.length === 0}
+        >
+          &gt;
+        </button>
+      </div>
 
-      {/* ✅ [렌더링] 삭제 모달 (deleteTarget에 값이 있을 때만 표시) */ }
-  {
-    deleteTarget && (
-      <DeleteModal
-        onClose={handleCloseModal}
-        onConfirm={handleConfirmDelete}
-        movieTitle={frames[deleteTarget.index]?.content || "영화"} // [추가] 제목 전달
-      />
-    )
-  }
+      {/* ✅ [렌더링] 삭제 모달 (deleteTarget에 값이 있을 때만 표시) */}
+      {
+        deleteTarget && (
+          <DeleteModal
+            onClose={handleCloseModal}
+            onConfirm={handleConfirmDelete}
+            movieTitle={frames[deleteTarget.index]?.content || "영화"} // [추가] 제목 전달
+          />
+        )
+      }
     </>
   );
 };
