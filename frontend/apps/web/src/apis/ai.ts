@@ -23,6 +23,7 @@ export interface ExhibitionDesign {
 
 export interface RecommendedMovie {
   movieId: number;
+  title: string; // [추가] 영화 제목 (백엔드에서 Enrichment 됨)
   curatorComment: string;
   posterUrl?: string;
 }

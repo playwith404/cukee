@@ -68,3 +68,22 @@ export async function checkAuth() {
     nickname: string;
   };
 }
+// 사용자 정보 수정 (통합 Patch)
+export async function updateProfile(data: { nickname?: string }) {
+  const res = await api.patch('/users/me', data);
+  return res.data as {
+    userId: number;
+    email: string;
+    nickname: string;
+    createdAt: string;
+  };
+}
+
+// 회원 탈퇴
+export async function withdrawUser(password: string) {
+  // DELETE 메서드에 body를 보낼 때는 data 속성을 사용해야 함
+  const res = await api.delete('/users/me', {
+    data: { password }
+  });
+  return res.data;
+}

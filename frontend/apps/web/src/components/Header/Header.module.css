@@ -156,6 +156,9 @@
     cursor: pointer;
     color: #373431;
 }
+.menuLabel:hover {
+    font-weight: 500;
+}
 
 /* 2. 닉네임 + 연필 감싸는 영역 */
 .profileRow {
@@ -206,11 +209,29 @@
 .subMenu {
     background: none;
     text-align: center;
-    font-size: 16px;
-    font-weight: 300;
-    color: #555;
-    margin-top: 5px;
 }
+
+/* ... 기존 CSS ... */
+
+/* [추가] 서브 메뉴 아이템 (버그 제보, 탈퇴하기) */
+.subMenuBtn {
+    display: block; /* 한 줄 차지 */
+    width: 100%;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 400;
+    color: #555;
+    padding: 0;
+    margin-top: 8px;
+}
+
+/* 요청하신 호버 시 두께 400 설정 */
+.subMenuBtn:hover {
+    font-weight: 500;
+}
+
 .menuBtnMore:hover {
     font-weight: 500;
 }
@@ -368,6 +389,61 @@
 .btnConfirm:hover {
   background-color: #7a7370;
   transform: translateY(-1px);
+}
+
+/* === [추가] UserInfoModal 전용 내부 스타일 (모달 스타일 재활용 후 내부만 꾸밈) === */
+.formContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  text-align: left; /* 라벨 왼쪽 정렬 */
+  padding: 0 20px;  /* 내부 여백 살짝 */
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.formLabel {
+  font-size: 14px;
+  color: #8F8784;
+  font-weight: 500;
+  margin-left: 5px;
+}
+
+.inputUnderline {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #8F8784; /* 밑줄 스타일 */
+  padding: 8px 5px;
+  font-size: 18px;
+  color: #373431;
+  font-weight: 300;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.inputUnderline:focus {
+  border-bottom: 2px solid #373431; /* 포커스 시 진해짐 */
+}
+
+.inputUnderline:disabled {
+  color: #aaa;
+  border-bottom: 1px dashed #ccc;
+  cursor: not-allowed;
+}
+
+.emailText {
+  font-size: 18px;      /* 입력창 폰트 크기와 동일 */
+  font-weight: 300;     /* 입력창 두께와 동일 */
+  color: #555;          /* 읽기 전용 느낌의 회색 */
+  margin: 0;
+  padding: 8px 5px;     /* 입력창과 위치를 맞추기 위한 패딩 */
+  text-align: left;
+  /* 밑줄이 필요 없다면 border-bottom 없음, 필요하면 추가 */
 }
 
 /* 애니메이션 */

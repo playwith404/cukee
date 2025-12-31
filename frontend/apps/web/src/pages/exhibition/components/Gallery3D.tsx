@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import styles from './Gallery3D.module.css';
 
 export interface Frame {
@@ -18,6 +19,40 @@ interface Gallery3DProps {
   onPin?: (id: number) => void;
 }
 
+// ✅ [신규] 삭제 확인 모달 컴포넌트
+interface DeleteModalProps {
+  onClose: () => void;
+  onConfirm: () => void;
+  movieTitle: string; // [추가] 영화 제목
+}
+
+const DeleteModal: React.FC<DeleteModalProps> = ({ onClose, onConfirm, movieTitle }) => {
+  return (
+    <div className={styles.modalOverlay} onClick={onClose}>
+      <div
+        className={styles.glassModal}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h2 className={styles.modalTitle}>{movieTitle} 삭제하기</h2>
+        <p className={styles.modalDesc}>
+          영화를 삭제하면 되돌릴 수 없으며,<br />
+          해당 영화는 재추천되지 않습니다.<br />
+          <span className={styles.promptDesc}>계속 진행하시겠습니까?</span>
+        </p>
+
+        <div className={styles.modalActions}>
+          <button className={styles.btnCancel} onClick={onClose}>
+            취소
+          </button>
+          <button className={styles.btnConfirm} onClick={onConfirm}>
+            삭제
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export const Gallery3D = ({
   frames,
   activeIndex,
@@ -28,6 +63,9 @@ export const Gallery3D = ({
   onPosterClick,
   onPin
 }: Gallery3DProps) => {
+  // ✅ [상태 추가] 삭제할 대상 정보 저장 (null이면 모달 닫힘)
+  const [deleteTarget, setDeleteTarget] = useState<{ id: number; index: number } | null>(null);
+
   const maxIndex = frames.length - 1;
 
   const getFrameStyle = (index: number) => {
@@ -38,13 +76,29 @@ export const Gallery3D = ({
     if (diff === 1) return styles.right1;
     if (diff === -2) return styles.left2;
     if (diff === 2) return styles.right2;
-    
-    // [수정된 부분]
-    // 단순히 hidden이 아니라, 방향에 따라 분기 처리
-    if (diff < -2) return styles.hiddenLeft; // 왼쪽 저편으로 사라짐
-    if (diff > 2) return styles.hiddenRight; // 오른쪽 저편으로 사라짐
 
-    return styles.hidden; // 혹시 모를 예외 처리 
+    if (diff < -2) return styles.hiddenLeft;
+    if (diff > 2) return styles.hiddenRight;
+
+    return styles.hidden;
+  };
+
+  // ✅ [핸들러] 삭제 버튼 클릭 시 실행 (모달 열기)
+  const handleDeleteClick = (id: number, index: number) => {
+    setDeleteTarget({ id, index });
+  };
+
+  // ✅ [핸들러] 모달에서 '삭제' 확인 클릭 시 실행
+  const handleConfirmDelete = () => {
+    if (deleteTarget) {
+      onDelete(deleteTarget.id, deleteTarget.index); // 실제 삭제 함수 호출
+      setDeleteTarget(null); // 모달 닫기 및 초기화
+    }
+  };
+
+  // ✅ [핸들러] 모달 닫기
+  const handleCloseModal = () => {
+    setDeleteTarget(null);
   };
 
   return (
@@ -66,66 +120,59 @@ export const Gallery3D = ({
                   alt={`Movie ${frame.id}`}
                   style={{ width: '100%', height: '100%', objectFit: 'cover', cursor: onPosterClick ? 'pointer' : 'default' }}
                   onClick={(e) => {
-                    if (onPosterClick) {
-                      e.stopPropagation();
-                      onPosterClick(frame.id);
+                    e.stopPropagation();
+                    if (onPin) {
+                      onPin(frame.id);
                     }
                   }}
-                />
-              ) : (
-                <div style={{ padding: '20px', color: '#fff', textAlign: 'center' }}>
-                  {frame.content || `영화 ID: ${frame.id}`}
-                </div>
-              )}
+                >
+                  {frame.isPinned ? '풀기' : '고정하기'}
+                </button>
+                <span className={styles.divider}>|</span>
+
+                {/* ✅ [수정] 삭제 버튼에 handleDeleteClick 연결 */}
+                <button
+                  type="button"
+                  className={`${styles.actionBtn} ${styles.deleteBtn}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    console.log('삭제 버튼 클릭됨 -> 모달 오픈');
+                    handleDeleteClick(frame.id, index);
+                  }}
+                >
+                  삭제하기
+                </button>
+              </div>
             </div>
+          );
+        })}
 
-            {/* 하단 액션 버튼 */}
-            <div className={styles.actions}>
-              <button
-                type="button"
-                className={`${styles.actionBtn} ${frame.isPinned ? styles.pinned : ''}`}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (onPin) {
-                    onPin(frame.id);
-                  }
-                }}
-              >
-                {frame.isPinned ? '풀기' : '고정하기'}
-              </button>
-              <span className={styles.divider}>|</span>
-              <button
-                type="button"
-                className={`${styles.actionBtn} ${styles.deleteBtn}`}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  console.log('삭제 클릭됨');
-                  onDelete(frame.id, index);
-                }}
-              >
-                삭제하기
-              </button>
-            </div>
-          </div>
-        );
-      })}
+        {/* 네비게이션 화살표 */}
+        <button
+          className={`${styles.arrow} ${styles.prev}`}
+          onClick={onPrev}
+          disabled={activeIndex === 0}
+        >
+          &lt;
+        </button>
 
-      {/* 네비게이션 화살표 */}
-      <button
-        className={`${styles.arrow} ${styles.prev}`}
-        onClick={onPrev}
-        disabled={activeIndex === 0}
-      >
-        &lt;
-      </button>
+        <button
+          className={`${styles.arrow} ${styles.next}`}
+          onClick={onNext}
+          disabled={activeIndex === maxIndex || frames.length === 0}
+        >
+          &gt;
+        </button>
+      </div>
 
-      <button
-        className={`${styles.arrow} ${styles.next}`}
-        onClick={onNext}
-        disabled={activeIndex === maxIndex || frames.length === 0}
-      >
-        &gt;
-      </button>
-    </div>
+      {/* ✅ [렌더링] 삭제 모달 (deleteTarget에 값이 있을 때만 표시) */}
+      {deleteTarget && (
+        <DeleteModal
+          onClose={handleCloseModal}
+          onConfirm={handleConfirmDelete}
+          movieTitle={frames[deleteTarget.index]?.content || "영화"} // [추가] 제목 전달
+        />
+      )}
+    </>
   );
 };

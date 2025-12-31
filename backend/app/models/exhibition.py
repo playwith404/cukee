@@ -15,6 +15,7 @@ class Exhibition(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    ticket_group_id = Column(Integer, ForeignKey("ticket_groups.id", ondelete="SET NULL"), nullable=True, index=True)  # 티켓 그룹 ID
     title = Column(String(200), nullable=False)
     is_public = Column(Boolean, default=True, index=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), index=True)

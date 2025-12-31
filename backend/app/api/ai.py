@@ -87,6 +87,38 @@ async def generate_exhibition(
 
             ai_response = response.json()
             logger.info(f"AI Server response received for theme: {theme}")
+            
+            # [추가] 영화 제목 Enrichment (VM2 AI가 title을 안 주므로 DB에서 채움)
+            try:
+                result_json = ai_response.get("result_json", ai_response.get("resultJson", {}))
+                movies_data = result_json.get("movies", [])
+                
+                if movies_data:
+                    # 1. 영화 ID 목록 추출
+                    movie_ids = [m.get("movieId") for m in movies_data if m.get("movieId")]
+                    
+                    if movie_ids:
+                        from app.models.movie import Movie
+                        # 2. DB에서 영화 제목 조회
+                        movies_db = db.query(Movie.id, Movie.title_ko).filter(Movie.id.in_(movie_ids)).all()
+                        
+                        # 3. ID -> Title 매핑 생성
+                        title_map = {m.id: m.title_ko for m in movies_db}
+                        
+                        # 4. 응답 데이터에 title 주입
+                        for movie in movies_data:
+                            mid = movie.get("movieId")
+                            if mid in title_map:
+                                movie["title"] = title_map[mid]
+                            else:
+                                movie["title"] = "알 수 없는 영화" # Fallback
+
+                logger.info("Enriched movie titles successfully")
+
+            except Exception as e:
+                logger.error(f"Failed to enrich movie titles: {e}")
+                # Enrichment 실패해도 전체 로직을 죽이지 않고 원본 그대로 반환하도록 pass
+                pass
 
             return AIGenerateResponse(resultJson=ai_response.get("result_json", ai_response.get("resultJson", {})))
 
