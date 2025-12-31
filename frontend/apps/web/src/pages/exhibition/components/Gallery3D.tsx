@@ -102,6 +102,7 @@ export const Gallery3D = ({
   };
 
   return (
+  <>
     <div className={styles.container}>
       {frames.map((frame, index) => {
         const positionClass = getFrameStyle(index);
@@ -118,61 +119,82 @@ export const Gallery3D = ({
                 <img
                   src={frame.imageUrl}
                   alt={`Movie ${frame.id}`}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover', cursor: onPosterClick ? 'pointer' : 'default' }}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    cursor: onPosterClick ? 'pointer' : 'default',
+                  }}
                   onClick={(e) => {
                     e.stopPropagation();
-                    if (onPin) {
-                      onPin(frame.id);
+                    if (onPosterClick) {
+                      onPosterClick(frame.id);
                     }
                   }}
-                >
-                  {frame.isPinned ? '풀기' : '고정하기'}
-                </button>
-                <span className={styles.divider}>|</span>
-
-                {/* ✅ [수정] 삭제 버튼에 handleDeleteClick 연결 */}
-                <button
-                  type="button"
-                  className={`${styles.actionBtn} ${styles.deleteBtn}`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    console.log('삭제 버튼 클릭됨 -> 모달 오픈');
-                    handleDeleteClick(frame.id, index);
-                  }}
-                >
-                  삭제하기
-                </button>
-              </div>
+                />
+              ) : (
+                <div>{frame.content}</div>
+              )}
             </div>
-          );
-        })}
 
-        {/* 네비게이션 화살표 */}
-        <button
-          className={`${styles.arrow} ${styles.prev}`}
-          onClick={onPrev}
-          disabled={activeIndex === 0}
-        >
-          &lt;
-        </button>
+            {/* 하단 액션 버튼 */}
+            <div className={styles.actions}>
+              <button
+                type="button"
+                className={styles.actionBtn}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (onPin) {
+                    onPin(frame.id);
+                  }
+                }}
+              >
+                {frame.isPinned ? '풀기' : '고정하기'}
+              </button>
 
-        <button
-          className={`${styles.arrow} ${styles.next}`}
-          onClick={onNext}
-          disabled={activeIndex === maxIndex || frames.length === 0}
-        >
-          &gt;
-        </button>
-      </div>
+              <span className={styles.divider}>|</span>
 
-      {/* ✅ [렌더링] 삭제 모달 (deleteTarget에 값이 있을 때만 표시) */}
-      {deleteTarget && (
-        <DeleteModal
-          onClose={handleCloseModal}
-          onConfirm={handleConfirmDelete}
-          movieTitle={frames[deleteTarget.index]?.content || "영화"} // [추가] 제목 전달
-        />
-      )}
-    </>
-  );
-};
+              <button
+                type="button"
+                className={`${styles.actionBtn} ${styles.deleteBtn}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDeleteClick(frame.id, index);
+                }}
+              >
+                삭제하기
+              </button>
+            </div>
+          </div>
+        );
+      })}
+
+      {/* 네비게이션 화살표 */}
+      <button
+        className={`${styles.arrow} ${styles.prev}`}
+        onClick={onPrev}
+        disabled={activeIndex === 0}
+      >
+        &lt;
+      </button>
+
+      <button
+        className={`${styles.arrow} ${styles.next}`}
+        onClick={onNext}
+        disabled={activeIndex === maxIndex || frames.length === 0}
+      >
+        &gt;
+      </button>
+    </div>
+
+    {/* 삭제 모달 */}
+    {deleteTarget && (
+      <DeleteModal
+        onClose={handleCloseModal}
+        onConfirm={handleConfirmDelete}
+        movieTitle={frames[deleteTarget.index]?.content || '영화'}
+      />
+    )}
+  </>
+);
+}
