@@ -13,7 +13,7 @@ interface Gallery3DProps {
   activeIndex: number;
   onPrev: () => void;
   onNext: () => void;
-  onDelete: (id: number, index: number) => void;
+  onDelete?: (id: number, index: number) => void;
   onSelect: (index: number) => void;
   onPosterClick?: (id: number) => void;
   onPin?: (id: number) => void;
@@ -68,6 +68,10 @@ export const Gallery3D = ({
 
   const maxIndex = frames.length - 1;
 
+  // 편집 모드인지 확인 (두 함수가 모두 있어야 편집 가능)
+  // ReadOnly일 때는 부모가 undefined를 보내므로 false가 됨
+  const isEditMode = onPin && onDelete;
+
   const getFrameStyle = (index: number) => {
     const diff = index - activeIndex;
 
@@ -90,7 +94,8 @@ export const Gallery3D = ({
 
   // ✅ [핸들러] 모달에서 '삭제' 확인 클릭 시 실행
   const handleConfirmDelete = () => {
-    if (deleteTarget) {
+    //onDelete가 존재할 때만 실행하도록 안전장치 추가
+    if (deleteTarget && onDelete) {
       onDelete(deleteTarget.id, deleteTarget.index); // 실제 삭제 함수 호출
       setDeleteTarget(null); // 모달 닫기 및 초기화
     }
@@ -138,37 +143,39 @@ export const Gallery3D = ({
             </div>
 
             {/* 하단 액션 버튼 */}
-            <div className={styles.actions}>
-              <button
-                type="button"
-                className={styles.actionBtn}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (onPin) {
-                    onPin(frame.id);
-                  }
-                }}
-              >
-                {frame.isPinned ? '풀기' : '고정하기'}
-              </button>
+            {/* ✅ [핵심 변경 2] isEditMode일 때만 하단 버튼 영역을 그림 */}
+              {isEditMode && (
+                <div className={styles.actions}>
+                  <button
+                    type="button"
+                    className={styles.actionBtn}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      // isEditMode가 true면 onPin은 무조건 존재함
+                      onPin!(frame.id); 
+                    }}
+                  >
+                    {frame.isPinned ? '풀기' : '고정하기'}
+                  </button>
 
-              <span className={styles.divider}>|</span>
+                  <span className={styles.divider}>|</span>
 
-              <button
-                type="button"
-                className={`${styles.actionBtn} ${styles.deleteBtn}`}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleDeleteClick(frame.id, index);
-                }}
-              >
-                삭제하기
-              </button>
+                  <button
+                    type="button"
+                    className={`${styles.actionBtn} ${styles.deleteBtn}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteClick(frame.id, index);
+                    }}
+                  >
+                    삭제하기
+                  </button>
+                </div>
+              )}
             </div>
-          </div>
-        );
-      })}
-
+          );
+        })}
+        
       {/* 네비게이션 화살표 */}
       <button
         className={`${styles.arrow} ${styles.prev}`}
