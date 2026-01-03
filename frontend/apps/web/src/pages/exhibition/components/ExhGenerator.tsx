@@ -12,6 +12,7 @@ interface ExhibitionGeneratorProps {
   onError: (message: string) => void; // "에러 났어요" 알림
   isLoading: boolean;                 // 부모가 알려주는 현재 상태 (로딩중인지)
   pinnedMovieIds?: number[];          // [추가] 고정된 영화 ID 목록
+  isReadOnly: boolean; // 👈 [추가] 읽기 전용 모드
 }
 
 export const ExhibitionGenerator = ({
@@ -20,7 +21,8 @@ export const ExhibitionGenerator = ({
   onLoadingStart, // [추가]
   onError,        // [추가]
   isLoading,       // [추가]
-  pinnedMovieIds = [] // [추가] 기본값 빈 배열
+  pinnedMovieIds = [], // [추가] 기본값 빈 배열
+  isReadOnly // 👈 [추가] 받아오기
 }: ExhibitionGeneratorProps) => {
   const [prompt, setPrompt] = useState('');
 
@@ -81,6 +83,7 @@ export const ExhibitionGenerator = ({
       setPromptValue={setPrompt}
       onSubmit={handleSubmit}
       isLoading={isLoading} // ✅ 부모에게서 받은 loading 상태를 그대로 전달
+      isReadOnly={isReadOnly} // 👈 [추가] 자식에게 전달
     />
   );
 };

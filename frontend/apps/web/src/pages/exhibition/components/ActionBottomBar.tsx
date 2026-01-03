@@ -6,9 +6,10 @@ interface ActionBottomBarProps {
   setPromptValue: (val: string) => void;
   onSubmit: () => void;
   isLoading: boolean;
+  isReadOnly: boolean; // [추가]
 }
 
-export const ActionBottomBar = ({ promptValue, setPromptValue, onSubmit, isLoading }: ActionBottomBarProps) => {
+export const ActionBottomBar = ({ promptValue, setPromptValue, onSubmit, isLoading, isReadOnly }: ActionBottomBarProps) => {
   // 모달 표시 상태
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   
@@ -46,43 +47,39 @@ export const ActionBottomBar = ({ promptValue, setPromptValue, onSubmit, isLoadi
   return (
     <>
       <div className={styles.container}>
-        <div className={styles.promptWrapper}>
-          <input
-            type="text"
-            className={styles.input}
-            placeholder={isLoading ? "큐키가 전시회를 생성중이에요..." : "cukee 프롬프트 입력하기"}
-            value={promptValue}
-            onChange={(e) => setPromptValue(e.target.value)}
-            /* 엔터키 -> handlePreSubmit */
-            onKeyDown={(e) => e.key === 'Enter' && !isLoading && handlePreSubmit()}
-            disabled={isLoading}
-          />
-          <button
-            className={styles.submitBtn}
-            onClick={handlePreSubmit} /* 버튼 클릭 -> handlePreSubmit */
-            disabled={isLoading || !promptValue.trim()}
-            style={{
-              opacity: (isLoading || !promptValue.trim()) ? 0.5 : 1,
-            }}
-          >
-            {isLoading ? '...' : '→'}
-          </button>
-        </div>
+        {/* ✅ isReadOnly가 아닐 때(편집 모드)만 입력창과 버튼을 보여줌 */}
+        {!isReadOnly && (
+          <>
+            <div className={styles.promptWrapper}>
+              <input
+                type="text"
+                className={styles.input}
+                placeholder={isLoading ? "큐키가 전시회를 생성중이에요..." : "cukee 프롬프트 입력하기"}
+                value={promptValue}
+                onChange={(e) => setPromptValue(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && !isLoading && handlePreSubmit()}
+                disabled={isLoading}
+              />
+              <button
+                className={styles.submitBtn}
+                onClick={handlePreSubmit}
+                disabled={isLoading || !promptValue.trim()}
+                style={{ opacity: (isLoading || !promptValue.trim()) ? 0.5 : 1 }}
+              >
+                {isLoading ? '...' : '→'}
+              </button>
+            </div>
 
-        <div className={styles.actions}>
-          <button
-            className={styles.chip}
-            onClick={() => handleChipClick("조금 더 감동적인 영화를 원해!")}
-          >
-            조금 더 감동적인 영화를 원해!
-          </button>
-          <button
-            className={styles.chip}
-            onClick={() => handleChipClick("러닝 타임이 짧은 영화를 원해!")}
-          >
-            러닝 타임이 짧은 영화를 원해!
-          </button>
-        </div>
+            <div className={styles.actions}>
+              <button className={styles.chip} onClick={() => handleChipClick("조금 더 감동적인 영화를 원해!")}>
+                조금 더 감동적인 영화를 원해!
+              </button>
+              <button className={styles.chip} onClick={() => handleChipClick("러닝 타임이 짧은 영화를 원해!")}>
+                러닝 타임이 짧은 영화를 원해!
+              </button>
+            </div>
+          </>
+        )}
       </div>
 
       {/* 모달: showConfirmModal이 true일 때만 뜸 */}

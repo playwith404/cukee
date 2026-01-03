@@ -379,21 +379,20 @@ export const Exhibition = () => {
         />
       </div>
 
-      {/* ✅ 3. 저장된 전시회라면 AI 생성기(입력창) 숨기기 */}
-      {!isReadOnly && (
-        <ExhibitionGenerator
-          currentTicketId={currentTicketId}
-          onSuccess={handleExhibitionCreated}
-          onLoadingStart={() => {
-            setAiStatus('loading');
-            setSelectedMovieDetail(null);
-            setAiCuratorComment("");
-          }}
-          onError={handleAIError}
-          isLoading={aiStatus === 'loading' || aiStatus === 'delayed'}
-          pinnedMovieIds={pinnedMovieIds}
-        />
-      )}
+      {/* ✅ [수정] 조건문(!isReadOnly) 제거 -> 항상 렌더링하되 isReadOnly prop 전달 */}
+      <ExhibitionGenerator
+        currentTicketId={currentTicketId}
+        onSuccess={handleExhibitionCreated}
+        onLoadingStart={() => {
+          setAiStatus('loading');
+          setSelectedMovieDetail(null);
+          setAiCuratorComment("");
+        }}
+        onError={handleAIError}
+        isLoading={aiStatus === 'loading' || aiStatus === 'delayed'}
+        pinnedMovieIds={pinnedMovieIds}
+        isReadOnly={isReadOnly} // 👈 새로 추가한 Prop
+      />
     </div>
   );
 };
