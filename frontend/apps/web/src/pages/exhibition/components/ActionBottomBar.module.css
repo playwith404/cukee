@@ -10,6 +10,17 @@
   align-items: center;
   justify-content: center;
 }
+.narrowBar {
+  position: relative;
+  left: 0;
+  width: 100%;
+  height: 100px;
+  background-color: #373431;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
 
 .promptWrapper {
   position: relative;

@@ -113,7 +113,13 @@ export const Exhibition = () => {
 
   // [신규] 티켓 정보를 불러오는 useEffect
   useEffect(() => {
+    setSelectedMovieDetail(null); // 영화 상세정보(줄거리) 초기화
+    setAiCuratorComment("");      // AI 멘트 초기화
+    setErrorMessage("");          // 에러 메시지 초기화
+    setAiStatus('idle');          // AI 상태 초기화
+
     const loadTicketInfo = async () => {
+      
       if (exhibitionIdParam) {
         // 전시회 ID가 있으면 전시회 데이터 로드
         try {
@@ -348,18 +354,19 @@ export const Exhibition = () => {
         />
       )}
 
-      <Gallery3D
-        frames={frames}
-        activeIndex={activeIndex}
-        onPrev={handlePrev}
-        onNext={handleNext}
-        onSelect={setActiveIndex}
-        onPosterClick={handlePosterClick}
-        //  2. 저장된 전시회라면 삭제/고정 기능 모두 비활성화 (undefined 전달)
-        onDelete={isReadOnly ? undefined : handleDelete}
-        onPin={isReadOnly ? undefined : handlePin}
-      />
-
+      <div className={`${styles.galleryWrapper} ${isReadOnly ? styles.moveDown : ''}`}>
+        <Gallery3D
+          frames={frames}
+          activeIndex={activeIndex}
+          onPrev={handlePrev}
+          onNext={handleNext}
+          onSelect={setActiveIndex}
+          onPosterClick={handlePosterClick}
+          onDelete={isReadOnly ? undefined : handleDelete}
+          onPin={isReadOnly ? undefined : handlePin}
+        />
+      </div>
+      
       <CuratorGuide
         // API에 이미지가 있으면 그걸 쓰고, 없으면 위에서 만든 규칙(cara + 번호)을 사용
         characterImageUrl={ticketInfo?.characterImageUrl || dynamicCharacterImage}

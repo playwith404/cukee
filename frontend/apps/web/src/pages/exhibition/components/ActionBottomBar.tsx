@@ -46,7 +46,7 @@ export const ActionBottomBar = ({ promptValue, setPromptValue, onSubmit, isLoadi
 
   return (
     <>
-      <div className={styles.container}>
+      <div className={`${styles.container} ${isReadOnly ? styles.narrowBar : ''}`}>
         {/* ✅ isReadOnly가 아닐 때(편집 모드)만 입력창과 버튼을 보여줌 */}
         {!isReadOnly && (
           <>
