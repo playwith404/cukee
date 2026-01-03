@@ -44,6 +44,11 @@ export const Exhibition = () => {
   const dynamicCharacterImage = `/cara/cara${currentTicketId}.png`;
   const dynamicTicketImage = `/ticket/ticket${currentTicketId}.png`;
 
+
+  // [핵심 논리] ID가 존재하면 "불러온 전시회"이므로 수정 불가(ReadOnly) 모드.
+  const isReadOnly = !!exhibitionIdParam;
+  console.log("ReadOnly 모드 여부:", isReadOnly);
+  
   // === 3.  티켓 정보 상태 ===
   const [ticketInfo, setTicketInfo] = useState<Ticket | null>(null);
   const [loadingTicket, setLoadingTicket] = useState(true);
@@ -87,7 +92,6 @@ export const Exhibition = () => {
     // 저장된 전시회 불러왔을 때 큐레이터 멘트 
     // 저장된 전시회(ID가 있음)이고, AI가 작업 중이 아니라면 제목 표시
     if (exhibitionIdParam && aiStatus === 'idle') {
-      // 사용자가 원하신 "엑시비션 : 타이틀" 형식
       return `${exhibitionTitle}`;
     }
 
@@ -330,16 +334,19 @@ export const Exhibition = () => {
   // 🚧 MainLayout이나 Header가 없으면 임시 div로 감싸세요.
   return (
     <div className={styles.container}>
-      {/* 헤더 영역 (임시 구현) */}
+      {/* 헤더 영역 */}
       <Header
         currentSection={loadingTicket ? "로딩 중..." : (ticketInfo?.curatorName || "큐레이터")}
         exhibitionTitle={exhibitionTitle}
       />
 
-      <TopControls
-        onSave={handleSave}
-        onDecorate={() => console.log('Decorate')}
-      />
+      {/*  1. 저장된 전시회(isReadOnly)라면 상단 컨트롤(저장/꾸미기) 숨기기 */}
+      {!isReadOnly && (
+        <TopControls
+          onSave={handleSave}
+          onDecorate={() => console.log('Decorate')}
+        />
+      )}
 
       <Gallery3D
         frames={frames}
@@ -347,9 +354,10 @@ export const Exhibition = () => {
         onPrev={handlePrev}
         onNext={handleNext}
         onSelect={setActiveIndex}
-        onDelete={handleDelete}
         onPosterClick={handlePosterClick}
-        onPin={handlePin}
+        //  2. 저장된 전시회라면 삭제/고정 기능 모두 비활성화 (undefined 전달)
+        onDelete={isReadOnly ? undefined : handleDelete}
+        onPin={isReadOnly ? undefined : handlePin}
       />
 
       <CuratorGuide
@@ -371,19 +379,21 @@ export const Exhibition = () => {
         />
       </div>
 
-      <ExhibitionGenerator
-        currentTicketId={currentTicketId}
-        onSuccess={handleExhibitionCreated}
-        // [신규] 하위 컴포넌트가 부모 상태를 바꿀 수 있게 props 전달
-        onLoadingStart={() => {
-          setAiStatus('loading');
-          setSelectedMovieDetail(null);
-          setAiCuratorComment("");
-        }}
-        onError={handleAIError}
-        isLoading={aiStatus === 'loading' || aiStatus === 'delayed'}
-        pinnedMovieIds={pinnedMovieIds} // [추가] 고정된 영화 목록 전달
-      />
+      {/* ✅ 3. 저장된 전시회라면 AI 생성기(입력창) 숨기기 */}
+      {!isReadOnly && (
+        <ExhibitionGenerator
+          currentTicketId={currentTicketId}
+          onSuccess={handleExhibitionCreated}
+          onLoadingStart={() => {
+            setAiStatus('loading');
+            setSelectedMovieDetail(null);
+            setAiCuratorComment("");
+          }}
+          onError={handleAIError}
+          isLoading={aiStatus === 'loading' || aiStatus === 'delayed'}
+          pinnedMovieIds={pinnedMovieIds}
+        />
+      )}
     </div>
   );
 };
