@@ -84,6 +84,12 @@ export const Exhibition = () => {
     if (selectedMovieDetail) {
       return `${selectedMovieDetail.title}\n\n${selectedMovieDetail.detail}`;
     }
+    // 저장된 전시회 불러왔을 때 큐레이터 멘트 
+    // 저장된 전시회(ID가 있음)이고, AI가 작업 중이 아니라면 제목 표시
+    if (exhibitionIdParam && aiStatus === 'idle') {
+      // 사용자가 원하신 "엑시비션 : 타이틀" 형식
+      return `${exhibitionTitle}`;
+    }
 
     switch (aiStatus) {
       case 'loading':
