@@ -8,6 +8,13 @@
   background-color: #EDE6DD;
 }
 
+/* 👇 [추가] 생성/저장 모드일 때만 적용되는 스타일 */
+.createMode {
+  /* 갤러리를 밑으로 내리기 위해 위쪽 여백 추가 */
+  padding-top: 15vh; /* 화면 높이의 15%만큼 내림 (수치 조절 가능) */
+  box-sizing: border-box;
+}
+
 /* 티켓 래퍼: 위치 잡기 */
 .ticketWrapper {
   position: absolute;
@@ -25,6 +32,17 @@
   width: 240px; /* 시안에 맞춰 크기 조절하세요 */
   height: auto;
   display: block;
+}
+
+/* 갤러리 감싸는 기본 래퍼 */
+.galleryWrapper {
+  width: 100%;
+  flex: 1;
+}
+
+.moveDown {
+  margin-top: 10vh;
+  position: relative;
 }
 
 /* (선택사항) 아래에서 위로 올라오는 애니메이션 */
