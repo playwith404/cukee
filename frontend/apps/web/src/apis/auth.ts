@@ -87,3 +87,18 @@ export async function withdrawUser(password: string) {
   });
   return res.data;
 }
+
+// Google 로그인 URL 가져오기
+export async function getGoogleAuthUrl() {
+  const res = await api.get('/auth/google/url');
+  return res.data as {
+    url: string;
+    state: string;
+  };
+}
+
+// Google 로그인 시작 (리다이렉트 방식)
+export function startGoogleLogin() {
+  const baseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
+  window.location.href = `${baseUrl}/auth/google/login`;
+}

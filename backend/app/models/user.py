@@ -10,6 +10,7 @@ from app.core.database import Base
 class SocialProviderEnum(str, enum.Enum):
     """소셜 로그인 제공자"""
     kakao = "kakao"
+    google = "google"
     email = "email"
 
 
