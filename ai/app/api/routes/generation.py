@@ -108,7 +108,7 @@ Write a warm welcome message in Korean (30-60 characters) based on the context.
         for line in lines:
             clean_line = line.strip()
             # 불필요한 시스템 텍스트가 포함된 줄 제거
-            if any(x in clean_line for x in ["User Request:", "Theme:", "Example:", "[Output]"]):
+            if any(x in clean_line for x in ["User Request:", "Theme:", "Example:", "[Output]", "[Role]", "[Context]", "[Task]", "[Rules]"]):
                 continue
             if not clean_line:
                 continue

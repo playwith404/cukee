@@ -48,7 +48,7 @@ export const Exhibition = () => {
   // [핵심 논리] ID가 존재하면 "불러온 전시회"이므로 수정 불가(ReadOnly) 모드.
   const isReadOnly = !!exhibitionIdParam;
   console.log("ReadOnly 모드 여부:", isReadOnly);
-  
+
   // === 3.  티켓 정보 상태 ===
   const [ticketInfo, setTicketInfo] = useState<Ticket | null>(null);
   const [loadingTicket, setLoadingTicket] = useState(true);
@@ -119,7 +119,7 @@ export const Exhibition = () => {
     setAiStatus('idle');          // AI 상태 초기화
 
     const loadTicketInfo = async () => {
-      
+
       if (exhibitionIdParam) {
         // 전시회 ID가 있으면 전시회 데이터 로드
         try {
@@ -327,7 +327,10 @@ export const Exhibition = () => {
       // 인덱스 초기화 (처음이나 중간으로)
       setActiveIndex(Math.floor(newFrames.length / 2));
     } else {
-      alert("추천된 영화가 없습니다.");
+      // 영화가 없더라도 큐레이터 코멘트가 있으면 (가드레일 차단 등) 알림 띄우지 않음
+      if (!data.resultJson.curatorComment) {
+        alert("추천된 영화가 없습니다.");
+      }
     }
   };
 
@@ -366,7 +369,7 @@ export const Exhibition = () => {
           onPin={isReadOnly ? undefined : handlePin}
         />
       </div>
-      
+
       <CuratorGuide
         // API에 이미지가 있으면 그걸 쓰고, 없으면 위에서 만든 규칙(cara + 번호)을 사용
         characterImageUrl={ticketInfo?.characterImageUrl || dynamicCharacterImage}
