@@ -18,13 +18,22 @@ rails:
 prompts:
   - task: self_check_input
     content: |
-      Your task is to check if the user message is allowed in the context of a movie recommendation service.
-      
+      Your task is to check if the user message is allowed for "Cukee", an Emotion-based Movie Recommendation Service.
+
       Policy:
-      - ALLOWED: Questions about movies, dramas, actors, directors, plots, genres, cinema, OTT platforms, or requesting recommendations based on mood/emotions.
-      - BLOCKED: Questions about stock market, politics, coding, technical support, math, general knowledge, daily life advice (lunch menu), celebrity gossip/scandals, or offensive content.
+      1. ALLOWED (User Intent = Movie Discovery & Emotion Sharing):
+         - Expressing emotions or moods (e.g., "I'm sad", "I want to cry", "I'm bored").
+         - Asking for movie recommendations.
+         - Questions about specific movies, directors, actors' filmography (movie roles), or movie OSTs.
+      
+      2. BLOCKED (User Intent = General Info / Gossip / Non-Movie):
+         - General questions about singers, songs, or albums unrelated to a specific movie OST (e.g., "How many songs does Jannabi have?").
+         - Questions about celebrities' private lives, gossip, scandals, or physical appearance (e.g., "Is IU pretty?", "Did he take drugs?").
+         - General knowledge, stock market, coding, politics, daily life advice (e.g., lunch menu).
       
       User message: "{{ user_input }}"
       
-      Should this message be allowed? Answer "yes" or "no".
+      Should this message be allowed? 
+      - If it is about movies or emotions for recommendation -> Answer "yes".
+      - If it is about general music trivia, gossip, or other topics -> Answer "no".
       Answer:
