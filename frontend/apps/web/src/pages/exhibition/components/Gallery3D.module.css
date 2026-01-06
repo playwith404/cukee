@@ -8,6 +8,7 @@
   justify-content: center;
   align-items: flex-start;
   pointer-events: none;
+  
 }
 
 /* .nav-arrow -> .arrow */
@@ -72,23 +73,31 @@
   height: 100%;
   background-color: #e8e2dc;
 }
-
 .actions {
   position: absolute;
-  bottom: -45px; /* 추가 */
+  /* 기존 bottom: -45px; 제거 -> 포스터를 가리지 않게 하기 위함 */
+  top: 100%; /* 포스터(frame)의 바닥 끝선에서 시작 */
+  left: 0;
   width: 100%;
-  text-align: center;
-  font-size: 20px;
-  font-weight: 400;
-  color: #373431;
+  
+  /* 내용물 정렬 */
+  display: flex;
+  flex-direction: column; /* 세로 정렬 (타이틀 위, 버튼 아래) */
+  align-items: center;
+  justify-content: flex-start;
+  
+  padding-top: 15px; /* 포스터와 텍스트 사이 간격 */
+  
   opacity: 0;
   transition: opacity 0.3s;
   pointer-events: none;
+  z-index: 20; /* 포스터 그림자보다 위에 보이게 */
 }
+
 /* 상태 클래스들 */
 .center {
-  width: 300px;
-  height: 425px;
+  width: 275px;
+  height: 390px;
   transform: translateX(0) scale(1);
   filter: brightness(1);
   pointer-events: auto; /* 중앙만 클릭 가능 */
@@ -100,16 +109,35 @@
   pointer-events: auto;
   cursor: default;
 }
-
-/* [신규 추가] 버튼 스타일 초기화 및 클릭 영역 확보 */
+.actionTitle {
+  font-size: 20px;     /* 버튼보다 살짝 크거나 비슷하게 */
+  font-weight: 600;    /* 강조 */
+  color: #373431;
+  margin-bottom: 3px;  /* 버튼과의 간격 */
+  /* 긴 제목 말줄임 처리 (레이아웃 깨짐 방지) */
+  width: 100%;
+  padding: 0 10px;
+  box-sizing: border-box;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.buttonGroup {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+/* 버튼 스타일 초기화 및 클릭 영역 확보 */
 .actionBtn {
   background: none;
   border: none;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 400;
   color: #373431;
   cursor: pointer;
-  padding: 5px 10px; /* [핵심] 텍스트 주변에 클릭 가능한 투명 영역 추가 */
+  padding: 5px 8px; /* [핵심] 텍스트 주변에 클릭 가능한 투명 영역 추가 */
   position: relative;
 }
 .deleteBtn {
@@ -126,22 +154,22 @@
 
 /* 구분선 스타일 */
 .divider {
-  font-size: 20px;
+  font-size: 14px;
   color: #373431;
   user-select: none; /* 드래그 방지 */
 }
 .left1 {
-  width: 275px;
-  height: 390px;
-  transform: translateX(-300px) scale(0.9) rotateY(20deg);
+  width: 250px;
+  height: 355px;
+  transform: translateX(-270px) scale(0.9) rotateY(20deg);
   filter: brightness(0.9);
   z-index: 5;
 }
 /* ... right1, left2, right2 등 나머지 상태들도 동일하게 작성 ... */
 .right1 {
-    width: 275px;
-    height: 390px;
-    transform: translateX(300px) scale(0.9) rotateY(-20deg);
+    width: 250px;
+    height: 355px;
+    transform: translateX(270px) scale(0.9) rotateY(-20deg);
     filter: brightness(0.9);
     z-index: 5;
 }
@@ -149,16 +177,16 @@
 
 /* [상태 클래스] 좌우 2단계 */
 .left2 {
-    width: 220px;
-    height: 312px;
-    transform: translateX(-510px) scale(0.8) rotateY(30deg);
+    width: 195px;
+    height: 277px;
+    transform: translateX(-460px) scale(0.8) rotateY(30deg);
     opacity: 0.6;
     z-index: 1;
 }
 .right2 {
     width: 220px;
     height: 312px;
-    transform: translateX(510px) scale(0.8) rotateY(-30deg);
+    transform: translateX(460px) scale(0.8) rotateY(-30deg);
     opacity: 0.6;
     z-index: 1;
 }
@@ -304,4 +332,13 @@
 @keyframes slideUp {
   from { transform: translateY(20px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
+}
+
+@media screen and (max-height: 900px) {
+  .container {
+    transform: scale(0.9); 
+    transform-origin: top center;
+    /* scale로 줄어들면 아래 여백이 남으므로, container 높이 값도 살짝 보정 */
+    min-height: 420px; 
+  }
 }

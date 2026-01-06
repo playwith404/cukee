@@ -17,7 +17,7 @@ from app.core.exception_handlers import (
     sqlalchemy_exception_handler,
     general_exception_handler
 )
-from app.api import auth, users, ai, exhibitions, tickets
+from app.api import auth, users, ai, exhibitions, tickets, google_oauth
 
 # 데이터베이스 테이블 생성
 Base.metadata.create_all(bind=engine)
@@ -54,6 +54,7 @@ app.include_router(users.router)
 app.include_router(ai.router)
 app.include_router(tickets.router)  # 티켓 API
 app.include_router(exhibitions.router)  # 전시회 API (DB 연동)
+app.include_router(google_oauth.router)  # Google OAuth
 
 
 @app.get("/")

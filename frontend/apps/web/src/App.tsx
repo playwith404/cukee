@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import Home from './pages/Home/Home';
 import { Login } from './pages/auth/Login';
 import { Signup } from './pages/auth/Signup';
+import { GoogleCallback } from './pages/auth/GoogleCallback';
 import { Exhibition } from './pages/exhibition/Exhibition';
 import EmailVerifyPage from "./pages/auth/EmailVerifyPage";
 import { AuthProvider } from './contexts/AuthContext';
@@ -22,6 +23,7 @@ function App() {
         </Route>
 
         <Route path="/auth/email/verify" element={<EmailVerifyPage />} />
+        <Route path="/auth/google/callback" element={<GoogleCallback />} />
 
         {/* Private Routes */}
         <Route element={<PrivateRoute />}>

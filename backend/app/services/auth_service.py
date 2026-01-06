@@ -1,8 +1,10 @@
 """
 인증 관련 서비스
 """
+import secrets
 from sqlalchemy.orm import Session as DBSession
 from app.models import User
+from app.models.user import SocialProviderEnum
 from app.core.security import verify_password, get_password_hash
 from app.schemas.user import SignupRequest, LoginRequest
 from app.core.exceptions import (
@@ -106,3 +108,79 @@ class AuthService:
         db.commit()
         db.refresh(user)
         return user
+
+    @staticmethod
+    def get_or_create_google_user(db: DBSession, google_user_info: dict) -> User:
+        """Google 사용자 조회 또는 생성"""
+        google_id = google_user_info.get("id")
+        email = google_user_info.get("email")
+        name = google_user_info.get("name", "")
+
+        # 1. Google ID로 기존 사용자 조회
+        user = db.query(User).filter(
+            User.social_provider == SocialProviderEnum.google,
+            User.social_id == google_id,
+            User.is_deleted == False
+        ).first()
+
+        if user:
+            return user
+
+        # 2. 이메일로 기존 사용자 조회 (이메일 계정으로 가입한 경우)
+        existing_user = db.query(User).filter(
+            User.email == email,
+            User.is_deleted == False
+        ).first()
+
+        if existing_user:
+            # 기존 이메일 계정에 Google 연동
+            existing_user.social_provider = SocialProviderEnum.google
+            existing_user.social_id = google_id
+            db.commit()
+            db.refresh(existing_user)
+            return existing_user
+
+        # 3. 탈퇴한 유저 중 같은 이메일이 있는지 확인 (재가입)
+        deleted_user = db.query(User).filter(
+            User.email == email,
+            User.is_deleted == True
+        ).first()
+
+        if deleted_user:
+            # 재활성화
+            deleted_user.is_deleted = False
+            deleted_user.deleted_at = None
+            deleted_user.nickname = name[:20] if name else f"user_{google_id[:8]}"
+            deleted_user.social_provider = SocialProviderEnum.google
+            deleted_user.social_id = google_id
+            deleted_user.hashed_password = get_password_hash(secrets.token_urlsafe(32))
+            db.commit()
+            db.refresh(deleted_user)
+            return deleted_user
+
+        # 4. 새 사용자 생성
+        nickname = name[:20] if name else f"user_{google_id[:8]}"
+
+        # 닉네임 중복 시 랜덤 숫자 추가
+        base_nickname = nickname
+        counter = 1
+        while db.query(User).filter(User.nickname == nickname).first():
+            nickname = f"{base_nickname[:17]}_{counter}"
+            counter += 1
+
+        new_user = User(
+            email=email,
+            nickname=nickname,
+            hashed_password=get_password_hash(secrets.token_urlsafe(32)),
+            social_provider=SocialProviderEnum.google,
+            social_id=google_id,
+            email_verified=True,
+            agree_service=True,
+            agree_privacy=True,
+        )
+
+        db.add(new_user)
+        db.commit()
+        db.refresh(new_user)
+
+        return new_user
