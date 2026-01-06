@@ -87,9 +87,12 @@ class GuardrailsManager:
             logger.info(f"Rails raw response: {response}")
             
             # 응답 분석
-            if response and "영화 추천과 관련된 질문에만 답변할 수 있습니다" in response.get("content", ""):
+            # 응답 분석
+            content = response.get("content", "")
+            if response and ("blocked" in content.lower() or "영화 추천과 관련된 질문에만 답변할 수 있습니다" in content):
                  logger.info("🚫 Blocked by Guardrails!")
-                 return False, response["content"]
+                 refusal_message = "죄송합니다. 저는 영화 추천과 관련된 질문에만 답변할 수 있습니다. 영화 취향에 대해 이야기해 주세요!"
+                 return False, refusal_message
             
             logger.info("✅ Passed Guardrails")
             return True, None
