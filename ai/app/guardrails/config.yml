@@ -5,7 +5,7 @@ models:
 
 instructions:
   - type: general
-    content: |
+    content: | 
       당신은 영화 추천 서비스 'Cukee'의 입력 분류기입니다.
       사용자의 입력이 영화, 드라마, 배우, 감독, OST, 영화관, OTT, 또는 '심심함/감정' 등 콘텐츠 소비와 관련이 있다면 'allowed'라고 판단하세요.
       정치, 주식, 코딩, 사회 문제 등 영화와 전혀 무관한 경우에만 'blocked'라고 판단하세요.
