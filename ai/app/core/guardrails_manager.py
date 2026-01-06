@@ -24,14 +24,31 @@ class GuardrailsManager:
             current_dir = os.path.dirname(os.path.abspath(__file__))
             # app/core -> app/guardrails
             config_path = os.path.join(current_dir, "..", "guardrails")
+            config_path = os.path.normpath(config_path)
             
-            if not os.path.exists(os.path.join(config_path, "config.yml")):
-                logger.error(f"Guardrails config not found at {config_path}")
+            logger.info(f"Initializing Guardrails from path: {config_path}")
+            
+            if not os.path.exists(config_path):
+                 logger.error(f"Guardrails directory NOT found at {config_path}")
+                 return
+
+            config_file = os.path.join(config_path, "config.yml")
+            # topics_file is verified implicitly by from_path but good to log
+
+            if os.path.exists(config_file):
+                logger.info(f"Found config.yml at {config_file}")
+            else:
+                logger.error(f"Missing config.yml at {config_file}")
                 return
 
-            if not os.getenv("OPENAI_API_KEY"):
+            api_key = os.getenv("OPENAI_API_KEY")
+            if not api_key:
                 logger.warning("OPENAI_API_KEY is not set. Guardrails might fail.")
+            else:
+                masked_key = api_key[:5] + "..." + api_key[-4:]
+                logger.info(f"OPENAI_API_KEY found: {masked_key}")
 
+            # 로딩 시도
             config = RailsConfig.from_path(config_path)
             self._rails = LLMRails(config)
             logger.info("NeMo Guardrails initialized successfully")
@@ -52,18 +69,29 @@ class GuardrailsManager:
             logging.warning("Guardrails not initialized, skipping check")
             return True, None
 
+        api_key = os.getenv("OPENAI_API_KEY")
+        if not api_key:
+            logger.error("Create FAIL: OPENAI_API_KEY is missing!")
+        else:
+            logger.info(f"Guardrails checking input... Key exists (len={len(api_key)})")
+
         try:
             # generate 호출 시 messages 포맷 사용
             messages = [{"role": "user", "content": prompt}]
             
+            logger.info(f"Invoking rails with prompt: {prompt}")
+            
             # NeMo Guardrails 실행
             response = await self._rails.generate_async(messages=messages)
             
+            logger.info(f"Rails raw response: {response}")
+            
             # 응답 분석
-            # 차단된 경우 bot refuse by topic에 정의된 메시지가 반환됨
             if response and "영화 추천과 관련된 질문에만 답변할 수 있습니다" in response.get("content", ""):
+                 logger.info("🚫 Blocked by Guardrails!")
                  return False, response["content"]
             
+            logger.info("✅ Passed Guardrails")
             return True, None
 
         except Exception as e:
