@@ -19,39 +19,47 @@ interface Gallery3DProps {
   onPin?: (id: number) => void;
 }
 
-// ✅ [신규] 삭제 확인 모달 컴포넌트
-interface DeleteModalProps {
+// ✅ 범용 확인 모달 (삭제/고정 공용)
+interface ConfirmModalProps {
   onClose: () => void;
   onConfirm: () => void;
-  movieTitle: string; // [추가] 영화 제목
+  title: string;
+  description: React.ReactNode;
+  confirmText: string;
 }
 
-const DeleteModal: React.FC<DeleteModalProps> = ({ onClose, onConfirm, movieTitle }) => {
+const ConfirmModal: React.FC<ConfirmModalProps> = ({ 
+  onClose, 
+  onConfirm, 
+  title, 
+  description, 
+  confirmText 
+}) => {
   return (
     <div className={styles.modalOverlay} onClick={onClose}>
       <div
         className={styles.glassModal}
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className={styles.modalTitle}>{movieTitle} 삭제하기</h2>
-        <p className={styles.modalDesc}>
-          영화를 삭제하면 되돌릴 수 없으며,<br />
-          해당 영화는 재추천되지 않습니다.<br />
-          <span className={styles.promptDesc}>계속 진행하시겠습니까?</span>
-        </p>
-
+        <h2 className={styles.modalTitle}>{title}</h2>
+        <p className={styles.modalDesc}>{description}</p>
         <div className={styles.modalActions}>
-          <button className={styles.btnCancel} onClick={onClose}>
-            취소
-          </button>
-          <button className={styles.btnConfirm} onClick={onConfirm}>
-            삭제
-          </button>
+          <button className={styles.btnCancel} onClick={onClose}>취소</button>
+          <button className={styles.btnConfirm} onClick={onConfirm}>{confirmText}</button>
         </div>
       </div>
     </div>
   );
 };
+
+type ModalType = 'DELETE' | 'PIN';
+
+interface ModalState {
+  type: ModalType;
+  id: number;
+  index: number;
+  movieTitle: string;
+}
 
 export const Gallery3D = ({
   frames,
@@ -63,145 +71,183 @@ export const Gallery3D = ({
   onPosterClick,
   onPin
 }: Gallery3DProps) => {
-  // ✅ [상태 추가] 삭제할 대상 정보 저장 (null이면 모달 닫힘)
-  const [deleteTarget, setDeleteTarget] = useState<{ id: number; index: number } | null>(null);
+  const [activeModal, setActiveModal] = useState<ModalState | null>(null);
 
   const maxIndex = frames.length - 1;
-
-  // 편집 모드인지 확인 (두 함수가 모두 있어야 편집 가능)
-  // ReadOnly일 때는 부모가 undefined를 보내므로 false가 됨
   const isEditMode = onPin && onDelete;
 
   const getFrameStyle = (index: number) => {
     const diff = index - activeIndex;
-
     if (diff === 0) return styles.center;
     if (diff === -1) return styles.left1;
     if (diff === 1) return styles.right1;
     if (diff === -2) return styles.left2;
     if (diff === 2) return styles.right2;
-
     if (diff < -2) return styles.hiddenLeft;
     if (diff > 2) return styles.hiddenRight;
-
     return styles.hidden;
   };
 
-  // ✅ [핸들러] 삭제 버튼 클릭 시 실행 (모달 열기)
-  const handleDeleteClick = (id: number, index: number) => {
-    setDeleteTarget({ id, index });
+  const handleDeleteClick = (id: number, index: number, title: string) => {
+    setActiveModal({ type: 'DELETE', id, index, movieTitle: title });
   };
 
-  // ✅ [핸들러] 모달에서 '삭제' 확인 클릭 시 실행
-  const handleConfirmDelete = () => {
-    //onDelete가 존재할 때만 실행하도록 안전장치 추가
-    if (deleteTarget && onDelete) {
-      onDelete(deleteTarget.id, deleteTarget.index); // 실제 삭제 함수 호출
-      setDeleteTarget(null); // 모달 닫기 및 초기화
+  const handlePinClick = (id: number, index: number, title: string, isPinned?: boolean) => {
+    if (isPinned) {
+      onPin && onPin(id);
+    } else {
+      setActiveModal({ type: 'PIN', id, index, movieTitle: title });
     }
   };
 
-  // ✅ [핸들러] 모달 닫기
-  const handleCloseModal = () => {
-    setDeleteTarget(null);
+  const handleConfirmAction = () => {
+    if (!activeModal) return;
+    if (activeModal.type === 'DELETE' && onDelete) {
+      onDelete(activeModal.id, activeModal.index);
+    } else if (activeModal.type === 'PIN' && onPin) {
+      onPin(activeModal.id);
+    }
+    setActiveModal(null);
   };
 
+  const handleCloseModal = () => {
+    setActiveModal(null);
+  };
+
+  const getModalContent = () => {
+    if (!activeModal) return null;
+    if (activeModal.type === 'DELETE') {
+      return {
+        title: `'${activeModal.movieTitle}' 삭제하기`,
+        description: (
+          <>
+            영화를 삭제하면 되돌릴 수 없으며,<br />
+            해당 영화는 재추천되지 않습니다.<br />
+            <span className={styles.promptDesc}>계속 진행하시겠습니까?</span>
+          </>
+        ),
+        confirmText: '삭제'
+      };
+    } 
+    if (activeModal.type === 'PIN') {
+      return {
+        title: `'${activeModal.movieTitle}' 고정하기`,
+        description: (
+          <>
+            이 영화를 고정하면 전시회가 재생성되어도<br />
+            목록에서 사라지지 않고 유지됩니다.<br />
+            <span className={styles.promptDesc}>이 영화를 고정하시겠습니까?</span>
+          </>
+        ),
+        confirmText: '고정'
+      };
+    }
+    return null;
+  };
+
+  const modalContent = getModalContent();
+
   return (
-  <>
-    <div className={styles.container}>
-      {frames.map((frame, index) => {
-        const positionClass = getFrameStyle(index);
+    <>
+      <div className={styles.container}>
+        {frames.map((frame, index) => {
+          const positionClass = getFrameStyle(index);
+          const movieTitle = frame.content || '영화'; 
 
-        return (
-          <div
-            key={frame.id}
-            className={`${styles.frame} ${positionClass}`}
-            onClick={() => onSelect(index)}
-          >
-            {/* 내부 콘텐츠 */}
-            <div className={styles.content}>
-              {frame.imageUrl ? (
-                <img
-                  src={frame.imageUrl}
-                  alt={`Movie ${frame.id}`}
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                    cursor: onPosterClick ? 'pointer' : 'default',
-                  }}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (onPosterClick) {
-                      onPosterClick(frame.id);
-                    }
-                  }}
-                />
-              ) : (
-                <div>{frame.content}</div>
-              )}
-            </div>
+          return (
+            <div
+              key={frame.id}
+              className={`${styles.frame} ${positionClass}`} // ✅ frame이 가장 바깥 껍데기
+              onClick={() => onSelect(index)}
+            >
+              {/* 1. 이미지 영역 (content) */}
+              <div className={styles.content}>
+                {frame.imageUrl ? (
+                  <img
+                    src={frame.imageUrl}
+                    alt={`Movie ${frame.id}`}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                      cursor: onPosterClick ? 'pointer' : 'default',
+                    }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (onPosterClick) onPosterClick(frame.id);
+                    }}
+                  />
+                ) : (
+                  <div>{frame.content}</div>
+                )}
+              </div>
 
-            {/* 하단 액션 버튼 */}
-            {/* ✅ [핵심 변경 2] isEditMode일 때만 하단 버튼 영역을 그림 */}
+              {/* ✅ [핵심 수정] 
+                 actions를 frame div '내부'에 배치했습니다.
+                 이렇게 하면 frame이 회전하거나 줄어들 때 버튼도 한 몸처럼 같이 움직입니다.
+                 스타일은 건드리지 않았으므로 기존 CSS(absolute, bottom 등)가 적용됩니다.
+              */}
               {isEditMode && (
                 <div className={styles.actions}>
-                  <button
-                    type="button"
-                    className={styles.actionBtn}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      // isEditMode가 true면 onPin은 무조건 존재함
-                      onPin!(frame.id); 
-                    }}
-                  >
-                    {frame.isPinned ? '풀기' : '고정하기'}
-                  </button>
+                  <div className={styles.actionTitle}>{movieTitle}</div>
+                  
+                  <div className={styles.buttonGroup}>
+                    <button
+                      type="button"
+                      className={styles.actionBtn}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handlePinClick(frame.id, index, movieTitle, frame.isPinned);
+                      }}
+                    >
+                      {frame.isPinned ? '풀기' : '고정하기'}
+                    </button>
 
-                  <span className={styles.divider}>|</span>
+                    <span className={styles.divider}>|</span>
 
-                  <button
-                    type="button"
-                    className={`${styles.actionBtn} ${styles.deleteBtn}`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDeleteClick(frame.id, index);
-                    }}
-                  >
-                    삭제하기
-                  </button>
+                    <button
+                      type="button"
+                      className={`${styles.actionBtn} ${styles.deleteBtn}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteClick(frame.id, index, movieTitle);
+                      }}
+                    >
+                      삭제하기
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
           );
         })}
-        
-      {/* 네비게이션 화살표 */}
-      <button
-        className={`${styles.arrow} ${styles.prev}`}
-        onClick={onPrev}
-        disabled={activeIndex === 0}
-      >
-        &lt;
-      </button>
 
-      <button
-        className={`${styles.arrow} ${styles.next}`}
-        onClick={onNext}
-        disabled={activeIndex === maxIndex || frames.length === 0}
-      >
-        &gt;
-      </button>
-    </div>
+        <button
+          className={`${styles.arrow} ${styles.prev}`}
+          onClick={onPrev}
+          disabled={activeIndex === 0}
+        >
+          &lt;
+        </button>
 
-    {/* 삭제 모달 */}
-    {deleteTarget && (
-      <DeleteModal
-        onClose={handleCloseModal}
-        onConfirm={handleConfirmDelete}
-        movieTitle={frames[deleteTarget.index]?.content || '영화'}
-      />
-    )}
-  </>
-);
-}
+        <button
+          className={`${styles.arrow} ${styles.next}`}
+          onClick={onNext}
+          disabled={activeIndex === maxIndex || frames.length === 0}
+        >
+          &gt;
+        </button>
+      </div>
+
+      {activeModal && modalContent && (
+        <ConfirmModal
+          onClose={handleCloseModal}
+          onConfirm={handleConfirmAction}
+          title={modalContent.title}
+          description={modalContent.description}
+          confirmText={modalContent.confirmText}
+        />
+      )}
+    </>
+  );
+};

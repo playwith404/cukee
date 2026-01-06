@@ -17,7 +17,7 @@
 }
 
 .charImg {
-  width: 280px;
+  width: 250px;
   display: block;
 }
 
@@ -26,7 +26,6 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  transform: translateX(-30px);
 }
 
 .likeInfo {
@@ -69,7 +68,13 @@
   left: 8px;
 }
 
-@media (max-height: 500px) {
-  .container { height: 140px; }
-  .charImg { width: 180px; }
+@media screen and (max-height: 900px) {
+  .container { height: 150px; }
+  .charImg { width: 220px; }
+}
+
+@media (max-height: 850px) {
+  .container { height: 120px; }
+  .charImg { width: 190px; }
+  .bubbleWrapper { transform: scale(0.9); }
 }

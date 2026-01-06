@@ -129,8 +129,9 @@
   to { transform: translateY(0); opacity: 1; }
 }
 
-@media (max-height: 900px) {
+@media (max-height: 800px) {
   .container {
     margin: 25px auto 5px auto;
   }
+  .button {transform: scale(0.9);}
 }
