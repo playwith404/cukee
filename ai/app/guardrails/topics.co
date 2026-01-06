@@ -16,10 +16,10 @@ define user ask off topic
   "파이썬 코딩 알려줘"
   "점심 메뉴 추천해줘"
 
-define flow check off topic
-  if user ask off topic
-    bot refuse by topic
-    stop
-
 define bot refuse by topic
   "죄송합니다. 저는 영화 추천과 관련된 질문에만 답변할 수 있습니다. 영화 취향에 대해 이야기해 주세요!"
+
+define flow check off topic
+  user ask off topic
+  bot refuse by topic
+  stop
