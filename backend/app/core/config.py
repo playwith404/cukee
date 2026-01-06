@@ -36,6 +36,11 @@ class Settings(BaseSettings):
     # Verification Code
     VERIFICATION_CODE_EXPIRE_MINUTES: int = 5
 
+    # Google OAuth
+    GOOGLE_CLIENT_ID: Optional[str] = None
+    GOOGLE_CLIENT_SECRET: Optional[str] = None
+    GOOGLE_REDIRECT_URI: str = "https://middle.cloudkakao.store/auth/google/callback"
+
     @property
     def allowed_origins_list(self) -> List[str]:
         """CORS 허용 출처 리스트 반환"""

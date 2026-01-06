@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import styles from './Auth.module.css';
-import { sendVerificationCode } from '../../apis/auth';
+import { sendVerificationCode, startGoogleLogin } from '../../apis/auth';
 
 export const Signup = () => {
   const navigate = useNavigate();
@@ -212,6 +212,29 @@ export const Signup = () => {
               {/* 에러 메시지 */}
               {error && <div className={styles.error}>{error}</div>}
             </form>
+
+            <div className={styles.divider}>
+              <div className={styles.dividerLine}>
+                <div className={styles.dividerBorder}></div>
+              </div>
+              <div className={styles.dividerText}>
+                <span className={styles.dividerTextInner}>또는</span>
+              </div>
+            </div>
+
+            <div className={styles.socialButtons}>
+              <button
+                type="button"
+                className={styles.socialButton}
+                onClick={startGoogleLogin}
+                disabled={isLoading}
+              >
+                <span className={styles.socialButtonText}>Google</span>
+              </button>
+              <button type="button" className={styles.socialButton} disabled>
+                <span className={styles.socialButtonText}>Kakao</span>
+              </button>
+            </div>
 
             {/* 약관 */}
             <div className={styles.terms}>
