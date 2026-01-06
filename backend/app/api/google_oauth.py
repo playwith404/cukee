@@ -87,22 +87,25 @@ async def google_callback(
     - 사용자 생성 또는 조회
     - 세션 생성 및 쿠키 설정
     """
+    # 프론트엔드 기본 URL (GOOGLE_REDIRECT_URI에서 추출)
+    frontend_base_url = settings.GOOGLE_REDIRECT_URI.rsplit('/api', 1)[0]
+
     # 에러 처리
     if error:
         return RedirectResponse(
-            url=f"{settings.ALLOWED_ORIGINS.split(',')[0]}/auth/login?error=google_auth_failed"
+            url=f"{frontend_base_url}/auth/login?error=google_auth_failed"
         )
 
     if not code:
         return RedirectResponse(
-            url=f"{settings.ALLOWED_ORIGINS.split(',')[0]}/auth/login?error=no_code"
+            url=f"{frontend_base_url}/auth/login?error=no_code"
         )
 
     # state 검증 (CSRF 방지)
     stored_state = request.cookies.get("oauth_state")
     if not stored_state or stored_state != state:
         return RedirectResponse(
-            url=f"{settings.ALLOWED_ORIGINS.split(',')[0]}/auth/login?error=invalid_state"
+            url=f"{frontend_base_url}/auth/login?error=invalid_state"
         )
 
     try:
@@ -130,10 +133,9 @@ async def google_callback(
             user_agent=request.headers.get("user-agent")
         )
 
-        # 프론트엔드로 리다이렉트
-        frontend_url = settings.ALLOWED_ORIGINS.split(',')[0]
+        # 프론트엔드 티켓 선택 페이지로 리다이렉트
         redirect_response = RedirectResponse(
-            url=f"{frontend_url}/auth/google/callback?success=true"
+            url=f"{settings.GOOGLE_REDIRECT_URI.rsplit('/api', 1)[0]}/home"
         )
 
         # 세션 쿠키 설정
@@ -146,9 +148,8 @@ async def google_callback(
 
     except Exception as e:
         print(f"Google OAuth error: {e}")
-        frontend_url = settings.ALLOWED_ORIGINS.split(',')[0]
         return RedirectResponse(
-            url=f"{frontend_url}/auth/login?error=google_auth_failed"
+            url=f"{frontend_base_url}/auth/login?error=google_auth_failed"
         )
 
 
