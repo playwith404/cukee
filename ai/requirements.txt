@@ -17,3 +17,4 @@ sentence-transformers
 pgvector
 nemoguardrails==0.10.1
 openai==1.59.3
+langchain-openai
