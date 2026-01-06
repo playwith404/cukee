@@ -21,6 +21,17 @@ const UserInfoModal: React.FC<UserInfoModalProps> = ({ onClose, currentNickname,
       return;
     }
 
+    // [추가] 유효성 검사 (Signup.tsx와 동일 규격 적용)
+    if (nickname.length < 2 || nickname.length > 20) {
+      alert('닉네임은 2-20자 사이여야 합니다.');
+      return;
+    }
+
+    if (!/^[가-힣a-zA-Z0-9_]+$/.test(nickname)) {
+      alert('닉네임은 한글, 영문, 숫자, 언더스코어(_)만 사용 가능합니다.');
+      return;
+    }
+
     try {
       console.log("변경 요청:", nickname);
       await onUpdate(nickname);
