@@ -163,20 +163,27 @@ export const Gallery3D = ({
               {/* 1. 이미지 영역 (content) */}
               <div className={styles.content}>
                 {frame.imageUrl ? (
-                  <img
-                    src={frame.imageUrl}
-                    alt={`Movie ${frame.id}`}
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      objectFit: 'cover',
-                      cursor: onPosterClick ? 'pointer' : 'default',
-                    }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (onPosterClick) onPosterClick(frame.id);
-                    }}
-                  />
+                  <>
+                    <img
+                      src={frame.imageUrl}
+                      alt={`Movie ${frame.id}`}
+                      className={styles.posterImage}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        cursor: onPosterClick ? 'pointer' : 'default',
+                      }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (onPosterClick) onPosterClick(frame.id);
+                      }}
+                    />
+                  {/* hover 시 안내 텍스트 */}
+                  <div className={styles.posterOverlay}>
+                    클릭하면<br />영화 줄거리를 볼 수 있어요
+                  </div>
+                  </>
                 ) : (
                   <div>{frame.content}</div>
                 )}
