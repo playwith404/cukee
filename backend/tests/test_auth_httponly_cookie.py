@@ -62,7 +62,7 @@ class TestHttpOnlyCookieAuth:
         - JavaScript 접근 불가
         """
         response = client.post(
-            "/api/v1/auth/signup",
+            "/api/auth/signup",
             json={
                 "email": "test@example.com",
                 "password": "TestPass123!",
@@ -99,7 +99,7 @@ class TestHttpOnlyCookieAuth:
         """
         # 사용자 생성
         client.post(
-            "/api/v1/auth/signup",
+            "/api/auth/signup",
             json={
                 "email": "login@example.com",
                 "password": "TestPass123!",
@@ -109,7 +109,7 @@ class TestHttpOnlyCookieAuth:
 
         # 로그인
         response = client.post(
-            "/api/v1/auth/login",
+            "/api/auth/login",
             json={
                 "email": "login@example.com",
                 "password": "TestPass123!"
@@ -148,7 +148,7 @@ class TestHttpOnlyCookieAuth:
         """
         # 회원가입 및 쿠키 획득
         signup_response = client.post(
-            "/api/v1/auth/signup",
+            "/api/auth/signup",
             json={
                 "email": "cookie@example.com",
                 "password": "TestPass123!",
@@ -163,7 +163,7 @@ class TestHttpOnlyCookieAuth:
         print(f"Cookies: {cookies}")
 
         # 인증이 필요한 엔드포인트 호출 (/users/me)
-        response = client.get("/api/v1/users/me", cookies=cookies)
+        response = client.get("/api/users/me", cookies=cookies)
 
         print(f"Status Code: {response.status_code}")
         print(f"Response Body: {response.json()}")
@@ -188,7 +188,7 @@ class TestHttpOnlyCookieAuth:
         new_client = TestClient(app)
 
         # 쿠키 없이 /users/me 호출
-        response = new_client.get("/api/v1/users/me")
+        response = new_client.get("/api/users/me")
 
         print(f"Status Code: {response.status_code}")
         print(f"Response Body: {response.json()}")
@@ -210,7 +210,7 @@ class TestHttpOnlyCookieAuth:
         """
         # 회원가입 및 쿠키 획득
         signup_response = client.post(
-            "/api/v1/auth/signup",
+            "/api/auth/signup",
             json={
                 "email": "refresh@example.com",
                 "password": "TestPass123!",
@@ -225,7 +225,7 @@ class TestHttpOnlyCookieAuth:
         print(f"Old Session: {old_session}")
 
         # /auth/refresh 호출
-        response = client.post("/api/v1/auth/refresh", cookies=old_cookies)
+        response = client.post("/api/auth/refresh", cookies=old_cookies)
 
         print(f"Status Code: {response.status_code}")
         print(f"Response Body: {response.json()}")
@@ -244,13 +244,13 @@ class TestHttpOnlyCookieAuth:
         assert new_session != old_session, "새 세션이 발급되지 않았습니다"
 
         # 새 쿠키로 인증 요청 성공 확인
-        auth_response = client.get("/api/v1/users/me", cookies=new_cookies)
+        auth_response = client.get("/api/users/me", cookies=new_cookies)
         assert auth_response.status_code == 200
 
         print("✅ Step 3-2 통과: Silent Refresh로 새 세션 발급 성공")
 
         # 기존 세션으로 요청 시 실패 확인 (무효화 확인)
-        old_auth_response = client.get("/api/v1/users/me", cookies=old_cookies)
+        old_auth_response = client.get("/api/users/me", cookies=old_cookies)
         assert old_auth_response.status_code == 401
 
         print("✅ 기존 세션 무효화 확인")
@@ -261,7 +261,7 @@ class TestHttpOnlyCookieAuth:
         """
         print("\n=== Step 3-3: 쿠키 없이 Refresh 호출 테스트 ===")
 
-        response = client.post("/api/v1/auth/refresh")
+        response = client.post("/api/auth/refresh")
 
         print(f"Status Code: {response.status_code}")
         print(f"Response Body: {response.json()}")
@@ -277,7 +277,7 @@ class TestHttpOnlyCookieAuth:
         """
         # 회원가입 및 쿠키 획득
         signup_response = client.post(
-            "/api/v1/auth/signup",
+            "/api/auth/signup",
             json={
                 "email": "logout@example.com",
                 "password": "TestPass123!",
@@ -291,7 +291,7 @@ class TestHttpOnlyCookieAuth:
         print(f"Before Logout - Session: {cookies.get('session')}")
 
         # 로그아웃
-        response = client.post("/api/v1/auth/logout", cookies=cookies)
+        response = client.post("/api/auth/logout", cookies=cookies)
 
         print(f"Status Code: {response.status_code}")
         print(f"Response Body: {response.json()}")
@@ -311,7 +311,7 @@ class TestHttpOnlyCookieAuth:
         print(f"After Logout - Cookies: {after_logout_cookies}")
 
         # 로그아웃 후 인증 요청 실패 확인
-        auth_response = client.get("/api/v1/users/me", cookies=cookies)
+        auth_response = client.get("/api/users/me", cookies=cookies)
         assert auth_response.status_code == 401
 
         print("✅ Step 4 통과: 로그아웃 시 세션 무효화 및 인증 실패 확인")

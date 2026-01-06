@@ -10,7 +10,7 @@ from app.services.auth_service import AuthService
 from app.utils.dependencies import get_current_user
 from app.models import User
 
-router = APIRouter(prefix="/api/v1/users", tags=["Users"])
+router = APIRouter(prefix="/api/users", tags=["Users"])
 
 
 @router.get("/me", response_model=UserResponse, response_model_by_alias=False, status_code=status.HTTP_200_OK)

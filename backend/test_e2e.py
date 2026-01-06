@@ -54,7 +54,7 @@ def test_health_check():
 
 def test_signup():
     """회원가입 테스트"""
-    print_section("2. 회원가입 테스트 (POST /api/v1/auth/signup)")
+    print_section("2. 회원가입 테스트 (POST /api/auth/signup)")
 
     global session_cookie
 
@@ -68,7 +68,7 @@ def test_signup():
     }
 
     response = requests.post(
-        f"{BASE_URL}/api/v1/auth/signup",
+        f"{BASE_URL}/api/auth/signup",
         json=data
     )
 
@@ -96,7 +96,7 @@ def test_signup():
 
 def test_login(email: str, password: str):
     """로그인 테스트"""
-    print_section("3. 로그인 테스트 (POST /api/v1/auth/login)")
+    print_section("3. 로그인 테스트 (POST /api/auth/login)")
 
     global session_cookie
 
@@ -106,7 +106,7 @@ def test_login(email: str, password: str):
     }
 
     response = requests.post(
-        f"{BASE_URL}/api/v1/auth/login",
+        f"{BASE_URL}/api/auth/login",
         json=data
     )
 
@@ -131,7 +131,7 @@ def test_login(email: str, password: str):
 
 def test_get_user_info():
     """내 정보 조회 테스트"""
-    print_section("4. 내 정보 조회 테스트 (GET /api/v1/users/me)")
+    print_section("4. 내 정보 조회 테스트 (GET /api/users/me)")
 
     global session_cookie
 
@@ -142,7 +142,7 @@ def test_get_user_info():
     cookies = {'session': session_cookie}
 
     response = requests.get(
-        f"{BASE_URL}/api/v1/users/me",
+        f"{BASE_URL}/api/users/me",
         cookies=cookies
     )
 
@@ -166,7 +166,7 @@ def test_get_user_info():
 
 def test_update_user_info():
     """내 정보 수정 테스트"""
-    print_section("5. 내 정보 수정 테스트 (PUT /api/v1/users/me)")
+    print_section("5. 내 정보 수정 테스트 (PUT /api/users/me)")
 
     global session_cookie
 
@@ -181,7 +181,7 @@ def test_update_user_info():
     }
 
     response = requests.put(
-        f"{BASE_URL}/api/v1/users/me",
+        f"{BASE_URL}/api/users/me",
         json=data,
         cookies=cookies
     )
@@ -201,7 +201,7 @@ def test_update_user_info():
 
 def test_ai_generate():
     """AI 생성 테스트"""
-    print_section("6. AI 전시회 생성 테스트 (POST /api/v1/ai/generate)")
+    print_section("6. AI 전시회 생성 테스트 (POST /api/ai/generate)")
 
     global session_cookie
 
@@ -217,7 +217,7 @@ def test_ai_generate():
     }
 
     response = requests.post(
-        f"{BASE_URL}/api/v1/ai/generate",
+        f"{BASE_URL}/api/ai/generate",
         json=data,
         cookies=cookies
     )
@@ -250,7 +250,7 @@ def test_ai_generate():
 
 def test_exhibitions_list():
     """전시회 목록 조회 테스트"""
-    print_section("7. 전시회 목록 조회 테스트 (GET /api/v1/exhibitions)")
+    print_section("7. 전시회 목록 조회 테스트 (GET /api/exhibitions)")
 
     # 인증 불필요 (선택)
     params = {
@@ -259,7 +259,7 @@ def test_exhibitions_list():
     }
 
     response = requests.get(
-        f"{BASE_URL}/api/v1/exhibitions",
+        f"{BASE_URL}/api/exhibitions",
         params=params
     )
 
@@ -290,12 +290,12 @@ def test_exhibitions_list():
 
 def test_exhibition_detail():
     """전시회 상세 조회 테스트"""
-    print_section("8. 전시회 상세 조회 테스트 (GET /api/v1/exhibitions/{id})")
+    print_section("8. 전시회 상세 조회 테스트 (GET /api/exhibitions/{id})")
 
     exhibition_id = 1
 
     response = requests.get(
-        f"{BASE_URL}/api/v1/exhibitions/{exhibition_id}"
+        f"{BASE_URL}/api/exhibitions/{exhibition_id}"
     )
 
     success, _ = print_result(f"전시회 상세 조회 (ID: {exhibition_id})", response, 200)
@@ -316,7 +316,7 @@ def test_exhibition_detail():
 
 def test_logout():
     """로그아웃 테스트"""
-    print_section("9. 로그아웃 테스트 (POST /api/v1/auth/logout)")
+    print_section("9. 로그아웃 테스트 (POST /api/auth/logout)")
 
     global session_cookie
 
@@ -327,7 +327,7 @@ def test_logout():
     cookies = {'session': session_cookie}
 
     response = requests.post(
-        f"{BASE_URL}/api/v1/auth/logout",
+        f"{BASE_URL}/api/auth/logout",
         cookies=cookies
     )
 

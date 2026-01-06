@@ -12,7 +12,7 @@ from app.services.google_oauth_service import GoogleOAuthService
 from app.services.auth_service import AuthService
 from app.services.session_service import SessionService
 
-router = APIRouter(prefix="/api/v1/auth/google", tags=["Google OAuth"])
+router = APIRouter(prefix="/api/auth/google", tags=["Google OAuth"])
 
 
 def set_session_cookie(response: Response, session_id: str, environment: str = "development"):

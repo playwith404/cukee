@@ -19,7 +19,7 @@ from app.services.session_service import SessionService
 from app.services.verification_service import VerificationService
 from app.utils.dependencies import get_current_user
 
-router = APIRouter(prefix="/api/v1/auth", tags=["Authentication"])
+router = APIRouter(prefix="/api/auth", tags=["Authentication"])
 
 
 def set_session_cookie(response: Response, session_id: str, environment: str = "development"):
