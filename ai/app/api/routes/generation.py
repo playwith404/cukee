@@ -7,6 +7,7 @@ from app.schemas.generation import GenerateRequest, GenerateResponse
 from app.models.model_loader import model_manager
 from app.api.dependencies import get_db_session
 from app.services.retrieval_service import RetrievalService
+from app.core.guardrails_manager import guardrails_manager
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -15,6 +16,28 @@ router = APIRouter()
 async def generate_exhibition(request: GenerateRequest, db: Session = Depends(get_db_session)):
     """AI 전시회 생성 (PGVECTOR-first + 큐레이션 코멘트)"""
     try:
+        # 0. Guardrails 검사 (주제 차단)
+        allowed, refusal_message = await guardrails_manager.check_input(request.prompt)
+        if not allowed:
+            logger.info(f"Guardrails blocked request: {request.prompt}")
+            return GenerateResponse(
+                result_json={
+                    "title": "안내",
+                    "curatorComment": refusal_message,
+                    "movies": [],
+                    "design": {
+                        "font": "Pretendard",
+                        "colorScheme": "dark",
+                        "layoutType": "grid",
+                        "frameStyle": "modern",
+                        "background": "#1a1a1a",
+                        "backgroundImage": ""
+                    },
+                    "keywords": ["안내"]
+                },
+                theme=request.theme
+            )
+
         if not model_manager.is_ready():
             raise HTTPException(status_code=503, detail="Model not ready")
         
