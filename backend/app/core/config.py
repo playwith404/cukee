@@ -39,7 +39,7 @@ class Settings(BaseSettings):
     # Google OAuth
     GOOGLE_CLIENT_ID: Optional[str] = None
     GOOGLE_CLIENT_SECRET: Optional[str] = None
-    GOOGLE_REDIRECT_URI: str = "https://middle.cloudkakao.store/auth/google/callback"
+    GOOGLE_REDIRECT_URI: str = "https://middle.cloudkakao.store/api/auth/google/callback"
 
     @property
     def allowed_origins_list(self) -> List[str]:

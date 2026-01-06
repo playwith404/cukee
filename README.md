@@ -1,244 +1,332 @@
+<!-- 헤더 웨이브 배너 -->
 
-### 프로젝트 구조
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:E34C26,10:DA5B0B,30:C6538C,75:3572A5,100:A371F7&height=100&section=header&text=&fontSize=0" width="100%"/>
 
-```
-cukee/
-├── frontend/                # 프론트엔드 모노레포
-│   ├── apps/
-│   │   ├── web/            # Next.js 메인 애플리케이션
-│   │   └── extension/      # 브라우저 확장 프로그램
-│   └── packages/
-│       ├── ui/             # 공유 UI 컴포넌트
-│       ├── eslint-config/  # ESLint 설정
-│       └── typescript-config/ # TypeScript 설정
-├── backend/                # FastAPI 백엔드
-├── database/               # 데이터베이스 설정
-├── nginx/                  # Nginx 설정
-├── certbot/                # SSL 인증서 관리
-└── docker-compose.yml      # Docker 오케스트레이션
-```
+<div align="center">
 
-## 🐛 에러 해결 과정
+<!-- 프로젝트 로고 -->
+<img src="https://via.placeholder.com/200x200.png?text=LOGO" alt="Project Logo" width="200"/>
 
-### 1. TypeScript 타입 에러 (HomePageContainer.tsx)
+<br/>
+<br/>
 
-**문제**
-- `Ticket` 타입 import 오류
-- `fetchTickets` API 함수 미정의
+<!-- 타이핑 애니메이션 효과 -->
+<a href="https://git.io/typing-svg"><img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=40&pause=1000&color=6A5ACD&center=true&vCenter=true&random=false&width=600&height=100&lines=%F0%9F%9A%80+Project+Name;Welcome+to+Our+Project!;Made+with+%E2%9D%A4%EF%B8%8F+by+Team" alt="Typing SVG" /></a>
 
-**해결**
-- `src/apis/tickets.ts` 파일에서 `Ticket` 인터페이스와 `fetchTickets` 함수 정의
-- API 응답 타입 명확하게 정의
+<br/>
 
-```typescript
-export interface Ticket {
-  id: number;
-  curatorName: string;
-  characterImageUrl: string;
-  curatorMessage: string;
-}
+<!-- 프로젝트 설명 배지 -->
+<img src="https://img.shields.io/badge/프로젝트-한_줄_설명을_작성해주세요-blue?style=for-the-badge"/>
 
-export const fetchTickets = async (): Promise<{ data: Ticket[] }> => {
-  const response = await axios.get(`${API_BASE_URL}/tickets`);
-  return response.data;
-};
-```
+<br/>
+<br/>
 
-### 2. TypeScript 타입 에러 (ExhPageContainer.tsx)
+<!-- 상태 배지들 -->
+<img src="https://img.shields.io/badge/version-1.0.0-blue?style=flat-square"/>
+<img src="https://img.shields.io/badge/status-development-yellow?style=flat-square"/>
+<img src="https://img.shields.io/badge/team-6_members-green?style=flat-square"/>
 
-**문제**
-- `AIExhibitionResponse`, `ExhibitionDetailResponse`, `Frame` 타입 import 경로 오류
-- 상대 경로 불일치
+<br/>
+<br/>
 
-**해결**
-- 정확한 import 경로 수정
-- `src/apis/ai.ts`와 `src/apis/exhibition.ts`에서 타입 정의
+<!-- GitHub 통계 배지들 -->
+[![GitHub Stars](https://img.shields.io/github/stars/username/repo?style=for-the-badge&logo=github&logoColor=white&labelColor=gray&color=E1AD0E)](https://github.com/username/repo/stargazers)
+[![GitHub Forks](https://img.shields.io/github/forks/username/repo?style=for-the-badge&logo=github&logoColor=white&labelColor=gray&color=447CAF)](https://github.com/username/repo/network/members)
+[![GitHub Issues](https://img.shields.io/github/issues/username/repo?style=for-the-badge&logo=github&logoColor=white&labelColor=gray&color=9B5DE5)](https://github.com/username/repo/issues)
+[![License](https://img.shields.io/github/license/username/repo?style=for-the-badge&logo=github&logoColor=white&labelColor=gray&color=39D353)](LICENSE)
 
-```typescript
-// 수정된 import
-import { AIExhibitionResponse } from "../../src/apis/ai";
-import { ExhibitionDetailResponse } from '../../src/apis/exhibition';
-import { Frame } from './exhibition/Gallery';
-```
+<br/>
 
-### 3. Next.js Suspense Boundary 에러
+<!-- 빌드 및 배포 상태 배지 (선택사항) -->
+![Build Status](https://img.shields.io/badge/build-passing-brightgreen?style=flat-square&logo=github-actions)
+![Deploy Status](https://img.shields.io/badge/deploy-success-blue?style=flat-square&logo=vercel)
+![Coverage](https://img.shields.io/badge/coverage-85%25-green?style=flat-square&logo=codecov)
 
-**문제**
-- `useSearchParams()` 사용 시 Suspense boundary 필요
-- 에러: `useSearchParams() should be wrapped in a suspense boundary`
+<br/>
+<br/>
 
-**해결**
-- `app/exhibition/page.tsx`를 Suspense boundary로 래핑
-- 서버 컴포넌트와 클라이언트 컴포넌트 분리
+<!-- 네비게이션 링크 -->
+<p>
+  <a href="#-프로젝트-소개"><img src="https://img.shields.io/badge/📖_소개-4B32C3?style=for-the-badge"/></a>
+  <a href="#-주요-기능"><img src="https://img.shields.io/badge/✨_기능-F7931E?style=for-the-badge"/></a>
+  <a href="#️-기술-스택"><img src="https://img.shields.io/badge/🛠️_기술_스택-00C853?style=for-the-badge"/></a>
+  <a href="#-팀원-소개"><img src="https://img.shields.io/badge/👥_팀원-FF6B6B?style=for-the-badge"/></a>
+</p>
 
-```tsx
-// app/exhibition/page.tsx
-import { Suspense } from 'react';
-import { ExhPageContainer } from '../components/ExhPageContainer';
+<p>
+  <a href="https://github.com/username/repo/issues"><img src="https://img.shields.io/badge/🐛_버그_리포트-D32F2F?style=for-the-badge"/></a>
+  <a href="https://github.com/username/repo/issues"><img src="https://img.shields.io/badge/💡_기능_요청-7B1FA2?style=for-the-badge"/></a>
+  <a href="#-시작하기"><img src="https://img.shields.io/badge/🚀_시작하기-00BCD4?style=for-the-badge"/></a>
+</p>
 
-export default function ExhibitionPage() {
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <ExhPageContainer />
-    </Suspense>
-  );
-}
-```
+</div>
 
-### 4. next.config.js 환경 변수 참조 오류
+<!-- 구분선 with 애니메이션 -->
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%"/>
 
-**문제**
-- `INTERNAL_API_URL` 변수가 정의되지 않음
-- Rewrite 설정에서 참조 실패
 
-**해결**
-- 환경 변수를 프로세스 환경에서 가져오도록 수정
-- 기본값 설정으로 안정성 향상
+## 📋 목차
 
-```javascript
-const INTERNAL_API_URL = process.env.INTERNAL_API_URL || 'http://backend:8000';
+- [프로젝트 소개](#-프로젝트-소개)
+- [주요 기능](#-주요-기능)
+- [기술 스택](#️-기술-스택)
+- [시작하기](#-시작하기)
+- [팀원 소개](#-팀원-소개)
+- [라이선스](#-라이선스)
 
-async rewrites() {
-  return [
-    {
-      source: '/api/:path*',
-      destination: `${INTERNAL_API_URL}/api/:path`,
-    },
-  ];
-}
-```
+---
 
-### 5. 이미지 로딩 설정 (개발/배포 환경 대응)
+## 📖 프로젝트 소개
 
-**문제**
-- Next.js Image 컴포넌트에서 외부 이미지 로딩 시 보안 제한
-- 개발 환경(localhost)과 배포 환경(cloudkakao.store) 모두에서 이미지 접근 필요
+> 프로젝트에 대한 상세한 설명을 작성해주세요.
 
-**해결**
-- `next.config.js`의 `remotePatterns`에 두 환경 모두 추가
-- 개발 환경: HTTP + localhost:8000
-- 배포 환경: HTTPS + cloudkakao.store
+이 프로젝트는 **문제/필요성**을 해결하기 위해 시작되었습니다. 
+**주요 목표**와 **기대 효과**를 간략히 설명해주세요.
 
-```javascript
-images: {
-  remotePatterns: [
-    // 개발 환경: localhost
-    {
-      protocol: 'http',
-      hostname: 'localhost',
-      port: '8000',
-      pathname: '/**',
-    },
-    // 배포 환경: production domain
-    {
-      protocol: 'https',
-      hostname: 'cloudkakao.store',
-      pathname: '/**',
-    },
-  ],
-}
-```
+### 🎯 프로젝트 배경
+- 왜 이 프로젝트를 시작했나요?
+- 어떤 문제를 해결하고자 하나요?
 
-**효과**
-- Next.js Image 컴포넌트로 안전하게 외부 이미지 로딩
-- 환경 자동 감지로 별도 설정 불필요
+---
 
-## 🔧 주요 수정 사항
+## ✨ 주요 기능
 
-### 1. Docker 설정 최적화
+| 기능 | 설명 |
+|:---:|:---|
+| 🔐 **기능 1** | 기능에 대한 설명을 작성해주세요 |
+| 📊 **기능 2** | 기능에 대한 설명을 작성해주세요 |
+| 🔔 **기능 3** | 기능에 대한 설명을 작성해주세요 |
+| 💬 **기능 4** | 기능에 대한 설명을 작성해주세요 |
 
-**frontend/Dockerfile**
-- Node.js 20으로 업그레이드
-- Multi-stage build 최적화 (base, builder, installer, runner)
-- Turborepo를 활용한 모노레포 빌드 전략
-- Standalone 모드로 최소 런타임 이미지 생성
-- 빌드 타임 환경 변수 주입 (ARG/ENV)
+---
 
-**docker-compose.yml**
-- 4개 서비스 구성: frontend, backend, nginx, certbot
-- 서비스 간 의존성 관리 (depends_on)
-- 환경 변수를 통한 API URL 주입
-- SSL 인증서 자동 갱신 설정
+## 🛠️ 기술 스택
 
-### 2. API 통합 개선
+### Frontend
+![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
 
-**새로 생성된 파일**
-- `frontend/apps/web/src/apis/tickets.ts` - 티켓 API
-- `frontend/apps/web/src/apis/ai.ts` - AI 전시회 생성 API
-- `frontend/apps/web/src/apis/exhibition.ts` - 전시회 관리 API
+### Backend
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white)
+![Express](https://img.shields.io/badge/Express-000000?style=for-the-badge&logo=express&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
 
-**특징**
-- Axios 기반 HTTP 클라이언트
-- TypeScript 타입 안전성 보장
-- 환경 변수를 통한 API 엔드포인트 관리
+### DevOps & Tools
+![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white)
+![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=github-actions&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 
-### 3. 컴포넌트 구조 개선
+### Communication
+![Notion](https://img.shields.io/badge/Notion-000000?style=for-the-badge&logo=notion&logoColor=white)
+![Slack](https://img.shields.io/badge/Slack-4A154B?style=for-the-badge&logo=slack&logoColor=white)
+![Figma](https://img.shields.io/badge/Figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white)
 
-**HomePageContainer.tsx**
-- 티켓 목록 API 연동
-- 로딩/에러 상태 관리
-- 캐러셀을 통한 티켓 네비게이션
-- URL 기반 라우팅 (/exhibition?ticket=ID)
+---
 
-**ExhPageContainer.tsx**
-- URL 파라미터에서 티켓 ID 추출
-- AI 생성 전시회 데이터 반영
-- 갤러리 3D 뷰 구현
-- 큐레이터 정보 동적 로딩
+## 🚀 시작하기
 
-## 🚀 배포 및 실행
+### 필수 요구사항
 
-### 로컬 개발 환경
+- Node.js 18.0 이상
+- npm 또는 yarn
+- MySQL 8.0 이상
 
+### 설치 방법
+
+1. **레포지토리 클론**
 ```bash
-# 프론트엔드 개발 서버
-cd frontend
-pnpm install
-pnpm dev
-
-# 백엔드 개발 서버
-cd backend
-pip install -r requirements.txt
-uvicorn app.main:app --reload
+git clone https://github.com/username/repo.git
+cd repo
 ```
 
-### Docker 기반 배포
-
+2. **의존성 설치**
 ```bash
-# 전체 서비스 빌드 및 실행
-docker-compose up -d --build
-
-# 로그 확인
-docker-compose logs -f
-
-# 서비스 중지
-docker-compose down
+npm install
+# 또는
+yarn install
 ```
 
-### 환경 변수 설정
-
-**frontend/.env.production**
-```
-NEXT_PUBLIC_API_URL=https://middle.cloudkakao.store/api
-```
-
-**backend/.env**
-```
-DATABASE_URL=postgresql://user:password@database:5432/cukee
-SECRET_KEY=your-secret-key
+3. **환경 변수 설정**
+```bash
+cp .env.example .env
+# .env 파일을 열어 필요한 값을 설정해주세요
 ```
 
+4. **개발 서버 실행**
+```bash
+npm run dev
+# 또는
+yarn dev
+```
 
-## 🔍 트러블슈팅 가이드
+5. **브라우저에서 확인**
+```
+http://localhost:3000
+```
 
-### 빌드 실패 시
+---
 
-1. Node.js 버전 확인 (20+ 필요)
-2. 의존성 재설치: `pnpm install --frozen-lockfile`
-3. 캐시 삭제 후 재빌드: `docker-compose build --no-cache`
+## 👥 팀원 소개
 
-### API 통신 오류 시
+<div align="center">
 
-1. 환경 변수 확인 (`NEXT_PUBLIC_API_URL`)
-2. 백엔드 서비스 상태 확인: `docker-compose ps`
-3. Nginx 로그 확인: `docker-compose logs nginx`
+|<img src="https://via.placeholder.com/150" width="150" height="150"/>|<img src="https://via.placeholder.com/150" width="150" height="150"/>|<img src="https://via.placeholder.com/150" width="150" height="150"/>|
+|:---:|:---:|:---:|
+|**홍길동**|**김철수**|**이영희**|
+|팀장 / Backend|Frontend|Backend|
+|[![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/username1)|[![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/username2)|[![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/username3)|
+|![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=node.js&logoColor=white) ![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=flat-square&logo=mysql&logoColor=white)|![React](https://img.shields.io/badge/React-61DAFB?style=flat-square&logo=react&logoColor=black) ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)|![Express](https://img.shields.io/badge/Express-000000?style=flat-square&logo=express&logoColor=white) ![Redis](https://img.shields.io/badge/Redis-DC382D?style=flat-square&logo=redis&logoColor=white)|
+
+|<img src="https://via.placeholder.com/150" width="150" height="150"/>|<img src="https://via.placeholder.com/150" width="150" height="150"/>|<img src="https://via.placeholder.com/150" width="150" height="150"/>|
+|:---:|:---:|:---:|
+|**박민수**|**최지은**|**정우진**|
+|Frontend|Designer / Frontend|DevOps|
+|[![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/username4)|[![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/username5)|[![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/username6)|
+|![Vue.js](https://img.shields.io/badge/Vue.js-4FC08D?style=flat-square&logo=vue.js&logoColor=white) ![Sass](https://img.shields.io/badge/Sass-CC6699?style=flat-square&logo=sass&logoColor=white)|![Figma](https://img.shields.io/badge/Figma-F24E1E?style=flat-square&logo=figma&logoColor=white) ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat-square&logo=css3&logoColor=white)|![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white) ![AWS](https://img.shields.io/badge/AWS-232F3E?style=flat-square&logo=amazon-aws&logoColor=white)|
+
+</div>
+
+---
+
+## 📁 프로젝트 구조
+
+```
+📦 project-root
+├── 📂 src
+│   ├── 📂 components    # 재사용 가능한 컴포넌트
+│   ├── 📂 pages         # 페이지 컴포넌트
+│   ├── 📂 hooks         # 커스텀 훅
+│   ├── 📂 utils         # 유틸리티 함수
+│   ├── 📂 styles        # 스타일 파일
+│   └── 📂 api           # API 관련 코드
+├── 📂 public            # 정적 파일
+├── 📂 tests             # 테스트 파일
+├── 📄 .env.example      # 환경 변수 예시
+├── 📄 package.json
+└── 📄 README.md
+```
+
+---
+
+## 📊 프로젝트 진행 상황
+
+- [x] 프로젝트 기획
+- [x] UI/UX 디자인
+- [x] 데이터베이스 설계
+- [ ] 프론트엔드 개발
+- [ ] 백엔드 개발
+- [ ] 테스트 및 QA
+- [ ] 배포
+
+---
+
+## 🤝 기여하기
+
+프로젝트에 기여하고 싶으시다면 아래 단계를 따라주세요!
+
+1. 이 레포지토리를 Fork 합니다
+2. 새로운 브랜치를 생성합니다 (`git checkout -b feature/AmazingFeature`)
+3. 변경사항을 커밋합니다 (`git commit -m 'Add some AmazingFeature'`)
+4. 브랜치에 Push 합니다 (`git push origin feature/AmazingFeature`)
+5. Pull Request를 생성합니다
+
+---
+
+## 📝 라이선스
+
+이 프로젝트는 MIT 라이선스를 따릅니다. 자세한 내용은 [LICENSE](LICENSE) 파일을 참고해주세요.
+
+---
+
+<!-- 푸터 시작 -->
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%"/>
+
+<div align="center">
+
+<br/>
+
+<!-- GitHub 통계 카드 -->
+### 📊 GitHub Statistics
+
+<img src="https://github-readme-stats.vercel.app/api?username=username&show_icons=true&theme=tokyonight&hide_border=true&bg_color=0D1117&title_color=58A6FF&icon_color=58A6FF&text_color=C9D1D9" width="49%"/>
+<img src="https://github-readme-streak-stats.herokuapp.com/?user=username&theme=tokyonight&hide_border=true&background=0D1117&stroke=58A6FF&ring=58A6FF&fire=FF6B6B&currStreakLabel=58A6FF" width="49%"/>
+
+<br/>
+<br/>
+
+<!-- 활동 그래프 -->
+<img src="https://github-readme-activity-graph.vercel.app/graph?username=username&theme=tokyo-night&hide_border=true&bg_color=0D1117&color=58A6FF&line=58A6FF&point=FF6B6B" width="98%"/>
+
+<br/>
+<br/>
+
+---
+
+### 📬 Contact Us
+
+프로젝트에 대한 문의사항이 있으시면 아래로 연락해주세요!
+
+<a href="mailto:team@example.com">
+  <img src="https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white"/>
+</a>
+<a href="https://discord.gg/your-server">
+  <img src="https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white"/>
+</a>
+<a href="https://your-notion-page.notion.site">
+  <img src="https://img.shields.io/badge/Notion-000000?style=for-the-badge&logo=notion&logoColor=white"/>
+</a>
+<a href="https://your-blog.tistory.com">
+  <img src="https://img.shields.io/badge/Blog-FF5722?style=for-the-badge&logo=blogger&logoColor=white"/>
+</a>
+
+<br/>
+<br/>
+
+---
+
+### 🌟 Contributors
+
+이 프로젝트에 기여해주신 모든 분들께 감사드립니다!
+
+<a href="https://github.com/username/repo/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=username/repo" />
+</a>
+
+<br/>
+<br/>
+
+---
+
+### 💖 Support
+
+이 프로젝트가 도움이 되셨다면 ⭐️ **Star**를 눌러주세요!
+
+여러분의 Star가 저희에게 큰 힘이 됩니다 ✨
+
+<br/>
+
+<img src="https://capsule-render.vercel.app/api?type=soft&color=0:E34C26,100:A371F7&height=80&section=header&text=⭐%20Star%20this%20repo!%20⭐&fontSize=24&fontColor=ffffff&animation=twinkling"/>
+
+<br/>
+<br/>
+
+<!-- 방문자 카운터 -->
+<img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fusername%2Frepo&count_bg=%236A5ACD&title_bg=%23555555&icon=github.svg&icon_color=%23E7E7E7&title=visitors&edge_flat=true" alt="Visitors"/>
+
+<br/>
+<br/>
+
+<!-- 팀 로고/이름 -->
+<img src="https://readme-typing-svg.demolab.com?font=Pacifico&size=30&pause=1000&color=6A5ACD&center=true&vCenter=true&random=false&width=500&height=60&lines=Made+with+%E2%9D%A4%EF%B8%8F+by+Team+Name" alt="Team Name" />
+
+<br/>
+
+**Copyright © 2024 Team Name. All Rights Reserved.**
+
+<br/>
+
+</div>
+
+<!-- 푸터 웨이브 배너 -->
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:A371F7,75:3572A5,30:C6538C,10:DA5B0B,100:E34C26&height=100&section=footer&text=&fontSize=0" width="100%"/>

@@ -15,7 +15,7 @@ from app.schemas.exhibition import (
 from app.utils.dependencies import get_current_user_optional, get_current_user
 from app.services import exhibition_service
 
-router = APIRouter(prefix="/api/v1/exhibitions", tags=["Exhibitions"])
+router = APIRouter(prefix="/api/exhibitions", tags=["Exhibitions"])
 
 
 @router.post("", response_model=ExhibitionResponse, status_code=status.HTTP_201_CREATED)

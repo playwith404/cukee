@@ -67,7 +67,7 @@ export interface MovieDetailResponse {
 
 /**
  * 티켓 ID로 영화 목록 조회 (빠른 조회)
- * nginx 프록시 경로: /api/ai/curate-movies -> /api/v1/ai/curate-movies
+ * 경로: /api/ai/curate-movies
  */
 export const curateMovies = async (
   ticketId: number,
@@ -82,7 +82,7 @@ export const curateMovies = async (
 
 /**
  * AI 전시회 생성
- * nginx 프록시 경로: /api/ai/generate -> /api/v1/ai/generate
+ * 경로: /api/ai/generate
  */
 export const generateExhibition = async (
   prompt: string,
@@ -99,7 +99,7 @@ export const generateExhibition = async (
 
 /**
  * 영화 상세 설명 생성 (포스터 클릭 시)
- * nginx 프록시 경로: /api/ai/movie-detail -> /api/v1/ai/movie-detail
+ * 경로: /api/ai/movie-detail
  */
 export const getMovieDetail = async (
   movieId: number,

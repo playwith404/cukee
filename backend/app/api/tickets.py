@@ -11,7 +11,7 @@ from app.schemas.ticket import TicketResponse, TicketListResponse, TicketDetailR
 from app.utils.dependencies import get_current_user_optional
 from app.models import User
 
-router = APIRouter(prefix="/api/v1/tickets", tags=["Tickets"])
+router = APIRouter(prefix="/api/tickets", tags=["Tickets"])
 
 def ticket_to_response(ticket: TicketGroup) -> dict:
     """TicketGroup 모델을 TicketResponse 형식으로 변환"""

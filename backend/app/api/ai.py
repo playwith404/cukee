@@ -15,7 +15,7 @@ from app.models.ticket import TicketGroup
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/api/v1/ai", tags=["AI"])
+router = APIRouter(prefix="/api/ai", tags=["AI"])
 
 # VM2 AI 서버 설정
 AI_SERVER_URL = "http://10.0.19.117:5000"
