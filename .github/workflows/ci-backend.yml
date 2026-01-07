@@ -3,7 +3,7 @@ name: Backend CI/CD
 on:
   workflow_dispatch:
   push:
-    branches: [ "main", "dev" ] 
+    branches: [ "main", "dev", "feature/**" ] 
     paths:
       - 'backend/**'
       - 'docker-compose.yml'
@@ -65,7 +65,7 @@ jobs:
           username: ${{ secrets.SSH_USER_VM }}
           key: ${{ secrets.SSH_KEY_VM }}
           port: ${{ secrets.SSH_PORT || 22 }}
-          source: "docker-compose.yml,nginx"
+          source: "docker-compose.yml"
           target: "~/app"
 
       - name: Deploy to VM

@@ -1,0 +1,14 @@
+global:
+  scrape_interval: 15s # 15초마다 수집
+
+scrape_configs:
+  # 1. 일반 VM (Monitoring Hub & Target) - 내부망(Docker Network) 이용
+  - job_name: 'general-vm'
+    static_configs:
+      - targets: ['node-exporter:9100']
+
+  # 2. GPU 서버 (Target) - 외부망(Public IP) 이용
+  # 주의: 배포 시 'GPU_SERVER_IP_PLACEHOLDER'를 실제 GPU 서버의 공인 IP로 변경해야 함.
+  - job_name: 'gpu-server'
+    static_configs:
+      - targets: ['GPU_SERVER_IP_PLACEHOLDER:9100', 'GPU_SERVER_IP_PLACEHOLDER:9400']

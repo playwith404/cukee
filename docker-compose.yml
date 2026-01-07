@@ -54,5 +54,46 @@ services:
     # 인증서 자동 갱신을 위한 커맨드 (12시간마다 체크)
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
 
+  # 6. Prometheus (Monitoring)
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    restart: unless-stopped
+    volumes:
+      - ./monitor/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.size=512MB'
+      - '--storage.tsdb.retention.time=7d'
+    ports:
+      - "9090:9090"
+
+  # 7. Grafana (Dashboard)
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    restart: unless-stopped
+    ports:
+      - "3100:3000"
+    environment:
+      - GF_SERVER_ROOT_URL=https://middle.cloudkakao.store/monitor/
+      - GF_SERVER_SERVE_FROM_SUB_PATH=true
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+
+  # 8. Node Exporter (System Agent)
+  node-exporter:
+    image: prom/node-exporter
+    container_name: node-exporter
+    restart: unless-stopped
+    expose:
+      - "9100"
+
 volumes:
   redis_data:
+  prometheus_data:
+  grafana_data:
