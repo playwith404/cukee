@@ -8,10 +8,9 @@ from typing import Optional
 from app.core.database import get_db
 from app.core.config import settings
 from app.core.exceptions import UnauthorizedException, BadRequestException
-from app.schemas.user import (
     SignupRequest, SignupResponse, LoginRequest, LoginResponse,
     SendVerificationRequest, SendVerificationResponse,
-    VerifyCodeRequest, VerifyCodeResponse
+    VerifyCodeRequest, VerifyCodeResponse, ResetPasswordRequest
 )
 from app.schemas.common import MessageResponse
 from app.services.auth_service import AuthService
@@ -274,6 +273,85 @@ def verify_email_code(request_data: VerifyCodeRequest):
         success=True,
         message=result["message"]
     )
+
+
+@router.post("/password/reset-request", response_model=SendVerificationResponse, status_code=status.HTTP_200_OK)
+def request_password_reset(
+    request_data: SendVerificationRequest,
+    db: DBSession = Depends(get_db)
+):
+    """
+    비밀번호 재설정 인증번호 발송 요청
+    """
+    # 이메일 가입 여부 확인
+    try:
+        from app.models import User
+        user = db.query(User).filter(User.email == request_data.email).first()
+        if not user:
+            # 보안을 위해 사용자가 없어도 성공 메시지 반환 (또는 모호한 메시지)
+            # 하지만 UX를 위해 여기서는 Not Found를 명시하겠습니다.
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail={"success": False, "message": "가입되지 않은 이메일입니다."}
+            )
+            
+        if user.social_provider != "email":
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail={"success": False, "message": f"{user.social_provider} 소셜 로그인으로 가입된 계정입니다."}
+            )
+
+        result = VerificationService.send_password_reset_code(request_data.email)
+        if not result["success"]:
+             raise HTTPException(
+                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                detail={
+                    "success": False,
+                    "message": result["message"],
+                    "retry_after": result.get("retry_after")
+                }
+            )
+            
+        return SendVerificationResponse(
+            success=True,
+            message=result["message"],
+            expires_in=result.get("expires_in")
+        )
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail={"success": False, "message": "이메일 발송에 실패했습니다."}
+        )
+
+
+@router.post("/password/reset", response_model=MessageResponse, status_code=status.HTTP_200_OK)
+def reset_password(
+    request_data: ResetPasswordRequest,
+    db: DBSession = Depends(get_db)
+):
+    """
+    비밀번호 재설정 완료
+    """
+    # 1. 인증번호 검증
+    verify_result = VerificationService.verify_password_reset_code(request_data.email, request_data.code)
+    if not verify_result["success"]:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail={"success": False, "message": verify_result["message"]}
+        )
+
+    # 2. 비밀번호 변경
+    try:
+        AuthService.reset_password(db, request_data.email, request_data.new_password)
+        return MessageResponse(message="비밀번호가 성공적으로 변경되었습니다.")
+    except Exception as e:
+         raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail={"success": False, "message": "비밀번호 변경 중 오류가 발생했습니다."}
+        )
 
 
 @router.get("/me", response_model=LoginResponse, response_model_by_alias=False, status_code=status.HTTP_200_OK)

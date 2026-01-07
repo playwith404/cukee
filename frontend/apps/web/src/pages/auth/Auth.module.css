@@ -351,3 +351,14 @@
   letter-spacing: 0.05em; /* 자간 살짝 넓게 */
   padding-bottom: 1rem;   /* 화면 바닥과의 여백 */
 }
+
+/* Forgot Password 추가 스타일 */
+.description {
+  font-weight: 300;
+  line-height: 1.5;
+}
+
+.success {
+  font-weight: 500;
+  line-height: 1.5;
+}
