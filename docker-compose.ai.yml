@@ -58,8 +58,12 @@ services:
     image: prom/node-exporter
     container_name: node-exporter
     restart: unless-stopped
-    ports:
-      - "9100:9100"
+    command:
+      - '--path.rootfs=/host'
+    network_mode: host
+    pid: host
+    volumes:
+      - '/:/host:ro,rslave'
 
   # 3. DCGM Exporter (GPU Monitoring)
   dcgm-exporter:
