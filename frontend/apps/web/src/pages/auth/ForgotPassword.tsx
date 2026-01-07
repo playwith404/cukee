@@ -26,7 +26,7 @@ export const ForgotPassword = () => {
 
         try {
             const response = await requestPasswordReset(email);
-            if (response.data.success) {
+            if (response.success) {
                 setMessage('인증번호가 이메일로 전송되었습니다.');
                 setStep(2);
             }
@@ -57,7 +57,7 @@ export const ForgotPassword = () => {
 
         try {
             const response = await verifyPasswordResetCode(email, code);
-            if (response.data.success) {
+            if (response.success) {
                 setMessage('인증되었습니다.');
                 setStep(3);
             }
