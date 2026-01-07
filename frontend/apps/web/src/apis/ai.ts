@@ -111,3 +111,12 @@ export const getMovieDetail = async (
   });
   return response.data;
 };
+
+/**
+ * 세션의 영화 상세 캐시 삭제 (페이지 이탈 시)
+ * 경로: DELETE /api/ai/cache
+ */
+export const clearMovieDetailCache = async (): Promise<{ message: string; deleted: number }> => {
+  const response = await api.delete<{ message: string; deleted: number }>('/ai/cache');
+  return response.data;
+};
