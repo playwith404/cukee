@@ -188,3 +188,21 @@ class WithdrawRequest(BaseModel):
             }
         }
     )
+
+
+class ResetPasswordRequest(BaseModel):
+    """비밀번호 재설정 요청"""
+    email: EmailStr
+    code: str = Field(..., min_length=6, max_length=6)
+    new_password: str = Field(..., min_length=8, max_length=100, alias="newPassword")
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+        json_schema_extra={
+            "example": {
+                "email": "user@example.com",
+                "code": "123456",
+                "newPassword": "newpassword123"
+            }
+        }
+    )

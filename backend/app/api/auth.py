@@ -8,6 +8,7 @@ from typing import Optional
 from app.core.database import get_db
 from app.core.config import settings
 from app.core.exceptions import UnauthorizedException, BadRequestException
+from app.schemas.user import (
     SignupRequest, SignupResponse, LoginRequest, LoginResponse,
     SendVerificationRequest, SendVerificationResponse,
     VerifyCodeRequest, VerifyCodeResponse, ResetPasswordRequest
