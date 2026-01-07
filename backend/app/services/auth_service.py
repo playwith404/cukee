@@ -199,3 +199,87 @@ class AuthService:
         db.refresh(new_user)
 
         return new_user
+
+    @staticmethod
+    def get_or_create_kakao_user(db: DBSession, kakao_user_info: dict) -> User:
+        """Kakao 사용자 조회 또는 생성"""
+        kakao_id = str(kakao_user_info.get("id"))
+        kakao_account = kakao_user_info.get("kakao_account", {})
+        profile = kakao_account.get("profile", {})
+
+        email = kakao_account.get("email")
+        nickname = profile.get("nickname", "")
+
+        # 1. Kakao ID로 기존 사용자 조회
+        user = db.query(User).filter(
+            User.social_provider == SocialProviderEnum.kakao,
+            User.social_id == kakao_id,
+            User.is_deleted == False
+        ).first()
+
+        if user:
+            return user
+
+        # 2. 이메일로 기존 사용자 조회 (이메일 계정으로 가입한 경우)
+        if email:
+            existing_user = db.query(User).filter(
+                User.email == email,
+                User.is_deleted == False
+            ).first()
+
+            if existing_user:
+                # 기존 이메일 계정에 Kakao 연동
+                existing_user.social_provider = SocialProviderEnum.kakao
+                existing_user.social_id = kakao_id
+                db.commit()
+                db.refresh(existing_user)
+                return existing_user
+
+            # 3. 탈퇴한 유저 중 같은 이메일이 있는지 확인 (재가입)
+            deleted_user = db.query(User).filter(
+                User.email == email,
+                User.is_deleted == True
+            ).first()
+
+            if deleted_user:
+                # 재활성화
+                deleted_user.is_deleted = False
+                deleted_user.deleted_at = None
+                deleted_user.nickname = nickname[:20] if nickname else f"user_{kakao_id[:8]}"
+                deleted_user.social_provider = SocialProviderEnum.kakao
+                deleted_user.social_id = kakao_id
+                deleted_user.hashed_password = get_password_hash(secrets.token_urlsafe(32))
+                db.commit()
+                db.refresh(deleted_user)
+                return deleted_user
+
+        # 4. 새 사용자 생성
+        # 카카오에서 이메일을 제공하지 않는 경우 임시 이메일 생성
+        if not email:
+            email = f"kakao_{kakao_id}@kakao.temp"
+
+        user_nickname = nickname[:20] if nickname else f"user_{kakao_id[:8]}"
+
+        # 닉네임 중복 시 랜덤 숫자 추가
+        base_nickname = user_nickname
+        counter = 1
+        while db.query(User).filter(User.nickname == user_nickname).first():
+            user_nickname = f"{base_nickname[:17]}_{counter}"
+            counter += 1
+
+        new_user = User(
+            email=email,
+            nickname=user_nickname,
+            hashed_password=get_password_hash(secrets.token_urlsafe(32)),
+            social_provider=SocialProviderEnum.kakao,
+            social_id=kakao_id,
+            email_verified=True,
+            agree_service=True,
+            agree_privacy=True,
+        )
+
+        db.add(new_user)
+        db.commit()
+        db.refresh(new_user)
+
+        return new_user

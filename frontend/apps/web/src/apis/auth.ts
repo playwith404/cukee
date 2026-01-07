@@ -102,6 +102,20 @@ export function startGoogleLogin() {
   window.location.href = `${baseUrl}/auth/google/login`;
 }
 
+// Kakao 로그인 URL 가져오기
+export async function getKakaoAuthUrl() {
+  const res = await api.get('/auth/kakao/url');
+  return res.data as {
+    url: string;
+    state: string;
+  };
+}
+
+export function startKakaoLogin() {
+  const baseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
+  window.location.href = `${baseUrl}/auth/kakao/login`;
+}
+
 // 비밀번호 재설정 요청 (인증번호 발송)
 export async function requestPasswordReset(email: string) {
   const res = await api.post('/auth/password/reset-request', { email });

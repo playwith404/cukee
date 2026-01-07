@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import styles from './Auth.module.css';
-import { startGoogleLogin } from '../../apis/auth';
+import { startGoogleLogin, startKakaoLogin } from '../../apis/auth';
 import { useAuth } from '../../contexts/AuthContext';
 
 export const Login = () => {
@@ -131,7 +131,12 @@ export const Login = () => {
               >
                 <span className={styles.socialButtonText}>Google</span>
               </button>
-              <button type="button" className={styles.socialButton} disabled>
+              <button
+                type="button"
+                className={styles.socialButton}
+                onClick={startKakaoLogin}
+                disabled={isLoading}
+              >
                 <span className={styles.socialButtonText}>Kakao</span>
               </button>
             </div>
