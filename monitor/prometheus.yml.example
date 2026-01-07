@@ -11,4 +11,4 @@ scrape_configs:
   # 주의: 배포 시 'GPU_SERVER_IP_PLACEHOLDER'를 실제 GPU 서버의 공인 IP로 변경해야 함.
   - job_name: 'gpu-server'
     static_configs:
-      - targets: ['GPU_SERVER_IP_PLACEHOLDER:9100', 'GPU_SERVER_IP_PLACEHOLDER:9400']
+      - targets: ['GPU_SERVER_IP_PLACEHOLDER:9100', 'GPU_SERVER_IP_PLACEHOLDER:9400'] 
