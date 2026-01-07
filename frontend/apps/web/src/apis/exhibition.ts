@@ -173,6 +173,23 @@ export const getExhibitionById = async (exhibitionId: number) => {
   return response.data;
 };
 
+/**
+ * 전시회 수정
+ * PUT /exhibitions/{id}
+ */
+export interface UpdateExhibitionRequest {
+  title?: string;
+  isPublic?: boolean;
+}
+
+export const updateExhibition = async (
+  exhibitionId: number,
+  data: UpdateExhibitionRequest
+): Promise<CreateExhibitionResponse> => {
+  const response = await api.put<CreateExhibitionResponse>(`/exhibitions/${exhibitionId}`, data);
+  return response.data;
+};
+
 // =============================================================================
 // [API Functions] 티켓
 // =============================================================================

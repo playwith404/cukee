@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { getMyExhibitions, type Exhibition } from '../../apis/exhibition';
+import { getMyExhibitions, updateExhibition, type Exhibition } from '../../apis/exhibition';
 import styles from './Header.module.css';
 
 
@@ -225,6 +225,10 @@ const DropdownMenu = () => {
   const [exhibitions, setExhibitions] = useState<{ id: number; title: string }[]>([]);
   const [loadingExhibitions, setLoadingExhibitions] = useState(true);
 
+  // ✅ [신규] 전시회 이름 편집 상태
+  const [editingExhibitionId, setEditingExhibitionId] = useState<number | null>(null);
+  const [editingTitle, setEditingTitle] = useState('');
+
   // 전시회 목록 로드
   useEffect(() => {
     const loadExhibitions = async () => {
@@ -276,6 +280,34 @@ const DropdownMenu = () => {
   // ✅ 탈퇴 모달 핸들러
   const handleOpenDeleteModal = () => setShowDeleteModal(true);
   const handleCloseDeleteModal = () => setShowDeleteModal(false);
+
+  // ✅ [신규] 전시회 이름 편집 핸들러
+  const handleStartEdit = (id: number, currentTitle: string) => {
+    setEditingExhibitionId(id);
+    setEditingTitle(currentTitle);
+  };
+
+  const handleSaveTitle = async (id: number) => {
+    if (!editingTitle.trim()) {
+      alert("전시회 이름을 입력해주세요.");
+      return;
+    }
+
+    try {
+      await updateExhibition(id, { title: editingTitle.trim() });
+
+      // 로컬 상태 업데이트
+      setExhibitions(prev =>
+        prev.map(ex => ex.id === id ? { ...ex, title: editingTitle.trim() } : ex)
+      );
+
+      setEditingExhibitionId(null);
+      setEditingTitle('');
+    } catch (error) {
+      console.error("전시회 이름 변경 실패:", error);
+      alert("전시회 이름 변경에 실패했습니다.");
+    }
+  };
   return (
     <>
       <div className={styles.dropdownOuter}>
@@ -352,10 +384,54 @@ const DropdownMenu = () => {
                     {exhibitions.map((ex) => (
                       <li
                         key={ex.id}
-                        onClick={() => navigate(`/exhibition?exhibitionId=${ex.id}`)}
-                        style={{ cursor: 'pointer' }}
+                        className={styles.exhibitionItem}
                       >
-                        {ex.title}
+                        {editingExhibitionId === ex.id ? (
+                          /* 편집 모드 */
+                          <div className={styles.editRow}>
+                            <input
+                              type="text"
+                              value={editingTitle}
+                              onChange={(e) => setEditingTitle(e.target.value)}
+                              className={styles.editInput}
+                              autoFocus
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                  handleSaveTitle(ex.id);
+                                } else if (e.key === 'Escape') {
+                                  setEditingExhibitionId(null);
+                                }
+                              }}
+                            />
+                            <button
+                              className={styles.iconBtn}
+                              onClick={() => handleSaveTitle(ex.id)}
+                              title="저장"
+                            >
+                              ✓
+                            </button>
+                          </div>
+                        ) : (
+                          /* 보기 모드 */
+                          <div className={styles.viewRow}>
+                            <span
+                              className={styles.exhibitionTitle}
+                              onClick={() => navigate(`/exhibition?exhibitionId=${ex.id}`)}
+                            >
+                              {ex.title}
+                            </span>
+                            <button
+                              className={styles.iconBtn}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleStartEdit(ex.id, ex.title);
+                              }}
+                              title="수정"
+                            >
+                              ✏️
+                            </button>
+                          </div>
+                        )}
                       </li>
                     ))}
                   </ul>
