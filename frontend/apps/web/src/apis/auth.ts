@@ -113,8 +113,19 @@ export async function requestPasswordReset(email: string) {
   };
 }
 
+// 비밀번호 재설정 코드 검증
+export async function verifyPasswordResetCode(email: string, code: string) {
+  const res = await api.post('/auth/password/verify-code', { email, code });
+  return res.data as {
+    success: boolean;
+    message: string;
+    errorCode?: string;
+  };
+}
+
 // 비밀번호 재설정 완료
 export async function resetPassword(email: string, code: string, newPassword: string) {
   const res = await api.post('/auth/password/reset', { email, code, newPassword });
   return res.data as { message: string };
 }
+

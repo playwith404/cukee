@@ -328,6 +328,35 @@ def request_password_reset(
         )
 
 
+@router.post("/password/verify-code", response_model=VerifyCodeResponse, status_code=status.HTTP_200_OK)
+def verify_password_code(
+    request_data: VerifyCodeRequest
+):
+    """
+    비밀번호 재설정 인증번호 확인 (삭제하지 않음)
+    - 단계별 UI를 위해 인증번호가 맞는지 미리 확인하는 용도
+    """
+    result = VerificationService.check_password_reset_code(request_data.email, request_data.code)
+
+    if not result["success"]:
+        error_code = result.get("error_code")
+        status_code = status.HTTP_410_GONE if error_code == "EXPIRED" else status.HTTP_400_BAD_REQUEST
+        
+        raise HTTPException(
+            status_code=status_code,
+            detail={
+                "success": False,
+                "message": result["message"],
+                "error_code": error_code
+            }
+        )
+
+    return VerifyCodeResponse(
+        success=True,
+        message=result["message"]
+    )
+
+
 @router.post("/password/reset", response_model=MessageResponse, status_code=status.HTTP_200_OK)
 def reset_password(
     request_data: ResetPasswordRequest,

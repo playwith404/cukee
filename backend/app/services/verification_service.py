@@ -14,6 +14,7 @@ class VerificationService:
     VERIFICATION_PREFIX = "verify:email:"
     RESET_PASSWORD_PREFIX = "verify:reset-password:"
     RATE_LIMIT_PREFIX = "rate:email:"
+    RESET_PASSWORD_VERIFIED_PREFIX = "verified:reset-password:"
 
     @staticmethod
     def generate_code(length: int = 6) -> str:
@@ -186,6 +187,37 @@ class VerificationService:
 
         # 인증 성공 시 인증번호 삭제 (재사용 방지)
         redis.delete(verify_key)
+
+        return {
+            "success": True,
+            "message": "인증번호가 확인되었습니다."
+        }
+
+    @staticmethod
+    def check_password_reset_code(email: str, code: str) -> dict:
+        """
+        비밀번호 재설정 인증번호 확인 (삭제하지 않음)
+        - 프론트엔드 UI 단계 구분용
+        """
+        redis = get_redis()
+        verify_key = f"{VerificationService.RESET_PASSWORD_PREFIX}{email}"
+
+        # 저장된 인증번호 조회
+        stored_code = redis.get(verify_key)
+
+        if not stored_code:
+            return {
+                "success": False,
+                "message": "인증번호가 만료되었거나 존재하지 않습니다.",
+                "error_code": "EXPIRED"
+            }
+
+        if stored_code != code:
+            return {
+                "success": False,
+                "message": "인증번호가 일치하지 않습니다.",
+                "error_code": "INVALID"
+            }
 
         return {
             "success": True,
