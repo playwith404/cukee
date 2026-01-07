@@ -45,7 +45,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  pointer-events: none; /* 클릭 통과 */
+  pointer-events: none;
 
   transform-style: preserve-3d; /* 프레임 그림자 이동시 자연스럽게 따라감 */
 }
@@ -67,12 +67,64 @@
   filter: blur(6px);
   z-index: -1;
 }
+/* 프레임 클릭 효과  */
+
+.frame:hover {
+  transform: scale(1.02);              /* 호버 시 확대 */
+  cursor: pointer;
+}
+.frame:active {
+  transform: scale(1.01);       /* 클릭 시 약간 축소 */ 
+}
 
 .content {
   width: 100%;
   height: 100%;
   background-color: #e8e2dc;
 }
+
+/* 포스터 이미지 */
+.posterImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: filter 0.25s ease, transform 0.25s ease;
+  cursor: pointer;
+}
+
+/* hover 시 포스터 어두워짐 */
+.content:hover .posterImage {
+  filter: brightness(0.6);
+  transform: scale(1.02);
+}
+
+/* hover 시 안내 텍스트 */
+.posterOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+  line-height: 1.4;
+
+  background: rgba(0, 0, 0, 0.25);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+
+  pointer-events: none; /* 클릭은 img로 통과 */
+  z-index: 2;
+}
+
+/* hover 시 텍스트 표시 */
+.content:hover .posterOverlay {
+  opacity: 1;
+}
+
 .actions {
   position: absolute;
   /* 기존 bottom: -45px; 제거 -> 포스터를 가리지 않게 하기 위함 */

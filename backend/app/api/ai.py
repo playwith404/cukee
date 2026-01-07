@@ -3,15 +3,17 @@ AI 관련 API 엔드포인트 - VM2 AI 서버 연동
 """
 import httpx
 import logging
-from fastapi import APIRouter, Depends, status
+from typing import Optional
+from fastapi import APIRouter, Depends, status, Cookie
 from sqlalchemy.orm import Session as DBSession
 
 from app.core.database import get_db
 from app.core.exceptions import BadRequestException, InternalServerErrorException
 from app.schemas.ai import AIGenerateRequest, AIGenerateResponse
-from app.utils.dependencies import get_current_user
+from app.utils.dependencies import get_current_user, get_session_id
 from app.models import User
 from app.models.ticket import TicketGroup
+from app.services import persona_cache_service
 
 logger = logging.getLogger(__name__)
 
@@ -197,13 +199,17 @@ async def curate_movies(
 
 
 @router.post("/movie-detail", status_code=status.HTTP_200_OK)
-async def get_movie_detail(request_data: dict):
+async def get_movie_detail(
+    request_data: dict,
+    session_id: Optional[str] = Depends(get_session_id)
+):
     """
     영화 상세 정보 조회 (AI 서버 프록시)
-    - 인증 불필요
+    - 캐시 확인 → 캐시 히트면 반환 → 미스면 LLM 생성 후 캐싱
+    - 인증 불필요 (세션은 캐시 키로만 사용)
     """
     movie_id = request_data.get("movieId")
-    ticket_id = request_data.get("ticketId")
+    ticket_id = request_data.get("ticketId", 1)
     
     if not movie_id:
         raise BadRequestException(
@@ -211,11 +217,27 @@ async def get_movie_detail(request_data: dict):
             details="movieId는 필수 항목입니다."
         )
     
+    # 1. Redis 캐시 확인 (세션 ID가 있을 때만)
+    if session_id:
+        cached_summary = persona_cache_service.get_cached_summary(
+            session_id=session_id,
+            movie_id=movie_id,
+            ticket_id=ticket_id
+        )
+        if cached_summary:
+            logger.info(f"Returning cached summary for movie {movie_id}")
+            # 캐시된 데이터에서 title 정보를 같이 저장하기 위해 형식 맞춤
+            # 캐시에는 "title|detail" 형식으로 저장
+            if "|" in cached_summary:
+                title, detail = cached_summary.split("|", 1)
+                return {"movieId": movie_id, "title": title, "detail": detail}
+            return {"movieId": movie_id, "title": "", "detail": cached_summary}
+    
     # ticketId로 테마 찾기 (큐레이션과 동일한 LORA 사용)
     theme = TICKET_TO_THEME.get(ticket_id, "편안하고 잔잔한 감성 추구")  # 기본값
     
     try:
-        # VM2 AI 서버 호출
+        # 2. VM2 AI 서버 호출
         async with httpx.AsyncClient(timeout=30.0) as client:
             response = await client.post(
                 f"{AI_SERVER_URL}/api/v1/movie-detail",
@@ -232,7 +254,21 @@ async def get_movie_detail(request_data: dict):
                     details=f"AI Server returned {response.status_code}"
                 )
             
-            return response.json()
+            result = response.json()
+            
+            # 3. Redis에 캐싱 (세션 ID가 있을 때만)
+            if session_id:
+                title = result.get("title", "")
+                detail = result.get("detail", "")
+                cache_value = f"{title}|{detail}"  # title과 detail 함께 저장
+                persona_cache_service.cache_summary(
+                    session_id=session_id,
+                    movie_id=movie_id,
+                    ticket_id=ticket_id,
+                    summary=cache_value
+                )
+            
+            return result
             
     except httpx.RequestError as e:
         logger.error(f"AI server connection failed: {e}")
@@ -240,3 +276,20 @@ async def get_movie_detail(request_data: dict):
             message="AI 서버에 연결할 수 없습니다.",
             details=str(e)
         )
+
+
+@router.delete("/cache", status_code=status.HTTP_200_OK)
+async def clear_cache(
+    session_id: Optional[str] = Depends(get_session_id)
+):
+    """
+    세션의 모든 persona 캐시 삭제
+    - 페이지 이탈 시 호출
+    """
+    if not session_id:
+        return {"message": "No session to clear", "deleted": 0}
+    
+    deleted = persona_cache_service.clear_session_cache(session_id)
+    logger.info(f"Cleared {deleted} cache entries for session {session_id}")
+    
+    return {"message": "Cache cleared", "deleted": deleted}

@@ -59,6 +59,7 @@ class ExhibitionMovie(Base):
     movie_id = Column(Integer, ForeignKey("movies.id", ondelete="CASCADE"), nullable=False, index=True)
     display_order = Column(Integer, default=0)
     curator_comment = Column(Text, nullable=True)
+    persona_summary = Column(Text, nullable=True)  # AI 생성 영화 소개
     is_pinned = Column(Boolean, default=False)
     is_removed = Column(Boolean, default=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())

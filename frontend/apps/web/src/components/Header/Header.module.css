@@ -2,302 +2,388 @@
    Header 영역
    ========================================= */
 .outerWrapper {
-    position: sticky;
-    top: 15px;
-    z-index: 102;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    pointer-events: none;
+  position: sticky;
+  top: 15px;
+  z-index: 102;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
 }
 
 .header {
-    width: 1300px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 10px 20px;
-    border-radius: 9999px;
-    background-color: #EDE6DD;
-    box-shadow: inset 0 4px 10px 0 rgba(0, 0, 0, 0.15);
-    pointer-events: auto;
-    position: relative;
+  width: 1300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 20px;
+  border-radius: 9999px;
+  background-color: #EDE6DD;
+  box-shadow: inset 0 4px 10px 0 rgba(0, 0, 0, 0.15);
+  pointer-events: auto;
+  position: relative;
 }
 
 .container {
-    width: 700px;
-    height: 45px;
-    background-color: #8F8784;
-    border-radius: 9999px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0 20px;
-    box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.25);
-    color: white;
-    margin: 0;
+  width: 700px;
+  height: 45px;
+  background-color: #8F8784;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 20px;
+  box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.25);
+  color: white;
+  margin: 0;
 }
 
 .menuWrapper {
-    position: relative;
-    width: 28px;
-    height: 50px;
-    display: flex;
-    align-items: center;
-    transform: translateX(-100px);
+  position: relative;
+  width: 28px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  transform: translateX(-100px);
 }
 
 .title {
-    font-size: 20px;
-    font-weight: 200;
+  font-size: 20px;
+  font-weight: 200;
 }
 
 .menuButton {
-    background: none;
-    border: none;
-    font-size: 32px;
-    cursor: pointer;
-    color: #888888;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  background: none;
+  border: none;
+  font-size: 32px;
+  cursor: pointer;
+  color: #888888;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .cookieIcon {
-    width: 30px;
-    height: 30px;
-    transform: translateY(3px);
-    object-fit: contain;
-    margin-right: 25px;
+  width: 30px;
+  height: 30px;
+  transform: translateY(3px);
+  object-fit: contain;
+  margin-right: 25px;
 }
 
 /* -----------------------------------------
    드롭다운 메뉴 (글래스모피즘)
    ----------------------------------------- */
 .dropdownOuter {
-    position: absolute;
-    top: 100%; /* 헤더 바로 아래 */
-    width: 100%;
-    z-index: 102;
-    padding: 0 20px; /* 약간의 여백 */
-    box-sizing: border-box;
+  position: absolute;
+  top: 100%;
+  /* 헤더 바로 아래 */
+  width: 100%;
+  z-index: 102;
+  padding: 0 20px;
+  /* 약간의 여백 */
+  box-sizing: border-box;
 }
 
 .dropdownGlass {
-    backdrop-filter: blur(20px);
-    background-color: rgba(237, 230, 221, 0.85);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 16px;
-    padding: 30px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-    position: relative;
-    height: 360px;
-    box-sizing: border-box;
+  backdrop-filter: blur(20px);
+  background-color: rgba(237, 230, 221, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+  padding: 30px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  position: relative;
+  height: 360px;
+  box-sizing: border-box;
 }
 
 .dropSplit {
-    display: flex;
-    min-height: 100%;
+  display: flex;
+  min-height: 100%;
 }
 
 /* === Left Section === */
 .dropLeft {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-    border-right: 1px solid rgba(143, 135, 132, 0.3);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  border-right: 1px solid rgba(143, 135, 132, 0.3);
 }
 
 .menuContainer {
-    width: 200px;
-    display: flex;
-    flex-direction: column;
-    gap: 25px;
+  width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
 }
 
 .menuGroup {
-    color: #373431;
-    width: 100%;
-    text-align: center;
-    padding: 5px 0;
+  color: #373431;
+  width: 100%;
+  text-align: center;
+  padding: 5px 0;
 }
 
 .menuLabel {
-    font-size: 24px;
-    font-weight: 300;
-    font-family: inherit;
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: #373431;
+  font-size: 24px;
+  font-weight: 300;
+  font-family: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #373431;
 }
 
 .menuBtn {
-    font-size: 24px;
-    font-weight: 300;
-    font-family: inherit;
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: #373431;
+  font-size: 24px;
+  font-weight: 300;
+  font-family: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #373431;
 }
+
 .menuBtn:hover {
-    font-weight: 500;
+  font-weight: 500;
 }
 
 .menuLabel {
-    font-size: 24px;
-    font-weight: 300;
-    font-family: inherit;
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: #373431;
+  font-size: 24px;
+  font-weight: 300;
+  font-family: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #373431;
 }
+
 .menuLabel:hover {
-    font-weight: 500;
+  font-weight: 500;
 }
 
 /* 2. 닉네임 + 연필 감싸는 영역 */
 .profileRow {
-    display: flex;
-    align-items: center;
-    justify-content: center; /* 가운데 정렬 */
-    gap: 8px; /* 닉네임과 연필 사이 간격 */
-    cursor: pointer; /* 손가락 모양 커서 */
-    transition: opacity 0.2s;
-    padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* 가운데 정렬 */
+  gap: 8px;
+  /* 닉네임과 연필 사이 간격 */
+  cursor: pointer;
+  /* 손가락 모양 커서 */
+  transition: opacity 0.2s;
+  padding: 5px;
 }
 
 .profileName:hover {
-    /* font-weight: 500; */
+  /* font-weight: 500; */
 }
 
 /* 3. 닉네임 텍스트 */
 .profileName {
-    font-size: 20px; /* 타이틀보다 살짝 작게 */
-    font-weight: 300;
-    color: #555;
+  font-size: 20px;
+  /* 타이틀보다 살짝 작게 */
+  font-weight: 300;
+  color: #555;
 }
 
 /* 4. 연필 아이콘 */
 .pencilIcon {
-    width: 16px;
-    height: 16px;
-    object-fit: contain;
-    opacity: 0.6;
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+  opacity: 0.6;
 }
+
 .divider {
-    width: 60px;            /* 선의 길이 (취향껏 조절) */
-    border: none;
-    border-top: 1px solid rgba(55, 52, 49, 0.3); /* 선 색상 및 두께 */
-    margin: 40px auto 30px;      /* 위아래 간격 50px, 좌우 중앙 정렬 */
+  width: 60px;
+  /* 선의 길이 (취향껏 조절) */
+  border: none;
+  border-top: 1px solid rgba(55, 52, 49, 0.3);
+  /* 선 색상 및 두께 */
+  margin: 40px auto 30px;
+  /* 위아래 간격 50px, 좌우 중앙 정렬 */
 }
+
 .menuBtnMore {
-    margin-top: 0px;
-    font-size: 20px;
-    font-weight: 300;
-    font-family: inherit;
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: #373431;
+  margin-top: 0px;
+  font-size: 20px;
+  font-weight: 300;
+  font-family: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #373431;
 }
 
 .subMenu {
-    background: none;
-    text-align: center;
+  background: none;
+  text-align: center;
 }
 
 /* ... 기존 CSS ... */
 
 /* [추가] 서브 메뉴 아이템 (버그 제보, 탈퇴하기) */
 .subMenuBtn {
-    display: block; /* 한 줄 차지 */
-    width: 100%;
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: 400;
-    color: #555;
-    padding: 0;
-    margin-top: 8px;
+  display: block;
+  /* 한 줄 차지 */
+  width: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 400;
+  color: #555;
+  padding: 0;
+  margin-top: 8px;
 }
 
 /* 요청하신 호버 시 두께 400 설정 */
 .subMenuBtn:hover {
-    font-weight: 500;
+  font-weight: 500;
 }
 
 .menuBtnMore:hover {
-    font-weight: 500;
+  font-weight: 500;
 }
 
 /* === Right Section === */
 
 .dropRight {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    /* padding-left: 0px; */
-    align-items: center;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  /* padding-left: 0px; */
+  align-items: center;
 }
 
 .listTitle {
-    font-size: 24px;
-    font-weight: 300;
-    color: #373431;
-    margin-top: 0;
-    margin-bottom: 20px;
+  font-size: 24px;
+  font-weight: 300;
+  color: #373431;
+  margin-top: 0;
+  margin-bottom: 20px;
 }
 
 .scrollList {
-    flex: 1;
-    overflow-y: auto;
-    width: 100%;
-    max-height: 200px;
+  flex: 1;
+  overflow-y: auto;
+  width: 100%;
+  max-height: 200px;
 }
 
 .scrollList ul {
-    padding: 0;
-    margin: 0;
-    list-style: none;
+  padding: 0;
+  margin: 0;
+  list-style: none;
 }
 
 .scrollList li {
-    padding: 8px 0;
-    font-size: 16px;
-    font-weight: 300;
-    text-align: center;
-    color: #373431;
-    cursor: pointer;
+  padding: 8px 0;
+  font-size: 16px;
+  font-weight: 300;
+  text-align: center;
+  color: #373431;
+  cursor: pointer;
 }
 
 .scrollList li:hover {
-    color: #8F8784;
-    font-weight: 500;
+  color: #8F8784;
+  font-weight: 500;
+}
+
+/* === [신규] 전시회 목록 인라인 편집 스타일 === */
+.exhibitionItem {
+  padding: 8px 10px !important;
+}
+
+.viewRow,
+.editRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.exhibitionTitle {
+  flex: 1;
+  text-align: center;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.editInput {
+  flex: 1;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #8F8784;
+  padding: 4px 8px;
+  font-size: 16px;
+  font-weight: 300;
+  color: #373431;
+  outline: none;
+  text-align: center;
+}
+
+.editInput:focus {
+  border-bottom: 2px solid #373431;
+}
+
+.iconBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 4px 6px;
+  color: #8F8784;
+  transition: all 0.2s;
+  opacity: 0.6;
+}
+
+.iconBtn:hover {
+  opacity: 1;
+  color: #373431;
+}
+
+.deleteBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  padding: 4px 8px;
+  color: #c44;
+  transition: all 0.2s;
+  opacity: 0.7;
+}
+
+.deleteBtn:hover {
+  opacity: 1;
+  color: #a00;
 }
 
 /* Footer */
 .dropFooter {
-    position: absolute;
-    bottom: 20px;
-    right: 50px;
-    font-size: 16px;
-    color: #8F8784;
-    cursor: pointer;
-    text-decoration: underline;
-    background: none;
-    border: none;
-    padding: 0;
+  position: absolute;
+  bottom: 20px;
+  right: 50px;
+  font-size: 16px;
+  color: #8F8784;
+  cursor: pointer;
+  text-decoration: underline;
+  background: none;
+  border: none;
+  padding: 0;
 }
 
 .dropFooter:hover {
-    color: #373431;
+  color: #373431;
 }
 
 
@@ -319,13 +405,16 @@
 
 .glassModal {
   border: 1px solid rgba(255, 255, 255, 0.3);
-  padding: 40px 30px; /* 내부 여백 살짝 조정 */
-  backdrop-filter: blur(5px); /* 블러 효과 강화 */
-  background-color: rgba(255, 255, 255, 0.35); 
-  border-radius: 26px; 
+  padding: 40px 30px;
+  /* 내부 여백 살짝 조정 */
+  backdrop-filter: blur(5px);
+  /* 블러 효과 강화 */
+  background-color: rgba(255, 255, 255, 0.35);
+  border-radius: 26px;
   box-shadow: 35px 35px 68px 0px rgba(0, 0, 0, 0.15), inset -10px -10px 16px 0px rgba(0, 0, 0, 0.15), inset 0px 11px 28px 0px rgb(255, 255, 255);
 
-  width: 500px; /* 너무 넓지 않게 조정 (700 -> 500) */
+  width: 500px;
+  /* 너무 넓지 않게 조정 (700 -> 500) */
   max-width: 90%;
   text-align: center;
   display: flex;
@@ -350,7 +439,8 @@
 }
 
 .promptDesc {
-  display: block; /* 줄바꿈 효과 */
+  display: block;
+  /* 줄바꿈 효과 */
   font-weight: 500;
   color: #373431;
   margin-top: 0px;
@@ -363,7 +453,8 @@
   margin-top: 10px;
 }
 
-.btnCancel, .btnConfirm {
+.btnCancel,
+.btnConfirm {
   padding: 8px 25px;
   border-radius: 9999px;
   font-size: 16px;
@@ -377,6 +468,7 @@
   border: 1px solid #8F8784;
   color: #8F8784;
 }
+
 .btnCancel:hover {
   background-color: rgba(143, 135, 132, 0.1);
 }
@@ -386,6 +478,7 @@
   color: white;
   font-weight: 500;
 }
+
 .btnConfirm:hover {
   background-color: #7a7370;
   transform: translateY(-1px);
@@ -396,8 +489,10 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
-  text-align: left; /* 라벨 왼쪽 정렬 */
-  padding: 0 20px;  /* 내부 여백 살짝 */
+  text-align: left;
+  /* 라벨 왼쪽 정렬 */
+  padding: 0 20px;
+  /* 내부 여백 살짝 */
 }
 
 .formGroup {
@@ -417,7 +512,8 @@
   width: 100%;
   background: transparent;
   border: none;
-  border-bottom: 1px solid #8F8784; /* 밑줄 스타일 */
+  border-bottom: 1px solid #8F8784;
+  /* 밑줄 스타일 */
   padding: 8px 5px;
   font-size: 18px;
   color: #373431;
@@ -427,7 +523,8 @@
 }
 
 .inputUnderline:focus {
-  border-bottom: 2px solid #373431; /* 포커스 시 진해짐 */
+  border-bottom: 2px solid #373431;
+  /* 포커스 시 진해짐 */
 }
 
 .inputUnderline:disabled {
@@ -437,21 +534,38 @@
 }
 
 .emailText {
-  font-size: 18px;      /* 입력창 폰트 크기와 동일 */
-  font-weight: 300;     /* 입력창 두께와 동일 */
-  color: #555;          /* 읽기 전용 느낌의 회색 */
+  font-size: 18px;
+  /* 입력창 폰트 크기와 동일 */
+  font-weight: 300;
+  /* 입력창 두께와 동일 */
+  color: #555;
+  /* 읽기 전용 느낌의 회색 */
   margin: 0;
-  padding: 8px 5px;     /* 입력창과 위치를 맞추기 위한 패딩 */
+  padding: 8px 5px;
+  /* 입력창과 위치를 맞추기 위한 패딩 */
   text-align: left;
   /* 밑줄이 필요 없다면 border-bottom 없음, 필요하면 추가 */
 }
 
 /* 애니메이션 */
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
+
 @keyframes slideUp {
-  from { transform: translateY(20px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
