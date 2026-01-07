@@ -53,6 +53,35 @@ services:
         max-size: "10m"
         max-file: "3"
 
+  # 2. Node Exporter (System Agent)
+  node-exporter:
+    image: prom/node-exporter
+    container_name: node-exporter
+    restart: unless-stopped
+    command:
+      - '--path.rootfs=/host'
+    network_mode: host
+    pid: host
+    volumes:
+      - '/:/host:ro,rslave'
+
+  # 3. DCGM Exporter (GPU Monitoring)
+  dcgm-exporter:
+    image: nvidia/dcgm-exporter:3.3.5-3.4.0-ubuntu22.04
+    container_name: dcgm-exporter
+    restart: unless-stopped
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    ports:
+      - "9400:9400"
+    environment:
+      - DCGM_EXPORTER_NO_HOSTNAME=1
+
 networks:
   ai-network:
     driver: bridge

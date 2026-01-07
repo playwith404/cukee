@@ -2,7 +2,7 @@ name: Frontend CI/CD
 
 on:
   push:
-    branches: [ "main", "dev"] 
+    branches: [ "main", "dev" ] 
     paths: 
       - 'frontend/**'
       - 'docker-compose.yml'
@@ -69,7 +69,7 @@ jobs:
           username: ${{ secrets.SSH_USER_VM }}
           key: ${{ secrets.SSH_KEY_VM }}
           port: ${{ secrets.SSH_PORT || 22 }}
-          source: "docker-compose.yml,nginx"
+          source: "docker-compose.yml,nginx,monitor"
           target: "~/app"
 
       - name: Deploy to VM
@@ -85,7 +85,17 @@ jobs:
             
             # 0. Pre-check: Clean up and ensure config validity
             mkdir -p backend
+            mkdir -p backend
             touch backend/.env # Satisfy docker-compose env_file requirement
+
+            # Setup Prometheus config
+            if [ -f "monitor/prometheus.yml.example" ]; then
+                cp monitor/prometheus.yml.example monitor/prometheus.yml
+                # SSH_HOST_GPU 시크릿을 이용하여 IP 교체
+                if [ -n "${{ secrets.SSH_HOST_GPU }}" ]; then
+                    sed -i "s/GPU_SERVER_IP_PLACEHOLDER/${{ secrets.SSH_HOST_GPU }}/g" monitor/prometheus.yml
+                fi
+            fi
 
             # 1. Docker Login
             echo ${{ secrets.DOCKER_TOKEN }} | sudo docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
