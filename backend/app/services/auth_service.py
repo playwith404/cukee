@@ -110,6 +110,21 @@ class AuthService:
         return user
 
     @staticmethod
+    def reset_password(db: DBSession, email: str, new_password: str) -> User:
+        """비밀번호 재설정"""
+        user = db.query(User).filter(User.email == email).first()
+        if not user:
+            raise NotFoundException(
+                message="사용자를 찾을 수 없습니다.",
+                details=f"이메일 '{email}'에 해당하는 사용자가 없습니다."
+            )
+
+        user.hashed_password = get_password_hash(new_password)
+        db.commit()
+        db.refresh(user)
+        return user
+
+    @staticmethod
     def get_or_create_google_user(db: DBSession, google_user_info: dict) -> User:
         """Google 사용자 조회 또는 생성"""
         google_id = google_user_info.get("id")
