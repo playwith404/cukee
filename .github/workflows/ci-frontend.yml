@@ -9,7 +9,7 @@ on:
       - '.github/workflows/ci-frontend.yml'
       - 'nginx/**'
   pull_request:
-    branches: [ "main", "dev", "feature/backend/CUK-124-forgot-pwd" ]
+    branches: [ "main", "dev", "feature/backend/CUK-124-forgot-pwd" ] 
     paths:
       - 'frontend/**'
       - 'docker-compose.yml'
