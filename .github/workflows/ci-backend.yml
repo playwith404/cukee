@@ -3,7 +3,7 @@ name: Backend CI/CD
 on:
   workflow_dispatch:
   push:
-    branches: [ "main", "dev" ,"feature/exh/CUK-121"] 
+    branches: [ "main", "dev" ] 
     paths:
       - 'backend/**'
       - 'docker-compose.yml'

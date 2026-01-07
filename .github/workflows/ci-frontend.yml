@@ -2,7 +2,7 @@ name: Frontend CI/CD
 
 on:
   push:
-    branches: [ "main", "dev", "feature/exh/CUK-121" ] 
+    branches: [ "main", "dev"] 
     paths: 
       - 'frontend/**'
       - 'docker-compose.yml'
