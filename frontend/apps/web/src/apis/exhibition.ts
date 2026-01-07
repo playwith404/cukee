@@ -190,6 +190,14 @@ export const updateExhibition = async (
   return response.data;
 };
 
+/**
+ * 전시회 삭제
+ * DELETE /exhibitions/{id}
+ */
+export const deleteExhibition = async (exhibitionId: number): Promise<void> => {
+  await api.delete(`/exhibitions/${exhibitionId}`);
+};
+
 // =============================================================================
 // [API Functions] 티켓
 // =============================================================================
