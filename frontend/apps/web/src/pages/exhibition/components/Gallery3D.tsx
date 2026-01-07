@@ -6,6 +6,8 @@ export interface Frame {
   content?: string;
   imageUrl?: string;
   isPinned?: boolean;
+  title?: string;  // 영화 제목
+  personaSummary?: string | null;  // DB에서 가져온 AI 영화 소개
 }
 
 interface Gallery3DProps {
@@ -28,12 +30,12 @@ interface ConfirmModalProps {
   confirmText: string;
 }
 
-const ConfirmModal: React.FC<ConfirmModalProps> = ({ 
-  onClose, 
-  onConfirm, 
-  title, 
-  description, 
-  confirmText 
+const ConfirmModal: React.FC<ConfirmModalProps> = ({
+  onClose,
+  onConfirm,
+  title,
+  description,
+  confirmText
 }) => {
   return (
     <div className={styles.modalOverlay} onClick={onClose}>
@@ -128,7 +130,7 @@ export const Gallery3D = ({
         ),
         confirmText: '삭제'
       };
-    } 
+    }
     if (activeModal.type === 'PIN') {
       return {
         title: `'${activeModal.movieTitle}' 고정하기`,
@@ -152,7 +154,7 @@ export const Gallery3D = ({
       <div className={styles.container}>
         {frames.map((frame, index) => {
           const positionClass = getFrameStyle(index);
-          const movieTitle = frame.content || '영화'; 
+          const movieTitle = frame.content || '영화';
 
           return (
             <div
@@ -197,7 +199,7 @@ export const Gallery3D = ({
               {isEditMode && (
                 <div className={styles.actions}>
                   <div className={styles.actionTitle}>{movieTitle}</div>
-                  
+
                   <div className={styles.buttonGroup}>
                     <button
                       type="button"

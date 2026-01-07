@@ -58,3 +58,13 @@ def get_current_user_optional(
         return user
     except:
         return None
+
+
+def get_session_id(
+    session: Optional[str] = Cookie(None)
+) -> Optional[str]:
+    """
+    세션 ID 추출 (캐시 키 생성용)
+    """
+    return session
+
