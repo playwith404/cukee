@@ -58,7 +58,7 @@ export const ForgotPassword = () => {
         try {
             const response = await verifyPasswordResetCode(email, code);
             if (response.success) {
-                setMessage('인증되었습니다.');
+                // 인증되었습니다 메시지 제거하고 바로 3단계로 이동
                 setStep(3);
             }
         } catch (err: any) {
@@ -238,7 +238,18 @@ export const ForgotPassword = () => {
 
                         {/* 메시지 표시 */}
                         {error && <div className={styles.error} style={{ marginTop: '15px' }}>{error}</div>}
-                        {message && <div className={styles.success} style={{ marginTop: '15px' }}>{message}</div>}
+                        {message && (
+                            <div
+                                className={styles.success}
+                                style={{
+                                    marginTop: '8px',
+                                    fontSize: '0.85rem', // 사용자가 원한 대로 작게
+                                    color: '#4ade80'    // 녹색 유지를 위해 명시 (styles.success가 적용되겠지만 확인차)
+                                }}
+                            >
+                                {message}
+                            </div>
+                        )}
 
                     </div>
                 </div>
