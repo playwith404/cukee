@@ -75,7 +75,7 @@ class RetrievalService:
                 WHERE me.embedding IS NOT NULL
                   AND tgm.ticket_group_id = :ticket_id
                 {exclude_condition}
-                  AND (:adult_exclude = false OR (m.certification NOT IN ('18', '19', '19+', 'Restricted', 'R', 'NC-17') AND m.certification IS NOT NULL AND m.certification != ''))
+                  AND (:adult_exclude = false OR m.certification IN ('ALL', '12', '15', 'G', 'PG', 'PG-13'))
                 ORDER BY me.embedding <=> :embedding ASC
                 LIMIT :limit
             """)
