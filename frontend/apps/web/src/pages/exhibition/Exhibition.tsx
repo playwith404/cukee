@@ -219,7 +219,8 @@ export const Exhibition = () => {
       if (exhibitionIdParam) return;
 
       try {
-        const response = await curateMovies(currentTicketId, 5);
+        const adultExclude = localStorage.getItem('adultExclude') === 'true';
+        const response = await curateMovies(currentTicketId, 5, adultExclude);
 
         if (response.movies && response.movies.length > 0) {
           const newFrames: Frame[] = response.movies.map((movie) => ({

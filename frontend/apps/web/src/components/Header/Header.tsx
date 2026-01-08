@@ -532,9 +532,21 @@ export const Header: React.FC<HeaderProps> = ({
   exhibitionTitle
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isAdultExclude, setIsAdultExclude] = useState(false);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('adultExclude');
+    setIsAdultExclude(saved === 'true');
+  }, []);
 
   const toggleMenu = () => {
     setIsMenuOpen((prev) => !prev);
+  };
+
+  const toggleAdultFilter = () => {
+    const nextState = !isAdultExclude;
+    setIsAdultExclude(nextState);
+    localStorage.setItem('adultExclude', String(nextState));
   };
 
   return (
@@ -562,6 +574,17 @@ export const Header: React.FC<HeaderProps> = ({
             cukee / {currentSection}
             {exhibitionTitle && ` / ${exhibitionTitle}`}
           </span>
+        </div>
+
+        {/* 3. 우측 19금 필터 토글 */}
+        <div className={styles.rightWrapper}>
+          <button
+            className={`${styles.toggleBtn} ${isAdultExclude ? styles.toggleBtnActive : ''}`}
+            onClick={toggleAdultFilter}
+            title="19금 컨텐츠 필터링"
+          >
+            {isAdultExclude ? '19+ OFF' : '19+ ON'}
+          </button>
         </div>
 
         {/* 3. 드롭다운 메뉴 (조건부 렌더링) */}

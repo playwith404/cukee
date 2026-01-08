@@ -73,6 +73,7 @@ async def generate_exhibition(
                     "theme": theme,
                     "ticketId": request_data.ticketId,
                     "pinnedMovieIds": request_data.pinnedMovieIds,
+                    "adultExclude": request_data.adultExclude,  # [추가] 필터 전달
                     "max_length": 2048,
                     "temperature": 0.7,
                     "top_p": 0.9,
@@ -153,6 +154,7 @@ async def curate_movies(
 
     ticket_id = request_data.get("ticketId")
     limit = request_data.get("limit", 5)
+    adult_exclude = request_data.get("adultExclude", False)  # [추가]
 
     if not ticket_id:
         raise BadRequestException(
@@ -162,16 +164,22 @@ async def curate_movies(
 
     try:
         # ticket_group_movies와 movies 테이블 조인하여 영화 조회
+        # [수정] 19금 필터링 조건 추가
         query = text("""
             SELECT m.id as movie_id, m.title_ko as title, m.poster_path as poster_url
             FROM ticket_group_movies tgm
             JOIN movies m ON tgm.movie_id = m.id
             WHERE tgm.ticket_group_id = :ticket_id
+            AND (:adult_exclude = false OR m.certification IN ('ALL', '12', '15', 'G', 'PG', 'PG-13'))
             ORDER BY RANDOM()
             LIMIT :limit
         """)
         
-        result = db.execute(query, {"ticket_id": ticket_id, "limit": limit})
+        result = db.execute(query, {
+            "ticket_id": ticket_id, 
+            "limit": limit,
+            "adult_exclude": adult_exclude
+        })
         movies = result.fetchall()
 
         movie_list = [

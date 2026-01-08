@@ -59,7 +59,7 @@ async def generate_exhibition(request: GenerateRequest, db: Session = Depends(ge
         retrieved_movies = []
         if limit > 0:
             retrieved_movies = await RetrievalService.retrieve_similar_movies(
-                db, request.prompt, request.ticketId, limit=limit, exclude_ids=request.pinnedMovieIds
+                db, request.prompt, request.ticketId, limit=limit, exclude_ids=request.pinnedMovieIds, adult_exclude=request.adultExclude
             )
         
         logger.info(f"Retrieved {len(retrieved_movies)} movies from PGVECTOR")
