@@ -282,6 +282,7 @@ export const MainCarousel: React.FC<MainCarouselProps> = ({
           <div
             key={slide.id}
             className={`${styles.ticketBase} ${getPositionClass(slide.position)}`}
+            onClick={() => onTicketClick(slide.ticket.id)}
             style={{
               aspectRatio: `${slide.ticket.width} / ${slide.ticket.height}`
             }}
