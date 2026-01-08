@@ -67,7 +67,7 @@ class RetrievalService:
             # (:adult_exclude = false OR m.certification NOT IN (...))
             
             query = text(f"""
-                SELECT m.id, m.title_ko, m.overview_ko, m.poster_path, 
+                SELECT m.id, m.title_ko, m.overview_ko, m.poster_path, m.certification,
                        1 - (me.embedding <=> :embedding) as similarity
                 FROM movies m
                 JOIN movie_embeddings me ON m.id = me.movie_id
@@ -93,6 +93,7 @@ class RetrievalService:
             
             movies = []
             for row in rows:
+                logger.info(f"Retrieved movie: {row.title_ko} (Cert: {row.certification})")
                 movies.append({
                     "id": row.id,
                     "title": row.title_ko,
