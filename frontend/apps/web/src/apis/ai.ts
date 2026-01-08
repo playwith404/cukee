@@ -71,11 +71,13 @@ export interface MovieDetailResponse {
  */
 export const curateMovies = async (
   ticketId: number,
-  limit: number = 5
+  limit: number = 5,
+  adultExclude: boolean = false
 ): Promise<CurateMoviesResponse> => {
   const response = await api.post<CurateMoviesResponse>('/ai/curate-movies', {
     ticketId,
     limit,
+    adultExclude,
   });
   return response.data;
 };
@@ -87,12 +89,14 @@ export const curateMovies = async (
 export const generateExhibition = async (
   prompt: string,
   ticketId: number,
-  pinnedMovieIds: number[] = []
+  pinnedMovieIds: number[] = [],
+  adultExclude: boolean = false
 ): Promise<AIExhibitionResponse> => {
   const response = await api.post<AIExhibitionResponse>('/ai/generate', {
     prompt,
     ticketId,
-    pinnedMovieIds
+    pinnedMovieIds,
+    adultExclude
   });
   return response.data;
 };
@@ -109,5 +113,14 @@ export const getMovieDetail = async (
     movieId,
     ticketId,
   });
+  return response.data;
+};
+
+/**
+ * 세션의 영화 상세 캐시 삭제 (페이지 이탈 시)
+ * 경로: DELETE /api/ai/cache
+ */
+export const clearMovieDetailCache = async (): Promise<{ message: string; deleted: number }> => {
+  const response = await api.delete<{ message: string; deleted: number }>('/ai/cache');
   return response.data;
 };

@@ -5,7 +5,7 @@ FROM pytorch/pytorch:2.6.0-cuda12.4-cudnn9-runtime
 # 작업 디렉토리 설정
 WORKDIR /app
 
-# 시스템 패키지 업데이트 및 필수 도구 설치
+# 시스템 패키지 업데이트 및 필수 도구 설치 
 RUN apt-get update && apt-get install -y \
     git \
     curl \

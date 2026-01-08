@@ -48,25 +48,13 @@ class RetrievalService:
             return []
 
     @staticmethod
-    async def retrieve_similar_movies(db_session, prompt: str, ticket_id: int, limit: int = 5, exclude_ids: list[int] = None):
+    async def retrieve_similar_movies(db_session, prompt: str, ticket_id: int, limit: int = 5, exclude_ids: list[int] = None, adult_exclude: bool = False):
         """
-        사용자 프롬프트와 유사한 영화 검색 (티켓별 필터링)
-        
-        Args:
-            db_session: DB 세션
-            prompt: 사용자 입력 프롬프트
-            ticket_id: 티켓 ID (영화 필터링용)
-            limit: 반환할 영화 개수
-            
-        Returns:
-            유사한 영화 목록 (List[dict])
+        사용자 프롬프트와 유사한 영화 검색 (티켓별 필터링 + 19금 필터링)
         """
         try:
             # 1. 프롬프트 임베딩 생성
             embedding = embedding_manager.encode(prompt)
-            
-            # 2. PGVECTOR 코사인 유사도 검색 (티켓별 필터링)
-            # 2. PGVECTOR 코사인 유사도 검색 (티켓별 필터링)
             
             # 제외할 ID 조건 추가
             exclude_condition = ""
@@ -74,6 +62,10 @@ class RetrievalService:
                 exclude_ids_str = ",".join(map(str, exclude_ids))
                 exclude_condition = f"AND m.id NOT IN ({exclude_ids_str})"
 
+            # 19금 필터링 조건 추가
+            # adult_exclude가 True이면 18세 이상(18, 19, Restricted, R, NC-17) 제외
+            # (:adult_exclude = false OR m.certification NOT IN (...))
+            
             query = text(f"""
                 SELECT m.id, m.title_ko, m.overview_ko, m.poster_path, 
                        1 - (me.embedding <=> :embedding) as similarity
@@ -83,18 +75,19 @@ class RetrievalService:
                 WHERE me.embedding IS NOT NULL
                   AND tgm.ticket_group_id = :ticket_id
                 {exclude_condition}
+                  AND (:adult_exclude = false OR m.certification IN ('ALL', '12', '15', 'G', 'PG', 'PG-13'))
                 ORDER BY me.embedding <=> :embedding ASC
                 LIMIT :limit
             """)
             
             # vector 타입은 문자열로 변환하여 전달해야 할 수도 있음 (pgvector 버전에 따라 다름)
-            # 여기서는 리스트를 문자열로 변환 "[1.0, 0.5, ...]"
             embedding_str = str(embedding)
             
             result = db_session.execute(query, {
                 "embedding": embedding_str, 
                 "ticket_id": ticket_id,
-                "limit": limit
+                "limit": limit,
+                "adult_exclude": adult_exclude
             })
             rows = result.fetchall()
             

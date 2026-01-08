@@ -41,6 +41,11 @@ class Settings(BaseSettings):
     GOOGLE_CLIENT_SECRET: Optional[str] = None
     GOOGLE_REDIRECT_URI: str = "https://middle.cloudkakao.store/api/auth/google/callback"
 
+    # Kakao OAuth
+    KAKAO_CLIENT_ID: Optional[str] = None
+    KAKAO_CLIENT_SECRET: Optional[str] = None
+    KAKAO_REDIRECT_URI: str = "https://middle.cloudkakao.store/api/auth/kakao/callback"
+
     @property
     def allowed_origins_list(self) -> List[str]:
         """CORS 허용 출처 리스트 반환"""

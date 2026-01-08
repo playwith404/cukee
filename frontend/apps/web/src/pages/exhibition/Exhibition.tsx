@@ -12,7 +12,7 @@ import { ExhibitionGenerator } from './components/ExhGenerator';
 
 // API 타입 import (경로는 프로젝트 구조에 맞게 수정)
 import type { AIExhibitionResponse } from '../../apis/ai';
-import { curateMovies, getMovieDetail } from '../../apis/ai'; // 영화 조회 API
+import { curateMovies, getMovieDetail, clearMovieDetailCache } from '../../apis/ai'; // 영화 조회 API
 import { fetchTickets, type Ticket, createExhibition, getExhibitionById } from '../../apis/exhibition';
 
 import { ExhibitionDecorate } from './ExhibitionDecorate';
@@ -125,6 +125,27 @@ export const Exhibition = () => {
     }
   };
 
+  // [신규] 페이지 이탈 시 캐시 삭제 (새 전시회 모드에서만)
+  useEffect(() => {
+    // 저장된 전시회(ReadOnly)에서는 캐시 삭제 불필요
+    if (isReadOnly) return;
+
+    const handleBeforeUnload = () => {
+      // 동기적으로 sendBeacon 사용 (페이지 언로드 시에도 안정적으로 전송)
+      navigator.sendBeacon('/api/ai/cache', '');
+    };
+
+    // beforeunload 이벤트는 페이지를 떠날 때(새로고침, 탭 닫기, 다른 URL 이동) 발생
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    // cleanup: 컴포넌트 언마운트 시 (React Router로 다른 페이지 이동)
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      // 컴포넌트 언마운트 시에도 캐시 삭제 시도
+      clearMovieDetailCache().catch(console.error);
+    };
+  }, [isReadOnly]);
+
   // [신규] 티켓 정보를 불러오는 useEffect
   useEffect(() => {
     setSelectedMovieDetail(null); // 영화 상세정보(줄거리) 초기화
@@ -166,7 +187,8 @@ export const Exhibition = () => {
               imageUrl: movie.posterUrl
                 ? `https://image.tmdb.org/t/p/w500${movie.posterUrl}`
                 : "https://via.placeholder.com/300x450?text=No+Image",
-              title: movie.title || `영화 ${movie.movieId}`
+              title: movie.title || `영화 ${movie.movieId}`,
+              personaSummary: movie.personaSummary || null  // DB에서 가져온 AI 영화 소개
             }));
             setFrames(exhibitionFrames);
             setActiveIndex(Math.floor(exhibitionFrames.length / 2));
@@ -211,7 +233,8 @@ export const Exhibition = () => {
       if (exhibitionIdParam) return;
 
       try {
-        const response = await curateMovies(currentTicketId, 5);
+        const adultExclude = localStorage.getItem('adultExclude') === 'true';
+        const response = await curateMovies(currentTicketId, 5, adultExclude);
 
         if (response.movies && response.movies.length > 0) {
           const newFrames: Frame[] = response.movies.map((movie) => ({
@@ -253,7 +276,19 @@ export const Exhibition = () => {
     try {
       setLoadingDetail(true);
 
-      // 티켓 ID를 전달하여 해당 티켓의 LORA 테마 사용
+      // 저장된 전시회인 경우: DB에서 가져온 personaSummary 사용
+      if (isReadOnly) {
+        const frame = frames.find(f => f.id === frameId);
+        if (frame && (frame as any).personaSummary) {
+          setSelectedMovieDetail({
+            title: (frame as any).title || '',
+            detail: (frame as any).personaSummary
+          });
+          return;
+        }
+      }
+
+      // 새 전시회: Redis 캐시 확인 후 LLM 생성 (backend에서 처리)
       const response = await getMovieDetail(frameId, currentTicketId);
 
       setSelectedMovieDetail({

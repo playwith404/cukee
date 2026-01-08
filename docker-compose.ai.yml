@@ -53,6 +53,78 @@ services:
         max-size: "10m"
         max-file: "3"
 
+  # 2. Node Exporter (System Agent)
+  node-exporter:
+    image: prom/node-exporter
+    container_name: node-exporter
+    restart: unless-stopped
+    command:
+      - '--path.rootfs=/host'
+    network_mode: host
+    pid: host
+    volumes:
+      - '/:/host:ro,rslave'
+
+  # 3. DCGM Exporter (GPU Monitoring)
+  dcgm-exporter:
+    image: nvidia/dcgm-exporter:3.3.5-3.4.0-ubuntu22.04
+    container_name: dcgm-exporter
+    restart: unless-stopped
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    ports:
+      - "9400:9400"
+    environment:
+      - DCGM_EXPORTER_NO_HOSTNAME=1
+    networks:
+      - ai-network
+
+  # 4. Prometheus (Monitoring Hub)
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    restart: unless-stopped
+    volumes:
+      - ./monitor/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.size=5GB'
+      - '--storage.tsdb.retention.time=7d'
+    ports:
+      - "9090:9090"
+    networks:
+      - ai-network
+
+  # 5. Grafana (Dashboard)
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    restart: unless-stopped
+    ports:
+      - "3100:3000"
+    environment:
+      - GF_SERVER_ROOT_URL=https://middle.cloudkakao.store/monitor/
+      - GF_SERVER_SERVE_FROM_SUB_PATH=true
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    networks:
+      - ai-network
+
+volumes:
+  prometheus_data:
+  grafana_data:
+
 networks:
   ai-network:
     driver: bridge

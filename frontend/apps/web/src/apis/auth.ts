@@ -97,8 +97,49 @@ export async function getGoogleAuthUrl() {
   };
 }
 
-// Google 로그인 시작 (리다이렉트 방식)
 export function startGoogleLogin() {
   const baseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
   window.location.href = `${baseUrl}/auth/google/login`;
 }
+
+// Kakao 로그인 URL 가져오기
+export async function getKakaoAuthUrl() {
+  const res = await api.get('/auth/kakao/url');
+  return res.data as {
+    url: string;
+    state: string;
+  };
+}
+
+export function startKakaoLogin() {
+  const baseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
+  window.location.href = `${baseUrl}/auth/kakao/login`;
+}
+
+// 비밀번호 재설정 요청 (인증번호 발송)
+export async function requestPasswordReset(email: string) {
+  const res = await api.post('/auth/password/reset-request', { email });
+  return res.data as {
+    success: boolean;
+    message: string;
+    expiresIn?: number;
+    retryAfter?: number;
+  };
+}
+
+// 비밀번호 재설정 코드 검증
+export async function verifyPasswordResetCode(email: string, code: string) {
+  const res = await api.post('/auth/password/verify-code', { email, code });
+  return res.data as {
+    success: boolean;
+    message: string;
+    errorCode?: string;
+  };
+}
+
+// 비밀번호 재설정 완료
+export async function resetPassword(email: string, code: string, newPassword: string) {
+  const res = await api.post('/auth/password/reset', { email, code, newPassword });
+  return res.data as { message: string };
+}
+

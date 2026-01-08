@@ -1,7 +1,8 @@
 """
 전시회 관련 API 엔드포인트 (실제 DB 연동)
 """
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+import logging
+from fastapi import APIRouter, Depends, HTTPException, status, Query, BackgroundTasks, Cookie
 from sqlalchemy.orm import Session as DBSession
 from typing import Optional, List
 
@@ -12,27 +13,55 @@ from app.schemas.exhibition import (
     ExhibitionCreate, ExhibitionUpdate, ExhibitionResponse,
     ExhibitionListResponse, ExhibitionListItem
 )
-from app.utils.dependencies import get_current_user_optional, get_current_user
-from app.services import exhibition_service
+from app.utils.dependencies import get_current_user_optional, get_current_user, get_session_id
+from app.services import exhibition_service, persona_cache_service
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/exhibitions", tags=["Exhibitions"])
 
 
 @router.post("", response_model=ExhibitionResponse, status_code=status.HTTP_201_CREATED)
-def create_exhibition(
+async def create_exhibition(
     exhibition_data: ExhibitionCreate,
+    background_tasks: BackgroundTasks,
     current_user: User = Depends(get_current_user),
+    session_id: Optional[str] = Depends(get_session_id),
     db: DBSession = Depends(get_db)
 ):
     """
     전시회 생성
     - 인증 필수
+    - Redis 캐시된 persona_summary를 DB에 저장
+    - 캐시되지 않은 영화들은 백그라운드에서 생성
     """
     exhibition = exhibition_service.create_exhibition(
         db=db,
         user_id=current_user.id,
         exhibition_data=exhibition_data
     )
+    
+    ticket_id = exhibition_data.ticketId or 1
+    
+    # 캐시된 persona_summary를 DB에 저장
+    if session_id:
+        saved_count = persona_cache_service.save_summaries_to_db(
+            session_id=session_id,
+            exhibition_id=exhibition.id,
+            ticket_id=ticket_id,
+            db=db
+        )
+        logger.info(f"Saved {saved_count} cached summaries to DB for exhibition {exhibition.id}")
+        
+        # 캐시되지 않은 영화들은 백그라운드에서 생성
+        background_tasks.add_task(
+            generate_missing_summaries_task,
+            exhibition.id,
+            ticket_id
+        )
+        
+        # 캐시 삭제
+        persona_cache_service.clear_session_cache(session_id)
 
     return ExhibitionResponse(
         id=exhibition.id,
@@ -42,6 +71,24 @@ def create_exhibition(
         createdAt=exhibition.created_at,
         updatedAt=exhibition.updated_at
     )
+
+
+async def generate_missing_summaries_task(exhibition_id: int, ticket_id: int):
+    """캐시되지 않은 영화들의 persona_summary 생성 (백그라운드 태스크)"""
+    from app.core.database import SessionLocal
+    
+    db = SessionLocal()
+    try:
+        generated = await persona_cache_service.generate_missing_summaries(
+            exhibition_id=exhibition_id,
+            ticket_id=ticket_id,
+            db=db
+        )
+        logger.info(f"Background task: Generated {generated} missing summaries for exhibition {exhibition_id}")
+    except Exception as e:
+        logger.error(f"Background task failed: {e}")
+    finally:
+        db.close()
 
 
 @router.get("", response_model=dict, status_code=status.HTTP_200_OK)
@@ -158,6 +205,7 @@ def get_exhibition_detail(
             "movieId": movie.movie_id,
             "displayOrder": movie.display_order,
             "curatorComment": movie.curator_comment,
+            "personaSummary": movie.persona_summary,  # AI 생성 영화 소개
             "isPinned": movie.is_pinned,
             "isRemoved": movie.is_removed
         }

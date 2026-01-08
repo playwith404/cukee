@@ -54,5 +54,17 @@ services:
     # 인증서 자동 갱신을 위한 커맨드 (12시간마다 체크)
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
 
+  # 8. Node Exporter (System Agent)
+  node-exporter:
+    image: prom/node-exporter
+    container_name: node-exporter
+    restart: unless-stopped
+    command:
+      - '--path.rootfs=/host'
+    network_mode: host
+    pid: host
+    volumes:
+      - '/:/host:ro,rslave'
+
 volumes:
   redis_data:

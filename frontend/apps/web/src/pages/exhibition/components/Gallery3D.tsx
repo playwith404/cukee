@@ -6,6 +6,8 @@ export interface Frame {
   content?: string;
   imageUrl?: string;
   isPinned?: boolean;
+  title?: string;  // 영화 제목
+  personaSummary?: string | null;  // DB에서 가져온 AI 영화 소개
 }
 
 interface Gallery3DProps {
@@ -28,12 +30,12 @@ interface ConfirmModalProps {
   confirmText: string;
 }
 
-const ConfirmModal: React.FC<ConfirmModalProps> = ({ 
-  onClose, 
-  onConfirm, 
-  title, 
-  description, 
-  confirmText 
+const ConfirmModal: React.FC<ConfirmModalProps> = ({
+  onClose,
+  onConfirm,
+  title,
+  description,
+  confirmText
 }) => {
   return (
     <div className={styles.modalOverlay} onClick={onClose}>
@@ -128,7 +130,7 @@ export const Gallery3D = ({
         ),
         confirmText: '삭제'
       };
-    } 
+    }
     if (activeModal.type === 'PIN') {
       return {
         title: `'${activeModal.movieTitle}' 고정하기`,
@@ -152,7 +154,7 @@ export const Gallery3D = ({
       <div className={styles.container}>
         {frames.map((frame, index) => {
           const positionClass = getFrameStyle(index);
-          const movieTitle = frame.content || '영화'; 
+          const movieTitle = frame.content || '영화';
 
           return (
             <div
@@ -188,16 +190,10 @@ export const Gallery3D = ({
                   <div>{frame.content}</div>
                 )}
               </div>
-
-              {/* ✅ [핵심 수정] 
-                 actions를 frame div '내부'에 배치했습니다.
-                 이렇게 하면 frame이 회전하거나 줄어들 때 버튼도 한 몸처럼 같이 움직입니다.
-                 스타일은 건드리지 않았으므로 기존 CSS(absolute, bottom 등)가 적용됩니다.
-              */}
               {isEditMode && (
                 <div className={styles.actions}>
                   <div className={styles.actionTitle}>{movieTitle}</div>
-                  
+
                   <div className={styles.buttonGroup}>
                     <button
                       type="button"

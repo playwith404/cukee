@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { getMyExhibitions, type Exhibition } from '../../apis/exhibition';
+import { getMyExhibitions, updateExhibition, deleteExhibition, type Exhibition } from '../../apis/exhibition';
 import styles from './Header.module.css';
 
 
@@ -225,6 +225,13 @@ const DropdownMenu = () => {
   const [exhibitions, setExhibitions] = useState<{ id: number; title: string }[]>([]);
   const [loadingExhibitions, setLoadingExhibitions] = useState(true);
 
+  // ✅ [신규] 전시회 이름 편집 상태
+  const [editingExhibitionId, setEditingExhibitionId] = useState<number | null>(null);
+  const [editingTitle, setEditingTitle] = useState('');
+
+  // ✅ [신규] 전시회 삭제 모달 상태
+  const [deleteTarget, setDeleteTarget] = useState<{ id: number; title: string } | null>(null);
+
   // 전시회 목록 로드
   useEffect(() => {
     const loadExhibitions = async () => {
@@ -276,6 +283,50 @@ const DropdownMenu = () => {
   // ✅ 탈퇴 모달 핸들러
   const handleOpenDeleteModal = () => setShowDeleteModal(true);
   const handleCloseDeleteModal = () => setShowDeleteModal(false);
+
+  // ✅ [신규] 전시회 이름 편집 핸들러
+  const handleStartEdit = (id: number, currentTitle: string) => {
+    setEditingExhibitionId(id);
+    setEditingTitle(currentTitle);
+  };
+
+  const handleSaveTitle = async (id: number) => {
+    if (!editingTitle.trim()) {
+      alert("전시회 이름을 입력해주세요.");
+      return;
+    }
+
+    try {
+      await updateExhibition(id, { title: editingTitle.trim() });
+
+      // 로컬 상태 업데이트
+      setExhibitions(prev =>
+        prev.map(ex => ex.id === id ? { ...ex, title: editingTitle.trim() } : ex)
+      );
+
+      setEditingExhibitionId(null);
+      setEditingTitle('');
+    } catch (error) {
+      console.error("전시회 이름 변경 실패:", error);
+      alert("전시회 이름 변경에 실패했습니다.");
+    }
+  };
+
+  // ✅ [신규] 전시회 삭제 핸들러
+  const handleDeleteExhibition = async () => {
+    if (!deleteTarget) return;
+
+    try {
+      await deleteExhibition(deleteTarget.id);
+
+      // 로컬 상태에서 제거
+      setExhibitions(prev => prev.filter(ex => ex.id !== deleteTarget.id));
+      setDeleteTarget(null);
+    } catch (error) {
+      console.error("전시회 삭제 실패:", error);
+      alert("전시회 삭제에 실패했습니다.");
+    }
+  };
   return (
     <>
       <div className={styles.dropdownOuter}>
@@ -352,10 +403,64 @@ const DropdownMenu = () => {
                     {exhibitions.map((ex) => (
                       <li
                         key={ex.id}
-                        onClick={() => navigate(`/exhibition?exhibitionId=${ex.id}`)}
-                        style={{ cursor: 'pointer' }}
+                        className={styles.exhibitionItem}
                       >
-                        {ex.title}
+                        {editingExhibitionId === ex.id ? (
+                          /* 편집 모드 */
+                          <div className={styles.editRow}>
+                            <input
+                              type="text"
+                              value={editingTitle}
+                              onChange={(e) => setEditingTitle(e.target.value)}
+                              className={styles.editInput}
+                              autoFocus
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                  handleSaveTitle(ex.id);
+                                } else if (e.key === 'Escape') {
+                                  setEditingExhibitionId(null);
+                                }
+                              }}
+                            />
+                            <button
+                              className={styles.iconBtn}
+                              onClick={() => handleSaveTitle(ex.id)}
+                              title="저장"
+                            >
+                              ✓
+                            </button>
+                          </div>
+                        ) : (
+                          /* 보기 모드 */
+                          <div className={styles.viewRow}>
+                            <span
+                              className={styles.exhibitionTitle}
+                              onClick={() => navigate(`/exhibition?exhibitionId=${ex.id}`)}
+                            >
+                              {ex.title}
+                            </span>
+                            <button
+                              className={styles.iconBtn}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleStartEdit(ex.id, ex.title);
+                              }}
+                              title="수정"
+                            >
+                              ✏️
+                            </button>
+                            <button
+                              className={styles.deleteBtn}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setDeleteTarget({ id: ex.id, title: ex.title });
+                              }}
+                              title="삭제"
+                            >
+                              삭제
+                            </button>
+                          </div>
+                        )}
                       </li>
                     ))}
                   </ul>
@@ -392,6 +497,25 @@ const DropdownMenu = () => {
           nickname={userNickname}
         />
       )}
+      {/* ✅ [신규] 전시회 삭제 확인 모달 */}
+      {deleteTarget && (
+        <div className={styles.modalOverlay} onClick={() => setDeleteTarget(null)}>
+          <div className={styles.glassModal} onClick={(e) => e.stopPropagation()}>
+            <h2 className={styles.modalTitle}>전시회 삭제하기</h2>
+            <p className={styles.modalDesc}>
+              저장된 <span className={styles.promptDesc}>'{deleteTarget.title}'</span>을(를) 삭제하시겠습니까?
+            </p>
+            <div className={styles.modalActions}>
+              <button className={styles.btnCancel} onClick={() => setDeleteTarget(null)}>
+                취소
+              </button>
+              <button className={styles.btnConfirm} onClick={handleDeleteExhibition}>
+                확인
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };
@@ -408,9 +532,21 @@ export const Header: React.FC<HeaderProps> = ({
   exhibitionTitle
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isAdultExclude, setIsAdultExclude] = useState(false);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('adultExclude');
+    setIsAdultExclude(saved === 'true');
+  }, []);
 
   const toggleMenu = () => {
     setIsMenuOpen((prev) => !prev);
+  };
+
+  const toggleAdultFilter = () => {
+    const nextState = !isAdultExclude;
+    setIsAdultExclude(nextState);
+    localStorage.setItem('adultExclude', String(nextState));
   };
 
   return (
@@ -438,6 +574,17 @@ export const Header: React.FC<HeaderProps> = ({
             cukee / {currentSection}
             {exhibitionTitle && ` / ${exhibitionTitle}`}
           </span>
+        </div>
+
+        {/* 3. 우측 19금 필터 토글 */}
+        <div className={styles.rightWrapper}>
+          <button
+            className={`${styles.toggleBtn} ${isAdultExclude ? styles.toggleBtnActive : ''}`}
+            onClick={toggleAdultFilter}
+            title="19금 컨텐츠 필터링"
+          >
+            {isAdultExclude ? '19+ OFF' : '19+ ON'}
+          </button>
         </div>
 
         {/* 3. 드롭다운 메뉴 (조건부 렌더링) */}
