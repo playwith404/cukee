@@ -4,10 +4,8 @@ import { MainLayout } from '@repo/ui';
 import { MainCarousel } from './MainCarousel';
 import { Header } from '../../components/Header/Header';
 import { fetchTickets, type Ticket } from '../../apis/exhibition';
-import { useAuth } from '../../contexts/AuthContext'; // ✅ [변경] useAuth 사용
+import { useAuth } from '../../contexts/AuthContext';
 import styles from './Home.module.css';
-
-// ✅ [변경] 방금 만든 파일에서 데이터를 가져옵니다.
 import { FALLBACK_TICKETS } from './fallbackData';
 
 // --- 고정 데이터 ---
@@ -16,16 +14,18 @@ const curatorIntroText = "안녕하세요. MZ 큐레이터 김엠지예요. 밝�
 
 export default function HomePage() {
   const navigate = useNavigate();
-  const { user } = useAuth(); // ✅ [변경] Context에서 user 정보 가져오기
+  const { user } = useAuth();
+  
   const [currentIndex, setCurrentIndex] = useState(0);
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(true);
+  const [animatingTicketId, setAnimatingTicketId] = useState<number | null>(null);
+  //const [error, setError] = useState<string | null>(null);
+  
+  // 뷰 모드 상태 관리
+  const [viewMode, setViewMode] = useState<'default' | 'viewAll'>('default');
 
   const nickname = user?.nickname;
-
-  // 에러 로깅/표시용
-  const [error, setError] = useState<string | null>(null);
-
   const totalTickets = tickets.length;
   const currentTicket = tickets[currentIndex];
 
@@ -33,27 +33,17 @@ export default function HomePage() {
     const loadData = async () => {
       try {
         setLoading(true);
-        setError(null);
-
-        // 티켓 데이터만 가져오기 (사용자 정보는 Context가 관리)
+        //setError(null);
         const ticketResponse = await fetchTickets();
-
-        // 티켓 데이터 설정
         if (ticketResponse.data && ticketResponse.data.length > 0) {
           const fixedTickets = ticketResponse.data.map(t => ({
-            ...t,
-            characterImageUrl: t.characterImageUrl
+            ...t, characterImageUrl: t.characterImageUrl
           }));
           setTickets(fixedTickets);
         } else {
-          console.warn("서버 데이터 없음. 임시 데이터 사용.");
-          setError("데이터를 불러오지 못해 임시 데이터를 표시합니다.");
           setTickets(FALLBACK_TICKETS);
         }
-
       } catch (err) {
-        console.error('데이터 로드 실패:', err);
-        setError("서버 연결에 실패하여 임시 데이터를 표시합니다.");
         setTickets(FALLBACK_TICKETS);
       } finally {
         setLoading(false);
@@ -62,22 +52,32 @@ export default function HomePage() {
     loadData();
   }, []);
 
-  // ... (이하 나머지 코드는 동일합니다)
-
+  // const handleNext = () => {
+  //   if (currentIndex < tickets.length - 1) setCurrentIndex(currentIndex + 1);
+  // };
   const handleNext = () => {
-    if (currentIndex < tickets.length - 1) {
-      setCurrentIndex(currentIndex + 1);
-    }
+    setCurrentIndex((prev) => (prev + 1) % tickets.length);
   };
 
+  // const handlePrev = () => {
+  //   if (currentIndex > 0) setCurrentIndex(currentIndex - 1);
+  // };
   const handlePrev = () => {
-    if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
-    }
+    setCurrentIndex((prev) => (prev === 0 ? tickets.length - 1 : prev - 1));
   };
 
   const handleTicketClick = (ticketId: number) => {
-    navigate(`/exhibition?ticket=${ticketId}`);
+    if (animatingTicketId !== null) return;
+    setAnimatingTicketId(ticketId);
+    setTimeout(() => {
+      navigate(`/exhibition?ticket=${ticketId}`);
+      setAnimatingTicketId(null);
+    }, 500);
+  };
+
+  // 모드 토글 함수
+  const toggleViewMode = () => {
+    setViewMode(prev => prev === 'default' ? 'viewAll' : 'default');
   };
 
   if (loading) {
@@ -92,38 +92,40 @@ export default function HomePage() {
 
   return (
     <MainLayout>
-      <div className={styles.killcho}>
-        <div className={styles.headerWrapper}>
+      <div className={`${styles.killcho} ${viewMode === 'viewAll' ? styles.scrollLocked : ''}`}>
+        {/* 헤더: viewAll 모드일 땐 숨김 */}
+        <div className={`${styles.headerWrapper} ${viewMode === 'viewAll' ? styles.hidden : ''}`}>
           <Header currentSection={currentTicket?.curatorName || '큐레이터'} />
         </div>
 
-        {/* 에러 메시지 표시 (토스트 스타일) */}
-        {error && (
-          <div style={{
-            position: 'fixed',
-            bottom: '24px',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            backgroundColor: '#ff4d4f',
-            color: 'white',
-            padding: '12px 24px',
-            borderRadius: '8px',
-            zIndex: 1000,
-            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-            fontSize: '14px',
-            fontWeight: '500',
-            animation: 'fadeIn 0.3s ease-out'
-          }}>
-            ⚠️ {error}
-          </div>
-        )}
+        {/* 티켓만 보기 전용 헤더 (카운터) */}
+        <div className={`${styles.viewAllHeader} ${viewMode === 'viewAll' ? styles.visible : ''}`}>
+           {/* 1. 카운터 */}
+           <div className={styles.centerCounter}>
+              <span className={styles.bigCount}>{(currentIndex + 1).toString().padStart(2, '0')}</span>
+              <span className={styles.smallCount}>/{totalTickets.toString().padStart(2, '0')}</span>
+           </div>
+           {/* 2. 큐레이터 이름 & 메시지 */}
+           <div className={styles.separatorLine} />
+           <div className={styles.viewAllTextWrapper}>
+              <h2 className={styles.viewAllCuratorName}>
+                {currentTicket?.curatorName || '큐레이터'}
+              </h2>
+              <p className={styles.viewAllCuratorMessage}>
+                {currentTicket?.curatorMessage || curatorIntroText}
+              </p>
+           </div>
+        </div>
 
         <div className={styles.innerContainer}>
           <main className={styles.mainContent}>
             <div className={styles.upperSplit}>
-              <div className={styles.decoBox}></div>
+              {/* 데코박스 이원화 적용 */}
+              <div className={`${styles.decoBox} ${viewMode ? styles.decoBoxHidden : ''}`} />
+              <div className={`${styles.decoBoxFixed} ${viewMode ? styles.decoBoxFixedVisible : ''}`} />
 
-              <div className={styles.textSection}>
+              {/* 텍스트 섹션: viewAll 모드면 페이드 아웃 */}
+              <div className={`${styles.textSection} ${viewMode === 'viewAll' ? styles.fadeOut : ''}`}>
                 <div>
                   <h1 className={styles.title}>
                     {nickname ? `${nickname}님,` : '안녕하세요,'}<br />어떤 영화를<br />보고 싶나요?
@@ -143,11 +145,13 @@ export default function HomePage() {
                 </p>
               </div>
 
+              {/* 캐러셀 영역 */}
               <div style={{
                 position: 'absolute',
                 right: '0',
                 bottom: '-120px',
                 zIndex: 20,
+                transition: 'transform 0.6s ease',
               }}>
                 <MainCarousel
                   tickets={tickets}
@@ -155,18 +159,21 @@ export default function HomePage() {
                   onNext={handleNext}
                   onPrev={handlePrev}
                   onTicketClick={handleTicketClick}
+                  animatingTicketId={animatingTicketId}
+                  viewMode={viewMode}
+                  onToggleViewMode={toggleViewMode} // ✅ 함수 전달!
                 />
               </div>
             </div>
           </main>
         </div>
 
-        <div className={styles.curatorBox}>
+        {/* 큐레이터 영역 */}
+        <div className={`${styles.curatorBox} ${viewMode === 'viewAll' ? styles.curatorBoxMoved : ''}`}>
           <div className={styles.curatorContent}>
             <h2 className={styles.curatorName}>
               {currentTicket?.curatorName || '큐레이터'}
             </h2>
-
             <div className={styles.curatorLikesInfo}>
               <p style={{ margin: '0 0 4px 0' }}>♥ {likeCount}명의 유저가 이 전시회를 좋아해요.</p>
               <div className={styles.speechBubble}>
