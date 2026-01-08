@@ -3,6 +3,28 @@ import { useNavigate, Link } from 'react-router-dom';
 import styles from './Auth.module.css';
 import { requestPasswordReset, verifyPasswordResetCode, resetPassword } from '../../apis/auth';
 
+// 아이콘 SVG 컴포넌트
+const MailIcon = () => (
+    <svg className={styles.inputIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <rect x="2" y="4" width="20" height="16" rx="2" />
+        <path d="M22 6L12 13L2 6" />
+    </svg>
+);
+
+const KeyIcon = () => (
+    <svg className={styles.inputIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <circle cx="8" cy="15" r="4" />
+        <path d="M10.85 12.15L19 4M18 5l2 2M15 8l2 2" />
+    </svg>
+);
+
+const LockIcon = () => (
+    <svg className={styles.inputIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <rect x="3" y="11" width="18" height="11" rx="2" />
+        <path d="M7 11V7a5 5 0 0110 0v4" />
+    </svg>
+);
+
 export const ForgotPassword = () => {
     const navigate = useNavigate();
 
@@ -44,7 +66,8 @@ export const ForgotPassword = () => {
     };
 
     // 2단계: 인증번호 확인
-    const handleVerifyCode = async () => {
+    const handleVerifyCode = async (e: React.FormEvent) => {
+        e.preventDefault();
         setError('');
         setMessage('');
 
@@ -58,7 +81,6 @@ export const ForgotPassword = () => {
         try {
             const response = await verifyPasswordResetCode(email, code);
             if (response.success) {
-                // 인증되었습니다 메시지 제거하고 바로 3단계로 이동
                 setStep(3);
             }
         } catch (err: any) {
@@ -98,162 +120,164 @@ export const ForgotPassword = () => {
         }
     };
 
+    // 단계별 타이틀
+    const getStepTitle = () => {
+        switch (step) {
+            case 1: return '비밀번호 찾기';
+            case 2: return '인증번호 확인';
+            case 3: return '비밀번호 재설정';
+        }
+    };
+
+    // 단계별 서브타이틀
+    const getStepSubtitle = () => {
+        switch (step) {
+            case 1: return '가입한 이메일 주소를 입력해주세요';
+            case 2: return '이메일로 전송된 인증번호를 입력해주세요';
+            case 3: return '새로운 비밀번호를 입력해주세요';
+        }
+    };
+
+    // 단계별 버튼 텍스트
+    const getButtonText = () => {
+        if (isLoading) return '처리 중...';
+        switch (step) {
+            case 1: return '인증번호 받기';
+            case 2: return '확인';
+            case 3: return '변경하기';
+        }
+    };
+
     return (
         <div className={styles.container}>
-            {/* 로고 영역 */}
-            <div className={styles.logoSection}>
-                <h1 className={styles.logo}>
-                    cu<span className={styles.boldText}>kee </span>
-                    <img
-                        src="/cukee-logo.svg"
-                        alt="큐키"
-                        width="36"
-                        height="36"
-                        className={styles.logoImage}
-                    />
-                    : <span className={styles.boldText} style={{ marginLeft: '5px' }}>큐</span>레이터{' '}
-                    <span className={styles.boldText} style={{ marginLeft: '5px' }}>키</span>우기
-                </h1>
-            </div>
-
-            <div className={styles.wrapper}>
-                <h2 className={styles.title}>비밀번호 찾기</h2>
-
-                {/* 상단 로그인 링크 */}
-                <div className={styles.signupPrompt}>
-                    비밀번호가 기억나셨나요?{' '}
-                    <Link to="/auth/login" className={styles.signupLink}>
-                        로그인
-                    </Link>
+            {/* 네비게이션 바 */}
+            <nav className={styles.navbar}>
+                <Link to="/" className={styles.navLogo}>cukee</Link>
+                <div className={styles.navLinks}>
+                    <Link to="/auth/login" className={styles.navLink}>로그인</Link>
+                    <Link to="/auth/signup" className={styles.navLink}>회원가입</Link>
                 </div>
+            </nav>
 
+            {/* 메인 컨텐츠 */}
+            <div className={styles.wrapper}>
                 <div className={styles.mainContent}>
+                    <div className={`${styles.card} ${styles.cardLogin}`}>
+                        {/* 타이틀 */}
+                        <h2 className={styles.title}>{getStepTitle()}</h2>
+                        <p className={styles.subtitle}>{getStepSubtitle()}</p>
 
-                    {/* 제출 버튼 (왼쪽 배치) */}
-                    <button
-                        type="submit"
-                        form={step === 1 ? "emailForm" : (step === 3 ? "resetForm" : undefined)}
-                        onClick={step === 2 ? handleVerifyCode : undefined}
-                        disabled={isLoading}
-                        className={styles.submitButton}
-                        style={{ margin: '0 -30px 0 0' }}
-                    >
-                        <img
-                            src="/cookie2.png"
-                            alt="버튼"
-                            width="180"
-                            height="150"
-                            className={`${styles.cookieImage} ${styles.defaultImage}`}
-                        />
-                        <img
-                            src="/cookie2h.png"
-                            alt="버튼 호버"
-                            width="200"
-                            height={180}
-                            className={`${styles.cookieImage} ${styles.hoverImage}`}
-                        />
-                        <span className={styles.buttonText}>
-                            {isLoading ? '...' : (step === 1 ? '인증번호 받기' : (step === 2 ? '확인' : '변경하기'))}
-                        </span>
-                    </button>
-
-
-                    {/* 카드 영역 */}
-                    <div className={`${styles.card} ${styles.cardSignup}`}>
-
-                        {/* 1단계 폼 */}
+                        {/* 1단계 폼 - 이메일 입력 */}
                         {step === 1 && (
-                            <form id="emailForm" onSubmit={handleRequestCode} className={styles.form}>
-                                <p className={styles.description}>가입한 이메일 주소를 입력해주세요.</p>
+                            <form onSubmit={handleRequestCode} className={styles.form}>
                                 <div className={styles.formGroup}>
-                                    <label htmlFor="email" className={styles.label}>이메일_</label>
-                                    <input
-                                        id="email"
-                                        type="email"
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                        placeholder="example@email.com"
-                                        className={styles.input}
-                                        required
-                                        disabled={isLoading}
-                                    />
+                                    <label htmlFor="email" className={styles.label}>이메일</label>
+                                    <div className={styles.inputWrapper}>
+                                        <MailIcon />
+                                        <input
+                                            id="email"
+                                            type="email"
+                                            value={email}
+                                            onChange={(e) => setEmail(e.target.value)}
+                                            placeholder="이메일을 입력하세요"
+                                            className={styles.input}
+                                            required
+                                            disabled={isLoading}
+                                        />
+                                    </div>
                                 </div>
+
+                                {error && <div className={styles.error}>{error}</div>}
+
+                                <button type="submit" disabled={isLoading} className={styles.submitButton}>
+                                    {getButtonText()}
+                                </button>
                             </form>
                         )}
 
-                        {/* 2단계 폼 (인증번호 입력) */}
+                        {/* 2단계 폼 - 인증번호 입력 */}
                         {step === 2 && (
-                            <div className={styles.form}>
-                                <p className={styles.description}>이메일로 전송된 인증번호를 입력해주세요.</p>
+                            <form onSubmit={handleVerifyCode} className={styles.form}>
                                 <div className={styles.formGroup}>
-                                    <label htmlFor="code" className={styles.label}>인증번호_</label>
-                                    <input
-                                        id="code"
-                                        type="text"
-                                        value={code}
-                                        onChange={(e) => setCode(e.target.value)}
-                                        placeholder="6자리 숫자"
-                                        className={styles.input}
-                                        maxLength={6}
-                                        disabled={isLoading}
-                                    />
-                                </div>
-                            </div>
-                        )}
-
-                        {/* 3단계 폼 (비밀번호 재설정) */}
-                        {step === 3 && (
-                            <form id="resetForm" onSubmit={handleResetPassword} className={styles.form}>
-                                <p className={styles.description}>새로운 비밀번호를 입력해주세요.</p>
-
-                                <div className={styles.formGroup}>
-                                    <label htmlFor="newPassword" className={styles.label}>새 비밀번호_</label>
-                                    <input
-                                        id="newPassword"
-                                        type="password"
-                                        value={newPassword}
-                                        onChange={(e) => setNewPassword(e.target.value)}
-                                        placeholder="8자 이상 입력"
-                                        className={styles.input}
-                                        required
-                                        disabled={isLoading}
-                                    />
+                                    <label htmlFor="code" className={styles.label}>인증번호</label>
+                                    <div className={styles.inputWrapper}>
+                                        <KeyIcon />
+                                        <input
+                                            id="code"
+                                            type="text"
+                                            value={code}
+                                            onChange={(e) => setCode(e.target.value)}
+                                            placeholder="6자리 숫자"
+                                            className={styles.input}
+                                            maxLength={6}
+                                            disabled={isLoading}
+                                        />
+                                    </div>
                                 </div>
 
-                                <div className={styles.formGroup}>
-                                    <label htmlFor="newPasswordConfirm" className={styles.label}>비밀번호 확인_</label>
-                                    <input
-                                        id="newPasswordConfirm"
-                                        type="password"
-                                        value={newPasswordConfirm}
-                                        onChange={(e) => setNewPasswordConfirm(e.target.value)}
-                                        placeholder="비밀번호 재입력"
-                                        className={styles.input}
-                                        required
-                                        disabled={isLoading}
-                                    />
-                                </div>
+                                {message && <div className={styles.success}>{message}</div>}
+                                {error && <div className={styles.error}>{error}</div>}
+
+                                <button type="submit" disabled={isLoading} className={styles.submitButton}>
+                                    {getButtonText()}
+                                </button>
                             </form>
                         )}
 
-                        {/* 메시지 표시 */}
-                        {error && <div className={styles.error} style={{ marginTop: '15px' }}>{error}</div>}
-                        {message && (
-                            <div
-                                className={styles.success}
-                                style={{
-                                    marginTop: '8px',
-                                    fontSize: '0.85rem', // 사용자가 원한 대로 작게
-                                    color: '#4ade80'    // 녹색 유지를 위해 명시 (styles.success가 적용되겠지만 확인차)
-                                }}
-                            >
-                                {message}
-                            </div>
+                        {/* 3단계 폼 - 비밀번호 재설정 */}
+                        {step === 3 && (
+                            <form onSubmit={handleResetPassword} className={styles.form}>
+                                <div className={styles.formGroup}>
+                                    <label htmlFor="newPassword" className={styles.label}>새 비밀번호</label>
+                                    <div className={styles.inputWrapper}>
+                                        <LockIcon />
+                                        <input
+                                            id="newPassword"
+                                            type="password"
+                                            value={newPassword}
+                                            onChange={(e) => setNewPassword(e.target.value)}
+                                            placeholder="8자 이상 입력"
+                                            className={styles.input}
+                                            required
+                                            disabled={isLoading}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className={styles.formGroup}>
+                                    <label htmlFor="newPasswordConfirm" className={styles.label}>비밀번호 확인</label>
+                                    <div className={styles.inputWrapper}>
+                                        <LockIcon />
+                                        <input
+                                            id="newPasswordConfirm"
+                                            type="password"
+                                            value={newPasswordConfirm}
+                                            onChange={(e) => setNewPasswordConfirm(e.target.value)}
+                                            placeholder="비밀번호 재입력"
+                                            className={styles.input}
+                                            required
+                                            disabled={isLoading}
+                                        />
+                                    </div>
+                                </div>
+
+                                {error && <div className={styles.error}>{error}</div>}
+
+                                <button type="submit" disabled={isLoading} className={styles.submitButton}>
+                                    {getButtonText()}
+                                </button>
+                            </form>
                         )}
 
+                        {/* 푸터 링크 */}
+                        <div className={styles.signupPrompt}>
+                            비밀번호가 기억나셨나요?
+                            <Link to="/auth/login" className={styles.signupLink}>로그인</Link>
+                        </div>
                     </div>
                 </div>
             </div>
+
             <div className={styles.footerCredit}>
                 ♥ by playwith404
             </div>
