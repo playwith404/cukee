@@ -20,7 +20,7 @@ export default function HomePage() {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(true);
   const [animatingTicketId, setAnimatingTicketId] = useState<number | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  //const [error, setError] = useState<string | null>(null);
   
   // 뷰 모드 상태 관리
   const [viewMode, setViewMode] = useState<'default' | 'viewAll'>('default');
@@ -33,7 +33,7 @@ export default function HomePage() {
     const loadData = async () => {
       try {
         setLoading(true);
-        setError(null);
+        //setError(null);
         const ticketResponse = await fetchTickets();
         if (ticketResponse.data && ticketResponse.data.length > 0) {
           const fixedTickets = ticketResponse.data.map(t => ({

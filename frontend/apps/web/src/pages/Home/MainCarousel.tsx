@@ -61,7 +61,7 @@ export const MainCarousel: React.FC<MainCarouselProps> = ({
   const [fadingChar, setFadingChar] = useState<string | null>(null);   // 사라질(이전) 캐릭터
   const [triggerAnim, setTriggerAnim] = useState(false);               // 애니메이션 트리거
   
-  const [shakeDirection, setShakeDirection] = useState<'left' | 'right' | null>(null);
+  // const [shakeDirection, setShakeDirection] = useState<'left' | 'right' | null>(null);
 
   const mainTicket = tickets[currentIndex];
   const isClickAnimating = mainTicket && animatingTicketId === mainTicket.id;
@@ -71,8 +71,8 @@ export const MainCarousel: React.FC<MainCarouselProps> = ({
     ? activeChar.replace('h_cara', 'cara') 
     : null;
 
-  const isFirstTicket = currentIndex === 0;
-  const isLastTicket = currentIndex === len - 1;
+  // const isFirstTicket = currentIndex === 0;
+  // const isLastTicket = currentIndex === len - 1;
 
   // ---------------------------------------------------------------------------
   // 슬라이드 생성 함수
