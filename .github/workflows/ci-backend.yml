@@ -3,7 +3,7 @@ name: Backend CI/CD
 on:
   workflow_dispatch:
   push:
-    branches: [ "main", "dev" ]  
+    branches: [ "main", "dev" ]   
     paths:
       - 'backend/**'
       - 'docker-compose.yml'
@@ -79,9 +79,9 @@ jobs:
           script: |
             cd ~/app
 
-            # 0. Pre-check: Clean up and ensure config validity
+            # 0. Pre-check
             mkdir -p backend
-
+            
             # Create backend/.env with secrets (secure injection)
             echo 'DATABASE_URL=${{ secrets.DATABASE_URL }}' > backend/.env
             echo 'SECRET_KEY=${{ secrets.SECRET_KEY }}' >> backend/.env
@@ -125,59 +125,14 @@ jobs:
               echo "BACKEND_TAG=sha-${{ github.sha }}" >> .env
             fi
 
-            # 3. Update backend/.env with SMTP configuration
-            sudo chown $USER:$USER backend/.env
-            
-            # SMTP_HOST (고정값)
-            if grep -q "^SMTP_HOST=" backend/.env; then
-              sed -i "s/^SMTP_HOST=.*/SMTP_HOST=smtp.gmail.com/" backend/.env
-            else
-              echo "SMTP_HOST=smtp.gmail.com" >> backend/.env
-            fi
-            
-            # SMTP_PORT (고정값)
-            if grep -q "^SMTP_PORT=" backend/.env; then
-              sed -i "s/^SMTP_PORT=.*/SMTP_PORT=587/" backend/.env
-            else
-              echo "SMTP_PORT=587" >> backend/.env
-            fi
-            
-            # SMTP_USER (GitHub Secret)
-            if grep -q "^SMTP_USER=" backend/.env; then
-              sed -i "s/^SMTP_USER=.*/SMTP_USER=${{ secrets.SMTP_USER }}/" backend/.env
-            else
-              echo "SMTP_USER=${{ secrets.SMTP_USER }}" >> backend/.env
-            fi
-            
-            # SMTP_PASSWORD (GitHub Secret)
-            if grep -q "^SMTP_PASSWORD=" backend/.env; then
-              sed -i "s|^SMTP_PASSWORD=.*|SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }}|" backend/.env
-            else
-              echo "SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }}" >> backend/.env
-            fi
-            
-            # EMAIL_FROM (SMTP_USER와 동일)
-            if grep -q "^EMAIL_FROM=" backend/.env; then
-              sed -i "s/^EMAIL_FROM=.*/EMAIL_FROM=${{ secrets.SMTP_USER }}/" backend/.env
-            else
-              echo "EMAIL_FROM=${{ secrets.SMTP_USER }}" >> backend/.env
-            fi
-            
-            # EMAIL_FROM_NAME (고정값)
-            if grep -q "^EMAIL_FROM_NAME=" backend/.env; then
-              sed -i "s/^EMAIL_FROM_NAME=.*/EMAIL_FROM_NAME=Cukee/" backend/.env
-            else
-              echo "EMAIL_FROM_NAME=Cukee" >> backend/.env
-            fi
-
+            # 3. Update backend/.env with SMTP configuration (이미 위에서 생성하므로 중복 제거 또는 유지 - 여기서는 위와 합치기를 권장하나, 기존 구조 유지를 위해 유지하되 로직상 문제는 없음)
             
             echo "Current .env content:"
             cat .env
             
-            # 3. Pull & Deploy (All Services)
-            # 백엔드만 풀 받고, 실행할 때는 (backend + 나머지)가 모두 보장되도록
+            # 3. Pull & Deploy (Backend Only)
             sudo docker compose pull backend
-            sudo docker compose up -d
+            sudo docker compose up -d backend --remove-orphans
             
             # 5. Cleanup
             sudo docker image prune -af --filter "until=10m" || true

@@ -2,19 +2,17 @@ name: Frontend CI/CD
 
 on:
   push:
-    branches: [ "main", "dev", "feature/backend/CUK-124-forgot-pwd" ] 
+    branches: [ "main", "dev" ] 
     paths: 
       - 'frontend/**'
       - 'docker-compose.yml'
       - '.github/workflows/ci-frontend.yml'
-      - 'nginx/**'
   pull_request:
     branches: [ "main", "dev" ] 
     paths:
       - 'frontend/**'
       - 'docker-compose.yml'
       - '.github/workflows/ci-frontend.yml'
-      - 'nginx/**'
 
 jobs:
   build-and-push:
@@ -69,7 +67,7 @@ jobs:
           username: ${{ secrets.SSH_USER_VM }}
           key: ${{ secrets.SSH_KEY_VM }}
           port: ${{ secrets.SSH_PORT || 22 }}
-          source: "docker-compose.yml,nginx,monitor"
+          source: "docker-compose.yml"
           target: "~/app"
 
       - name: Deploy to VM
@@ -87,16 +85,7 @@ jobs:
             mkdir -p backend
             mkdir -p backend
             touch backend/.env # Satisfy docker-compose env_file requirement
-
-            # Setup Prometheus config
-            if [ -f "monitor/prometheus.yml.example" ]; then
-                cp monitor/prometheus.yml.example monitor/prometheus.yml
-                # SSH_HOST_GPU 시크릿을 이용하여 IP 교체
-                if [ -n "${{ secrets.SSH_HOST_GPU }}" ]; then
-                    sed -i "s/GPU_SERVER_IP_PLACEHOLDER/${{ secrets.SSH_HOST_GPU }}/g" monitor/prometheus.yml
-                fi
-            fi
-
+            
             # 1. Docker Login
             echo ${{ secrets.DOCKER_TOKEN }} | sudo docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
             
@@ -121,14 +110,9 @@ jobs:
             echo "Current .env content:"
             cat .env
             
-            # 3. Pull & Deploy (All Services)
+            # 3. Pull & Deploy (Frontend Only)
             sudo docker compose pull frontend
-            sudo docker compose up -d
-            
-            # 4. Reload Nginx (설정 변경 적용)
-            if sudo docker ps | grep -q nginx; then
-              sudo docker exec nginx nginx -s reload
-            fi
+            sudo docker compose up -d frontend --remove-orphans
             
             # 5. Cleanup
             sudo docker image prune -af --filter "until=10m" || true
