@@ -170,7 +170,7 @@ async def curate_movies(
             FROM ticket_group_movies tgm
             JOIN movies m ON tgm.movie_id = m.id
             WHERE tgm.ticket_group_id = :ticket_id
-            AND (:adult_exclude = false OR (m.certification NOT IN ('18', '19', 'Restricted', 'R', 'NC-17') AND m.certification IS NOT NULL AND m.certification != ''))
+            AND (:adult_exclude = false OR (m.certification NOT IN ('18', '19', '19+', 'Restricted', 'R', 'NC-17') AND m.certification IS NOT NULL AND m.certification != ''))
             ORDER BY RANDOM()
             LIMIT :limit
         """)
