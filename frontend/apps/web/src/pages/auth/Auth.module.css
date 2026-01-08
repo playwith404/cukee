@@ -176,6 +176,7 @@
 
 .input:disabled {
   opacity: 0.5;
+  background-color: #f5f0e8;
   cursor: not-allowed;
 }
 
@@ -285,7 +286,8 @@
 }
 
 .dividerBorder {
-  display: none;
+  width: 100%;
+  border-top: 1px solid #d4c9b8;
 }
 
 .dividerText {
@@ -295,7 +297,8 @@
 }
 
 .dividerTextInner {
-  background-color: transparent;
+  padding: 0 0.5rem;
+  background-color: #ffffff;
   color: #a89a8a;
 }
 

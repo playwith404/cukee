@@ -221,7 +221,7 @@
 /* 3. 티켓만 보기 전용 : 티켓카운터 + 텍스트 영역 */
 .viewAllHeader {
   position: fixed;
-  top: 20%;
+  top: 185px;
   left: calc(50% - 200px); 
   width: auto; 
   
@@ -353,56 +353,3 @@
     overflow: hidden;   /* 넘치는 1500px 잘라버림 (스크롤바 삭제) */
 }
 
-
-/* CASE 1: 중간 사이즈 (노트북/태블릿) -> 85% 축소 */
-@media screen and (max-width: 1200px), screen and (max-height: 750px) {
-  
-  /* [수정] 헤더 축소 */
-  .viewAllHeader.visible {
-    /* translateY(0)을 유지하면서 scale을 추가해야 합니다 */
-    transform: translateY(0) (0.85);
-    
-    /* 왼쪽 위를 기준으로 줄어들게 설정 (중요) */
-    transform-origin: top left;
-  }
-}
-
-/* CASE 2: 작은 사이즈 (작은 태블릿/좁은 화면) -> 65% 축소 & 위치 조정 */
-@media screen and (max-width: 900px), screen and (max-height: 600px) {
-
-  /* 헤더 위치 재조정 (중앙 계산식 무시하고 왼쪽 고정) */
-  .viewAllHeader {
-    left: 250px; 
-    top: 200px;
-  }
-
-  .viewAllHeader.visible {
-    /* 더 작게 축소 */
-    transform: translateY(0) scale(0.75); 
-    transform-origin: top left;
-  }
-}
-
-/* CASE 3: 모바일/아주 좁은 화면 -> 55% 축소 & 레이아웃 변경 */
-@media screen and (max-width: 600px) {
-
-  .viewAllHeader {
-    left: 30px; /* 모바일은 여백을 좁게 */
-    top: 100px;
-  }
-
-  .viewAllHeader.visible {
-    /* 모바일에서는 너무 작아지면 안 보이니 적당히 조절 */
-    transform: translateY(0) scale(0.65);
-    transform-origin: top left;
-  }
-
-  /* 화살표 버튼 위치 안쪽으로 */
-  .viewAllMode .prevBtn { left: 10px; }
-  .viewAllMode .nextBtn { right: 10px; }
-  
-  /* 박스 숨기기 등 추가 스타일 */
-  .viewAllMode .responsiveBackDrop {
-      /* 필요시 스타일 추가 */
-  }
-}
