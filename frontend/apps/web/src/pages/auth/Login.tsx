@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import styles from './Auth.module.css';
 import { useAuth } from '../../contexts/AuthContext';
+import { startGoogleLogin, startKakaoLogin } from '../../apis/auth';
 
 // 아이콘 SVG 컴포넌트
 const MailIcon = () => (
@@ -104,12 +105,36 @@ export const Login = () => {
                 </div>
               </div>
 
+              {/* 비밀번호 찾기 링크 */}
+              <div className={styles.forgotPassword}>
+                <Link to="/auth/forgot-password" className={styles.forgotPasswordLink}>
+                  비밀번호를 잊으셨나요?
+                </Link>
+              </div>
+
               {error && <div className={styles.error}>{error}</div>}
 
               <button type="submit" disabled={isLoading} className={styles.submitButton}>
                 {isLoading ? '로그인 중...' : '로그인'}
               </button>
             </form>
+
+            {/* 구분선 */}
+            <div className={styles.divider}>
+              <div className={styles.dividerLine}></div>
+              <span className={styles.dividerText}>또는</span>
+              <div className={styles.dividerLine}></div>
+            </div>
+
+            {/* 소셜 로그인 버튼 */}
+            <div className={styles.socialButtons}>
+              <button type="button" className={styles.socialButton} disabled={isLoading} onClick={startGoogleLogin}>
+                <span className={styles.socialButtonText}>Google</span>
+              </button>
+              <button type="button" className={styles.socialButton} disabled={isLoading} onClick={startKakaoLogin}>
+                <span className={styles.socialButtonText}>Kakao</span>
+              </button>
+            </div>
 
             {/* 푸터 링크 */}
             <div className={styles.signupPrompt}>
