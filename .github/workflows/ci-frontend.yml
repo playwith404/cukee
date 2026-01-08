@@ -87,6 +87,14 @@ jobs:
             mkdir -p backend
             mkdir -p backend
             touch backend/.env # Satisfy docker-compose env_file requirement
+            
+            # --- [New] Nginx IP 자동화 (Backend CI와 동일하게 적용) ---
+            # Frontend 배포 시에도 Nginx 설정이 덮어씌워지므로, 반드시 치환 로직이 수행되어야 함
+            if [ -f nginx/conf.d/default.conf ]; then
+              sed -i "s/GPU_SERVER_IP_PLACEHOLDER/${{ secrets.SSH_HOST_GPU }}/g" nginx/conf.d/default.conf
+              echo "Nginx config updated with GPU Server IP."
+            fi
+            # -----------------------------
 
             # 1. Docker Login
             echo ${{ secrets.DOCKER_TOKEN }} | sudo docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
@@ -114,12 +122,11 @@ jobs:
             
             # 3. Pull & Deploy (All Services)
             sudo docker compose pull frontend
-            sudo docker compose up -d
+            sudo docker compose up -d --remove-orphans
             
             # 4. Reload Nginx (설정 변경 적용)
-            if sudo docker ps | grep -q nginx; then
-              sudo docker exec nginx nginx -s reload
-            fi
+            # 설정 파일(default.conf)이 바뀌었으므로 반드시 리로드해야 함
+            sudo docker compose restart nginx
             
             # 5. Cleanup
             sudo docker image prune -af --filter "until=10m" || true
