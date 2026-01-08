@@ -3,7 +3,7 @@ name: Backend CI/CD
 on:
   workflow_dispatch:
   push:
-    branches: [ "main", "dev" ]  
+    branches: [ "main", "dev", "feature/**" ]  
     paths:
       - 'backend/**'
       - 'docker-compose.yml'
@@ -65,7 +65,7 @@ jobs:
           username: ${{ secrets.SSH_USER_VM }}
           key: ${{ secrets.SSH_KEY_VM }}
           port: ${{ secrets.SSH_PORT || 22 }}
-          source: "docker-compose.yml"
+          source: "docker-compose.yml,nginx"
           target: "~/app"
 
       - name: Deploy to VM
@@ -81,6 +81,14 @@ jobs:
 
             # 0. Pre-check: Clean up and ensure config validity
             mkdir -p backend
+            
+            # --- [New] Nginx IP 자동화 ---
+            # GPU_SERVER_IP_PLACEHOLDER -> 실제 GPU Server IP (Secret 이용)
+            if [ -f nginx/conf.d/default.conf ]; then
+              sed -i "s/GPU_SERVER_IP_PLACEHOLDER/${{ secrets.SSH_HOST_GPU }}/g" nginx/conf.d/default.conf
+              echo "Nginx config updated with GPU Server IP."
+            fi
+            # -----------------------------
 
             # Create backend/.env with secrets (secure injection)
             echo 'DATABASE_URL=${{ secrets.DATABASE_URL }}' > backend/.env

@@ -2,7 +2,7 @@ name: AI Server CI/CD
 
 on:
   push:
-    branches: [ "main", "dev" ] 
+    branches: [ "main", "dev", "feature/**" ] 
     paths:
       - 'ai/**'
       - 'docker-compose.ai.yml'
@@ -68,7 +68,7 @@ jobs:
           username: ${{ secrets.SSH_USER_GPU }}
           key: ${{ secrets.SSH_KEY_GPU }}
           port: ${{ secrets.SSH_PORT_GPU }}
-          source: "docker-compose.ai.yml"
+          source: "docker-compose.ai.yml,monitor"
           target: "~/app"
 
       - name: Deploy to GPU Server
@@ -80,6 +80,13 @@ jobs:
           port: ${{ secrets.SSH_PORT_GPU }}
           script: |
             cd ~/app
+            
+            # 0. 모니터링 설정 자동화 (IP 치환)
+            # example 파일을 복사하여 실제 설정 파일 생성
+            cp monitor/prometheus.yml.example monitor/prometheus.yml
+            
+            # GENERAL_VM_IP_PLACEHOLDER -> 실제 General VM IP (Secret 이용)
+            sed -i "s/GENERAL_VM_IP_PLACEHOLDER/${{ secrets.SSH_HOST_VM }}/g" monitor/prometheus.yml
             
             # 1. 필수 디렉토리 생성 (docker-compose.ai.yml 경로 의존성 해결)
             mkdir -p ai/logs
