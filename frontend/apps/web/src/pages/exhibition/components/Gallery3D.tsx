@@ -181,12 +181,6 @@ export const Gallery3D = ({
                   <div>{frame.content}</div>
                 )}
               </div>
-
-              {/* ✅ [핵심 수정] 
-                 actions를 frame div '내부'에 배치했습니다.
-                 이렇게 하면 frame이 회전하거나 줄어들 때 버튼도 한 몸처럼 같이 움직입니다.
-                 스타일은 건드리지 않았으므로 기존 CSS(absolute, bottom 등)가 적용됩니다.
-              */}
               {isEditMode && (
                 <div className={styles.actions}>
                   <div className={styles.actionTitle}>{movieTitle}</div>

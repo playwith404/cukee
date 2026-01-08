@@ -1,14 +1,10 @@
-// apps/web/src/pages/Home/MainCarousel.tsx
-// 티켓 캐러셀 컴포넌트 - 티켓 슬라이드 애니메이션 및 큐레이터 캐릭터 표시
-
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import styles from "./Carousel.module.css";
 
 // =============================================================================
 // 타입 정의
 // =============================================================================
 
-/** 티켓 데이터 인터페이스 */
 export interface TicketData {
   id: number;
   title: string;
@@ -20,23 +16,23 @@ export interface TicketData {
   height: number;
 }
 
-/** 캐러셀 컴포넌트 Props */
 interface MainCarouselProps {
-  tickets: TicketData[];        // 전체 티켓 목록
-  currentIndex: number;         // 현재 선택된 티켓 인덱스
-  onNext: () => void;           // 다음 티켓으로 이동 콜백
-  onPrev: () => void;           // 이전 티켓으로 이동 콜백
-  onTicketClick: (ticketId: number) => void;  // 티켓 클릭 시 콜백
+  tickets: TicketData[];
+  currentIndex: number;
+  onNext: () => void;
+  onPrev: () => void;
+  onTicketClick: (ticketId: number) => void;
+  animatingTicketId: number | null;
+  viewMode: 'default' | 'viewAll';
+  onToggleViewMode: () => void;
 }
 
-/** 슬라이드 위치 타입 - 각 티켓의 화면상 위치 */
-type SlidePosition = 'main' | 'second' | 'third' | 'hidden-left' | 'hidden-right';
+type SlidePosition = 'main' | 'second' | 'third' | 'fourth' | 'fifth' | 'hidden-left' | 'hidden-right';
 
-/** 개별 슬라이드 정보 */
 interface TicketSlide {
   ticket: TicketData;
   position: SlidePosition;
-  id: number;  // React key용 고유 ID
+  id: number;
 }
 
 // =============================================================================
@@ -48,253 +44,249 @@ export const MainCarousel: React.FC<MainCarouselProps> = ({
   currentIndex,
   onNext,
   onPrev,
-  onTicketClick
+  onTicketClick,
+  animatingTicketId,
+  viewMode,
+  onToggleViewMode
 }) => {
   const len = tickets.length;
 
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [slides, setSlides] = useState<TicketSlide[]>([]);
+  
   // ---------------------------------------------------------------------------
-  // 상태 관리
+  // [핵심 수정] 캐릭터 크로스페이드를 위한 2개의 상태
   // ---------------------------------------------------------------------------
-  const [isAnimating, setIsAnimating] = useState(false);  // 애니메이션 진행 중 여부
-  const [slides, setSlides] = useState<TicketSlide[]>([]); // 현재 표시 중인 슬라이드 목록
-  const [displayedCharacter, setDisplayedCharacter] = useState<string | null>(null); // 표시 중인 캐릭터 이미지
-  const [characterFading, setCharacterFading] = useState(false); // 캐릭터 페이드 애니메이션 상태
-  const [shakeDirection, setShakeDirection] = useState<'left' | 'right' | null>(null); // 경계 도달 시 흔들림 방향
-  const isInitialMount = useRef(true); // 초기 마운트 여부 추적
+  const [activeChar, setActiveChar] = useState<string | null>(null);   // 현재 보여질 캐릭터
+  const [fadingChar, setFadingChar] = useState<string | null>(null);   // 사라질(이전) 캐릭터
+  const [triggerAnim, setTriggerAnim] = useState(false);               // 애니메이션 트리거
+  
+  const [shakeDirection, setShakeDirection] = useState<'left' | 'right' | null>(null);
 
-  // ---------------------------------------------------------------------------
-  // 경계 체크 - 첫/마지막 티켓 여부
-  // ---------------------------------------------------------------------------
+  const mainTicket = tickets[currentIndex];
+  const isClickAnimating = mainTicket && animatingTicketId === mainTicket.id;
+  
+  // 클릭 시 활성화된(밝은) 캐릭터 이미지 URL
+  const activeCharacterUrl = activeChar 
+    ? activeChar.replace('h_cara', 'cara') 
+    : null;
+
   const isFirstTicket = currentIndex === 0;
   const isLastTicket = currentIndex === len - 1;
 
   // ---------------------------------------------------------------------------
   // 슬라이드 생성 함수
-  // - 현재 인덱스 기준으로 main, second, third 위치의 슬라이드 생성
-  // - 마지막 티켓 근처에서는 남은 티켓 수에 따라 슬라이드 수 조절
   // ---------------------------------------------------------------------------
+  // const createDefaultSlides = useCallback((idx: number): TicketSlide[] => {
+  //   if (len === 0) return [];
+
+  //   const slides: TicketSlide[] = [
+  //     { ticket: tickets[idx], position: 'main', id: tickets[idx].id },
+  //   ];
+
+  //   //const limit = viewMode === 'viewAll' ? 4 : 2;
+  //   const limit = 5;
+
+  //   for (let i = 1; i <= limit; i++) {
+  //     if (idx + i < len) {
+  //       let pos: SlidePosition = 'second';
+  //       if (i === 2) pos = 'third';
+  //       if (i === 3) pos = 'fourth';
+  //       if (i === 4) pos = 'fifth';
+  //       if (i === 5) pos = 'hidden-right';
+
+  //       slides.push({ ticket: tickets[idx + i], position: pos, id: tickets[idx + i].id });
+  //     }
+  //   }
+  //   return slides;
+  // }, [tickets, len]);
   const createDefaultSlides = useCallback((idx: number): TicketSlide[] => {
     if (len === 0) return [];
 
-    const slides: TicketSlide[] = [
-      { ticket: tickets[idx], position: 'main', id: tickets[idx].id },
-    ];
+    const slides: TicketSlide[] = [];
 
-    // 다음 티켓이 있으면 second 위치에 추가
-    if (idx + 1 < len) {
-      slides.push({ ticket: tickets[idx + 1], position: 'second', id: tickets[idx + 1].id });
+    // 1. 왼쪽 대기 (Previous) - [수정] 0번보다 작아지면 마지막 번호로 (순환)
+    const prevIdx = (idx - 1 + len) % len;
+    slides.push({ 
+        ticket: tickets[prevIdx], 
+        position: 'hidden-left', 
+        // 🚨 주의: 티켓 개수가 적으면 키가 겹칠 수 있으니 position을 섞어 키를 만듭니다
+        id: tickets[prevIdx].id 
+    });
+
+    // 2. 현재 메인 (Main)
+    slides.push({ ticket: tickets[idx], position: 'main', id: tickets[idx].id });
+
+    // 3. 오른쪽 대기 (Next 1~5)
+    const limit = 5; 
+
+    for (let i = 1; i <= limit; i++) {
+      // ⭐️ [핵심] 배열 길이를 넘어가면 다시 0, 1, 2... 로 돌아가는 공식
+      const nextIdx = (idx + i) % len;
+
+      let pos: SlidePosition = 'second';
+      if (i === 2) pos = 'third';
+      if (i === 3) pos = 'fourth';
+      if (i === 4) pos = 'fifth';
+      if (i === 5) pos = 'hidden-right';
+
+      slides.push({ ticket: tickets[nextIdx], position: pos, id: tickets[nextIdx].id });
     }
-
-    // 그 다음 티켓이 있으면 third 위치에 추가
-    if (idx + 2 < len) {
-      slides.push({ ticket: tickets[idx + 2], position: 'third', id: tickets[idx + 2].id });
-    }
-
     return slides;
   }, [tickets, len]);
 
   // ---------------------------------------------------------------------------
-  // 초기 마운트 시 슬라이드 및 캐릭터 설정
+  // [핵심 수정] 이미지 프리로딩 및 상태 교체 로직
   // ---------------------------------------------------------------------------
   useEffect(() => {
-    if (len > 0 && isInitialMount.current) {
+    if (len > 0) {
       setSlides(createDefaultSlides(currentIndex));
-      setDisplayedCharacter(tickets[currentIndex]?.characterImageUrl || null);
-      isInitialMount.current = false;
-    }
-  }, [len, currentIndex, createDefaultSlides, tickets]);
+      
+      const nextCharUrl = tickets[currentIndex]?.characterImageUrl || null;
 
-  // ---------------------------------------------------------------------------
-  // currentIndex 변경 시 슬라이드 동기화 (애니메이션 완료 후)
-  // ---------------------------------------------------------------------------
-  useEffect(() => {
-    if (!isAnimating && !isInitialMount.current && len > 0) {
-      setSlides(createDefaultSlides(currentIndex));
-      setDisplayedCharacter(tickets[currentIndex]?.characterImageUrl || null);
+      // 이미지가 실제로 바뀌었을 때만 로직 실행
+      if (nextCharUrl !== activeChar) {
+        
+        // 1. 이미지가 존재한다면 '미리 로딩(Preload)'을 시도합니다.
+        //    (로딩 없이 바로 띄우면 이미지가 안 뜬 상태로 페이드인되어 깜빡거림)
+        if (nextCharUrl) {
+            const img = new Image();
+            img.src = nextCharUrl;
+            
+            // 로딩이 완료되면 교체 진행
+            img.onload = () => {
+                setFadingChar(activeChar); // 기존 이미지를 '퇴장' 상태로
+                setActiveChar(nextCharUrl); // 새 이미지를 '입장' 상태로
+                setTriggerAnim(true);       // 애니메이션 시작
+
+                // 애니메이션 시간(0.4s) 후 정리
+                setTimeout(() => {
+                    setFadingChar(null);
+                    setTriggerAnim(false);
+                }, 400);
+            };
+        } else {
+            // 새 이미지가 null인 경우 (바로 삭제)
+            setFadingChar(activeChar);
+            setActiveChar(null);
+            setTriggerAnim(true);
+            setTimeout(() => {
+                setFadingChar(null);
+                setTriggerAnim(false);
+            }, 400);
+        }
+      }
     }
-  }, [currentIndex, isAnimating, createDefaultSlides, len, tickets]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [len, currentIndex, tickets]); // activeChar는 의존성에서 뺍니다 (무한루프 방지)
 
   if (len === 0) return null;
 
   // ---------------------------------------------------------------------------
-  // 다음(→) 버튼 핸들러
-  // - 마지막 티켓이면 흔들림 애니메이션
-  // - 그 외에는 슬라이드를 왼쪽으로 이동
+  // 이벤트 핸들러
   // ---------------------------------------------------------------------------
   const handleNext = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (isAnimating || len <= 1) return;
 
-    // 마지막 티켓 도달 시 흔들림 피드백
-    if (isLastTicket) {
-      setShakeDirection('right');
-      setTimeout(() => setShakeDirection(null), 400);
-      return;
-    }
+    // if (isLastTicket) {
+    //   setShakeDirection('right');
+    //   setTimeout(() => setShakeDirection(null), 400);
+    //   return;
+    // }
 
     setIsAnimating(true);
-
-    // 1단계: 새로 들어올 티켓이 있으면 화면 밖 오른쪽에 배치
-    const nextThirdIndex = currentIndex + 3;
-    const hasEnteringTicket = nextThirdIndex < len;
-
-    if (hasEnteringTicket) {
-      const enteringTicket = tickets[nextThirdIndex];
-      setSlides(prev => [
-        ...prev,
-        { ticket: enteringTicket, position: 'hidden-right', id: enteringTicket.id + 1000 }
-      ]);
-    }
-
-    // 2단계: 다음 프레임에서 모든 슬라이드 위치 변경 (CSS transition 트리거)
-    // - main → hidden-left (왼쪽으로 퇴장)
-    // - second → main (메인으로 승격)
-    // - third → second
-    // - hidden-right → third (새 티켓 등장)
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        setCharacterFading(true); // 캐릭터 페이드 아웃 시작
-        setSlides(prev => {
-          const slideCount = prev.length;
-          return prev.map((slide, idx) => {
-            if (idx === 0) return { ...slide, position: 'hidden-left' };
-            if (idx === 1) return { ...slide, position: 'main' };
-            if (idx === 2) return { ...slide, position: 'second' };
-            if (idx === 3 && slideCount === 4) return { ...slide, position: 'third' };
-            return slide;
-          });
-        });
-      });
-    });
-
-    // 캐릭터 이미지 교체 (페이드 중간 시점)
-    const nextCharacter = tickets[currentIndex + 1]?.characterImageUrl || null;
-    setTimeout(() => {
-      setDisplayedCharacter(nextCharacter);
-      setCharacterFading(false); // 페이드 인
-    }, 200);
-
-    // 3단계: 애니메이션 완료 후 상태 정리
-    setTimeout(() => {
-      onNext(); // 부모 컴포넌트에 인덱스 변경 알림
-      setIsAnimating(false);
-    }, 450);
+    onNext();
+    setTimeout(() => setIsAnimating(false), 450); 
   };
 
-  // ---------------------------------------------------------------------------
-  // 이전(←) 버튼 핸들러
-  // - 첫 번째 티켓이면 흔들림 애니메이션
-  // - 그 외에는 슬라이드를 오른쪽으로 이동
-  // ---------------------------------------------------------------------------
   const handlePrev = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (isAnimating || len <= 1) return;
 
-    // 첫 번째 티켓 도달 시 흔들림 피드백
-    if (isFirstTicket) {
-      setShakeDirection('left');
-      setTimeout(() => setShakeDirection(null), 400);
-      return;
-    }
+    // if (isFirstTicket) {
+    //   setShakeDirection('left');
+    //   setTimeout(() => setShakeDirection(null), 400);
+    //   return;
+    // }
 
     setIsAnimating(true);
-
-    // 1단계: 이전 티켓을 화면 밖 왼쪽에 배치
-    const prevIndex = currentIndex - 1;
-    const enteringTicket = tickets[prevIndex];
-
-    setSlides(prev => [
-      { ticket: enteringTicket, position: 'hidden-left', id: enteringTicket.id + 2000 },
-      ...prev
-    ]);
-
-    // 2단계: 다음 프레임에서 모든 슬라이드 위치 변경
-    // - hidden-left → main (새 티켓이 메인으로)
-    // - main → second
-    // - second → third
-    // - third → hidden-right (오른쪽으로 퇴장)
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        setCharacterFading(true);
-        setSlides(prev => {
-          const slideCount = prev.length;
-          return prev.map((slide, idx) => {
-            if (idx === 0) return { ...slide, position: 'main' };
-            if (idx === 1) return { ...slide, position: 'second' };
-            if (idx === 2) return { ...slide, position: 'third' };
-            if (idx >= 3 && slideCount > 3) return { ...slide, position: 'hidden-right' };
-            return slide;
-          });
-        });
-      });
-    });
-
-    // 캐릭터 이미지 교체
-    const prevCharacter = enteringTicket?.characterImageUrl || null;
-    setTimeout(() => {
-      setDisplayedCharacter(prevCharacter);
-      setCharacterFading(false);
-    }, 200);
-
-    // 3단계: 애니메이션 완료 후 상태 정리
-    setTimeout(() => {
-      onPrev();
-      setIsAnimating(false);
-    }, 450);
+    onPrev();
+    setTimeout(() => setIsAnimating(false), 450);
   };
 
-  // ---------------------------------------------------------------------------
-  // 슬라이드 위치에 따른 CSS 클래스 반환
-  // ---------------------------------------------------------------------------
   const getPositionClass = (position: SlidePosition): string => {
     switch (position) {
-      case 'main':
-        return styles.layerMain;
-      case 'second':
-        return styles.layerSecond;
-      case 'third':
-        return styles.layerThird;
-      case 'hidden-left':
-        return styles.layerHiddenLeft;
-      case 'hidden-right':
-        return styles.layerHiddenRight;
-      default:
-        return '';
+      case 'main': return styles.layerMain;
+      case 'second': return styles.layerSecond;
+      case 'third': return styles.layerThird;
+      case 'fourth': return styles.layerFourth;
+      case 'fifth': return styles.layerFifth;
+      case 'hidden-left': return styles.layerHiddenLeft;
+      case 'hidden-right': return styles.layerHiddenRight;
+      default: return '';
     }
   };
 
-  const mainTicket = tickets[currentIndex];
-
-  // ---------------------------------------------------------------------------
-  // 렌더링
-  // ---------------------------------------------------------------------------
   return (
-    <div className={styles.container}>
-      {/* 큐레이터 캐릭터 이미지 */}
-      <div className={styles.characterArea}>
-        {displayedCharacter && (
+    <div className={`${styles.container} ${viewMode === 'viewAll' ? styles.viewAllMode : ''}`}>
+      <div className={styles.responsiveBackDrop}></div>
+      {/* [캐릭터 영역 수정]
+         activeChar(입장)와 fadingChar(퇴장) 두 개의 이미지를 동시에 렌더링합니다.
+      */}
+      <div 
+        className={styles.characterArea}
+        style={{ 
+            opacity: viewMode === 'viewAll' ? 0 : 1, 
+            transition: 'opacity 0.4s ease' 
+        }}
+      >
+        {/* 1. 사라지는 캐릭터 (fadingChar) */}
+        {fadingChar && (
           <img
-            src={displayedCharacter}
-            alt="Character"
-            className={`${styles.characterImg} ${characterFading ? styles.characterFading : ''}`}
+            src={fadingChar}
+            alt="Character Fading Out"
+            className={`${styles.characterImg} ${styles.fadeOut}`}
+          />
+        )}
+
+        {/* 2. 나타나는 캐릭터 (activeChar) */}
+        {activeChar && (
+          <img
+            src={activeChar}
+            alt="Character Fading In"
+            className={`${styles.characterImg} ${triggerAnim ? styles.fadeIn : ''}`}
+            // 애니메이션 중이 아닐 때는 항상 100% 보이게 설정
+            style={{ opacity: (!fadingChar && !triggerAnim) ? 1 : undefined }}
+          />
+        )}
+
+        {/* 3. 클릭 시 강조되는 캐릭터 */}
+        {activeCharacterUrl && (
+          <img
+            src={activeCharacterUrl}
+            alt="Character Active"
+            className={styles.characterImg}
+            style={{
+              zIndex: 20, 
+              transition: 'opacity 0.2s ease-in-out',
+              opacity: isClickAnimating ? 1 : 0,
+            }}
           />
         )}
       </div>
 
       {/* 티켓 슬라이드 영역 */}
       <div
-        className={`${styles.ticketCluster} ${shakeDirection === 'left' ? styles.shakeLeft : ''} ${shakeDirection === 'right' ? styles.shakeRight : ''}`}
+        className={`${styles.ticketCluster} ${shakeDirection === 'left' ? styles.shakeLeft : ''} ${shakeDirection === 'right' ? styles.shakeRight : ''} ${viewMode === 'viewAll' ? styles.clusterExpanded : ''}`}
         onClick={() => mainTicket && onTicketClick(mainTicket.id)}
+        style={{ cursor: 'pointer' }}
       >
         {slides.map((slide) => (
           <div
             key={slide.id}
             className={`${styles.ticketBase} ${getPositionClass(slide.position)}`}
             style={{
-              // 수정 전 (삭제): width: `${slide.ticket.width}px`, height: `${slide.ticket.height}px`
-              
-              // 수정 후: 비율만 설정합니다.
-              // CSS에서 height: 80%를 잡고 있으므로, 비율에 맞춰 너비가 자동 계산됩니다.
               aspectRatio: `${slide.ticket.width} / ${slide.ticket.height}`
             }}
           >
@@ -308,17 +300,35 @@ export const MainCarousel: React.FC<MainCarouselProps> = ({
       </div>
 
       {/* 네비게이션 버튼 */}
-      <button className={styles.prevBtn} onClick={handlePrev} disabled={isAnimating}>
+      <button className={styles.prevBtn} onClick={handlePrev} disabled={isAnimating || isClickAnimating}>
         &lt;
       </button>
-      <button className={styles.nextBtn} onClick={handleNext} disabled={isAnimating}>
+      <button className={styles.nextBtn} onClick={handleNext} disabled={isAnimating || isClickAnimating}>
         &gt;
       </button>
 
-      {/* 티켓 상세 페이지 링크 */}
-      <div className={styles.linkText} onClick={() => mainTicket && onTicketClick(mainTicket.id)}>
-        티켓만 보기 &gt;
-      </div>
+      {/* 티켓만 보기 버튼 */}
+      {viewMode === 'default' && (
+        <div 
+          className={styles.linkText} 
+          onClick={(e) => { 
+            e.stopPropagation(); 
+            onToggleViewMode(); 
+          }}
+        >
+          티켓만 보기 &gt;
+        </div>
+      )}
+
+      {viewMode === 'viewAll' && (
+         <div 
+           className={styles.backButtonFixed}
+           onClick={(e) => { e.stopPropagation(); onToggleViewMode(); }}
+         >
+            &lt; 돌아가기
+         </div>
+      )}
+
     </div>
   );
 };

@@ -117,7 +117,7 @@ export const MainCarousel: React.FC<MainCarouselProps> = ({
         &gt;
       </button>
 
-      {/* 링크 텍스트 */}
+      
       <div className="mc-link-text" onClick={() => onTicketClick(mainTicket.id)}>
          티켓만 보기 &gt;
       </div>
