@@ -175,7 +175,11 @@
 }
 
 .input:disabled {
+<<<<<<< Updated upstream
   opacity: 0.5;
+=======
+  background-color: #f5f0e8;
+>>>>>>> Stashed changes
   cursor: not-allowed;
 }
 
@@ -260,9 +264,14 @@
 }
 
 .forgotPasswordLink {
+<<<<<<< Updated upstream
   font-size: 0.8rem;
   color: #6b5a4a;
   text-decoration: none;
+=======
+  font-size: 0.875rem;
+  color: #6b5a4a;
+>>>>>>> Stashed changes
   transition: color 0.2s;
 }
 
@@ -285,7 +294,12 @@
 }
 
 .dividerBorder {
+<<<<<<< Updated upstream
   display: none;
+=======
+  width: 100%;
+  border-top: 1px solid #d4c9b8;
+>>>>>>> Stashed changes
 }
 
 .dividerText {
@@ -295,7 +309,12 @@
 }
 
 .dividerTextInner {
+<<<<<<< Updated upstream
   background-color: transparent;
+=======
+  padding: 0 0.5rem;
+  background-color: #ffffff;
+>>>>>>> Stashed changes
   color: #a89a8a;
 }
 
@@ -311,6 +330,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+<<<<<<< Updated upstream
   padding: 0.75rem 1rem;
   background-color: #f5f0e8;
   border: 1px solid #d4c9b8;
@@ -329,6 +349,17 @@
 .socialButton:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+=======
+  padding: 0.5rem 1rem;
+  border: 1px solid #d4c9b8;
+  border-radius: 0.5rem;
+  background-color: #ffffff;
+  transition: background-color 0.2s;
+}
+
+.socialButton:hover:not(:disabled) {
+  background-color: #f5f0e8;
+>>>>>>> Stashed changes
 }
 
 .socialButtonText {
@@ -343,7 +374,10 @@
   text-align: center;
   font-size: 0.75rem;
   color: #a89a8a;
+<<<<<<< Updated upstream
   line-height: 1.5;
+=======
+>>>>>>> Stashed changes
 }
 
 .terms span {
