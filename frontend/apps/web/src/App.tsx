@@ -4,6 +4,7 @@ import { Login } from './pages/auth/Login';
 import { Signup } from './pages/auth/Signup';
 import { ForgotPassword } from './pages/auth/ForgotPassword';
 import { GoogleCallback } from './pages/auth/GoogleCallback';
+import { KakaoCallback } from './pages/auth/KakaoCallback';
 import { Exhibition } from './pages/exhibition/Exhibition';
 import EmailVerifyPage from "./pages/auth/EmailVerifyPage";
 import { AuthProvider } from './contexts/AuthContext';
@@ -26,6 +27,7 @@ function App() {
 
         <Route path="/auth/email/verify" element={<EmailVerifyPage />} />
         <Route path="/auth/google/callback" element={<GoogleCallback />} />
+        <Route path="/auth/kakao/callback" element={<KakaoCallback />} />
 
         {/* Private Routes */}
         <Route element={<PrivateRoute />}>
