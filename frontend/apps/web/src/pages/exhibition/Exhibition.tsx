@@ -15,6 +15,9 @@ import type { AIExhibitionResponse } from '../../apis/ai';
 import { curateMovies, getMovieDetail } from '../../apis/ai'; // 영화 조회 API
 import { fetchTickets, type Ticket, createExhibition, getExhibitionById } from '../../apis/exhibition';
 
+import { ExhibitionDecorate } from './ExhibitionDecorate';
+// import type { CukeeId, CukeeStyle } from '../../types/cukee';
+
 // AI 진행 상태 타입 정의 
 type AIStatus = 'idle' | 'loading' | 'delayed' | 'error';
 
@@ -60,6 +63,17 @@ export const Exhibition = () => {
   // === 5. 영화 상세 정보 상태 ===
   const [selectedMovieDetail, setSelectedMovieDetail] = useState<{ title: string; detail: string } | null>(null);
   const [loadingDetail, setLoadingDetail] = useState(false);
+
+  // === 6. 하단 바 모드 관리(프롬프트 & 꾸미기)===
+  const [bottomMode, setBottomMode] = useState<'action' | 'decorate'>('action');
+
+  // 큐키 스타일 상태 선언
+  // const [characterId] = useState<CukeeId>('c1');
+  // const [cukeeStyle, setCukeeStyle] = useState<CukeeStyle>('line');
+
+  // 이미지 URL 계산
+  //const characterImageUrl =
+  //  cukeeImages[characterId][cukeeStyle];
 
   // [신규] 10초 지연 감지 타이머 로직
   useEffect(() => {
@@ -353,7 +367,7 @@ export const Exhibition = () => {
       {!isReadOnly && (
         <TopControls
           onSave={handleSave}
-          onDecorate={() => console.log('Decorate')}
+          onDecorate={() => setBottomMode('decorate')}
         />
       )}
 
@@ -390,6 +404,7 @@ export const Exhibition = () => {
       </div>
 
       {/* ✅ [수정] 조건문(!isReadOnly) 제거 -> 항상 렌더링하되 isReadOnly prop 전달 */}
+      {bottomMode === 'action' && (
       <ExhibitionGenerator
         currentTicketId={currentTicketId}
         onSuccess={handleExhibitionCreated}
@@ -401,8 +416,15 @@ export const Exhibition = () => {
         onError={handleAIError}
         isLoading={aiStatus === 'loading' || aiStatus === 'delayed'}
         pinnedMovieIds={pinnedMovieIds}
-        isReadOnly={isReadOnly} // 👈 새로 추가한 Prop
+        isReadOnly={isReadOnly}
       />
+    )}
+
+    {bottomMode === 'decorate' && (
+      <ExhibitionDecorate
+        onClose={() => setBottomMode('action')}
+      />
+    )}
     </div>
   );
 };

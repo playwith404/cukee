@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import styles from './ActionBottomBar.module.css';
+import { ExhibitionDecorate } from '../ExhibitionDecorate';
+import type { CukeeStyle } from '../../../types/cukee';
 
 interface ActionBottomBarProps {
   promptValue: string;
@@ -7,9 +9,14 @@ interface ActionBottomBarProps {
   onSubmit: () => void;
   isLoading: boolean;
   isReadOnly: boolean; // [추가]
+
+  // 추가: 모드 관련 props
+  mode: 'action' | 'decorate';
+  onCloseDecorate: () => void;
+  onOpenDecorate: () => void;
 }
 
-export const ActionBottomBar = ({ promptValue, setPromptValue, onSubmit, isLoading, isReadOnly }: ActionBottomBarProps) => {
+export const ActionBottomBar = ({ promptValue, setPromptValue, onSubmit, isLoading, isReadOnly, mode, onCloseDecorate, onOpenDecorate, }: ActionBottomBarProps) => {
   // 모달 표시 상태
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   
@@ -48,7 +55,7 @@ export const ActionBottomBar = ({ promptValue, setPromptValue, onSubmit, isLoadi
     <>
       <div className={`${styles.container} ${isReadOnly ? styles.narrowBar : ''}`}>
         {/* ✅ isReadOnly가 아닐 때(편집 모드)만 입력창과 버튼을 보여줌 */}
-        {!isReadOnly && (
+        {mode === 'action' && !isReadOnly && (
           <>
             <div className={styles.promptWrapper}>
               <input
