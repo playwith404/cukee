@@ -71,6 +71,43 @@
   margin-right: 25px;
 }
 
+.rightWrapper {
+  position: relative;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateX(100px);
+}
+
+.toggleBtn {
+  background: none;
+  border: 1px solid #8F8784;
+  border-radius: 20px;
+  padding: 5px 10px;
+  font-size: 14px;
+  color: #8F8784;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.toggleBtn:hover {
+  background-color: rgba(143, 135, 132, 0.1);
+}
+
+.toggleBtnActive {
+  background-color: #ff4d4f;
+  border: 1px solid #ff4d4f;
+  color: white;
+}
+
+.toggleBtnActive:hover {
+  background-color: #d9363e;
+}
+
 /* -----------------------------------------
    드롭다운 메뉴 (글래스모피즘)
    ----------------------------------------- */

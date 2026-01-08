@@ -2,7 +2,7 @@ name: Nginx CI/CD
 
 on:
   push:
-    branches: [ "main", "dev" ]
+    branches: [ "main", "dev", "feature/**" ]
     paths:
       - 'nginx/**'
       - 'docker-compose.yml'
