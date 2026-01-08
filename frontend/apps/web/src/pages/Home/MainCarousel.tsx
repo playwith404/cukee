@@ -277,11 +277,7 @@ export const MainCarousel: React.FC<MainCarouselProps> = ({
       </div>
 
       {/* 티켓 슬라이드 영역 */}
-      <div
-        className={`${styles.ticketCluster} ${shakeDirection === 'left' ? styles.shakeLeft : ''} ${shakeDirection === 'right' ? styles.shakeRight : ''} ${viewMode === 'viewAll' ? styles.clusterExpanded : ''}`}
-        onClick={() => mainTicket && onTicketClick(mainTicket.id)}
-        style={{ cursor: 'pointer' }}
-      >
+      <div className={`${styles.ticketCluster} ${viewMode === 'viewAll' ? styles.clusterExpanded : ''}`}>
         {slides.map((slide) => (
           <div
             key={slide.id}
