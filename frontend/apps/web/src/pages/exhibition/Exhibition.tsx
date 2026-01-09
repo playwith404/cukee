@@ -13,7 +13,7 @@ import { ExhibitionGenerator } from './components/ExhGenerator';
 // API 타입 import (경로는 프로젝트 구조에 맞게 수정)
 import type { AIExhibitionResponse } from '../../apis/ai';
 import { curateMovies, getMovieDetail, clearMovieDetailCache } from '../../apis/ai'; // 영화 조회 API
-import { fetchTickets, type Ticket, createExhibition, getExhibitionById } from '../../apis/exhibition';
+import { fetchTickets, type Ticket, createExhibition, getExhibitionById, toggleTicketLike } from '../../apis/exhibition';
 
 import { ExhibitionDecorate } from './ExhibitionDecorate';
 import type { CukeeStyle } from '../../types/cukee';
@@ -420,6 +420,52 @@ export const Exhibition = () => {
     setAiStatus('error');
   };
 
+  // [신규] 좋아요 토글 핸들러 (낙관적 업데이트)
+  const handleLikeToggle = async () => {
+    // 1. 현재 티켓 정보가 없으면 중단
+    if (!ticketInfo) return;
+
+    // 2. 로그인 여부 체크 (간단히 localStorage 토큰 존재 여부 확인)
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('로그인이 필요한 서비스입니다.');
+      return;
+    }
+
+    // 3. 현재 상태 저장 (롤백용)
+    const previousTicketInfo = { ...ticketInfo };
+
+    // 4. 낙관적 업데이트 (UI 즉시 반영)
+    const newIsLiked = !ticketInfo.isLiked;
+    const newLikeCount = newIsLiked
+      ? ticketInfo.likeCount + 1
+      : Math.max(0, ticketInfo.likeCount - 1);
+
+    setTicketInfo({
+      ...ticketInfo,
+      isLiked: newIsLiked,
+      likeCount: newLikeCount,
+    });
+
+    try {
+      // 5. API 호출
+      const updatedTicket = await toggleTicketLike(ticketInfo.id);
+
+      // 6. 서버 응답으로 최종 상태 동기화 (확실하게)
+      setTicketInfo(prev => prev ? {
+        ...prev,
+        isLiked: updatedTicket.isLiked,
+        likeCount: updatedTicket.likeCount
+      } : null);
+
+    } catch (error) {
+      console.error('좋아요 토글 실패:', error);
+      // 7. 실패 시 롤백
+      setTicketInfo(previousTicketInfo);
+      alert('좋아요 처리에 실패했습니다.');
+    }
+  };
+
   // 🚧 MainLayout이나 Header가 없으면 임시 div로 감싸세요.
   return (
     <div className={styles.container}>
@@ -436,7 +482,7 @@ export const Exhibition = () => {
           onDecorate={() => setBottomMode('decorate')}
         />
       )}
-      
+
       {/* 갤러리 영역 */}
       <div className={`${styles.galleryWrapper} ${isReadOnly ? styles.moveDown : ''}`}>
         <Gallery3D
@@ -455,13 +501,18 @@ export const Exhibition = () => {
       <CuratorGuide
         // API에 이미지가 있으면 그걸 쓰고, 없으면 위에서 만든 규칙(cara + 번호)을 사용
         //characterImageUrl={ticketInfo?.characterImageUrl || dynamicCharacterImage}
-        
+
         // [중요] 여기서 사용자가 선택한 스타일이 적용된 이미지를 보여줍니다.
         characterImageUrl={`/cara_style/${cukeeId}/${cukeeStyle}.png`}
 
         curatorName={loadingTicket ? "로딩 중..." : (ticketInfo?.curatorName || 'MZ 큐레이터')}
         // 여기서 상태에 따른 메시지를 주입합니다.
         curatorMessage={getCuratorMessage()}
+
+        // [신규] 좋아요 정보 전달
+        likeCount={ticketInfo?.likeCount || 0}
+        isLiked={ticketInfo?.isLiked || false}
+        onToggleLike={handleLikeToggle}
       />
 
       {/* 오른쪽 하단 티켓 이미지 영역 */}
@@ -476,33 +527,33 @@ export const Exhibition = () => {
 
       {/* ✅ [수정] 조건문(!isReadOnly) 제거 -> 항상 렌더링하되 isReadOnly prop 전달 */}
       {bottomMode === 'action' && (
-      <ExhibitionGenerator
-        currentTicketId={currentTicketId}
-        onSuccess={handleExhibitionCreated}
-        onLoadingStart={() => {
-          setAiStatus('loading');
-          setSelectedMovieDetail(null);
-          setAiCuratorComment("");
-        }}
-        onError={handleAIError}
-        isLoading={aiStatus === 'loading' || aiStatus === 'delayed'}
-        pinnedMovieIds={pinnedMovieIds}
-        isReadOnly={isReadOnly}
-      />
-    )}
+        <ExhibitionGenerator
+          currentTicketId={currentTicketId}
+          onSuccess={handleExhibitionCreated}
+          onLoadingStart={() => {
+            setAiStatus('loading');
+            setSelectedMovieDetail(null);
+            setAiCuratorComment("");
+          }}
+          onError={handleAIError}
+          isLoading={aiStatus === 'loading' || aiStatus === 'delayed'}
+          pinnedMovieIds={pinnedMovieIds}
+          isReadOnly={isReadOnly}
+        />
+      )}
 
-    {bottomMode === 'decorate' && (
-      <ExhibitionDecorate
-        onClose={() => setBottomMode('action')}
-        ticketId={currentTicketId}
-        cukeeStyle={cukeeStyle}
-        onChangeCukeeStyle={setCukeeStyle}
-        frameStyle={frameStyle} 
-        onChangeFrameStyle={setFrameStyle}
-        bgStyle={bgStyle}
-        onChangeBgStyle={setBgStyle}
-      />
-    )}
+      {bottomMode === 'decorate' && (
+        <ExhibitionDecorate
+          onClose={() => setBottomMode('action')}
+          ticketId={currentTicketId}
+          cukeeStyle={cukeeStyle}
+          onChangeCukeeStyle={setCukeeStyle}
+          frameStyle={frameStyle}
+          onChangeFrameStyle={setFrameStyle}
+          bgStyle={bgStyle}
+          onChangeBgStyle={setBgStyle}
+        />
+      )}
     </div>
   );
 };
