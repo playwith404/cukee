@@ -13,7 +13,9 @@ export const FALLBACK_TICKETS: Ticket[] = [
     height: 450,
     ticketImageUrl: '/ticket/ticket1.png',
     characterImageUrl: '/cara/h_cara1.png',
-    description: '숏폼 콘텐츠를 즐기는 MZ세대를 위한 티켓'
+    description: '숏폼 콘텐츠를 즐기는 MZ세대를 위한 티켓',
+    likeCount: 0,
+    isLiked: false
   },
   {
     id: 2,
@@ -27,7 +29,9 @@ export const FALLBACK_TICKETS: Ticket[] = [
     height: 450,
     ticketImageUrl: '/ticket/ticket2.png',
     characterImageUrl: '/cara/h_cara2.png',
-    description: '나만 알고 싶은 보물 같은 영화들'
+    description: '나만 알고 싶은 보물 같은 영화들',
+    likeCount: 0,
+    isLiked: false
   },
   {
     id: 3,
@@ -41,7 +45,9 @@ export const FALLBACK_TICKETS: Ticket[] = [
     height: 450,
     ticketImageUrl: '/ticket/ticket3.png',
     characterImageUrl: '/cara/h_cara3.png',
-    description: '지친 하루 끝에 위로가 되는 영화'
+    description: '지친 하루 끝에 위로가 되는 영화',
+    likeCount: 0,
+    isLiked: false
   },
   {
     id: 4,
@@ -55,7 +61,9 @@ export const FALLBACK_TICKETS: Ticket[] = [
     height: 450,
     ticketImageUrl: '/ticket/ticket4.png',
     characterImageUrl: '/cara/h_cara4.png',
-    description: '생각할 거리를 던져주는 묵직한 영화'
+    description: '생각할 거리를 던져주는 묵직한 영화',
+    likeCount: 0,
+    isLiked: false
   },
   {
     id: 5,
@@ -69,7 +77,9 @@ export const FALLBACK_TICKETS: Ticket[] = [
     height: 450,
     ticketImageUrl: '/ticket/ticket5.png',
     characterImageUrl: '/cara/h_cara5.png',
-    description: '아무 생각 없이 웃고 싶을 때'
+    description: '아무 생각 없이 웃고 싶을 때',
+    likeCount: 0,
+    isLiked: false
   },
   {
     id: 6,
@@ -83,7 +93,9 @@ export const FALLBACK_TICKETS: Ticket[] = [
     height: 450,
     ticketImageUrl: '/ticket/ticket6.png',
     characterImageUrl: '/cara/h_cara6.png',
-    description: '스트레스를 날려버릴 화끈한 액션'
+    description: '스트레스를 날려버릴 화끈한 액션',
+    likeCount: 0,
+    isLiked: false
   },
   {
     id: 7,
@@ -97,7 +109,9 @@ export const FALLBACK_TICKETS: Ticket[] = [
     height: 450,
     ticketImageUrl: '/ticket/ticket7.png',
     characterImageUrl: '/cara/h_cara7.png',
-    description: '새로운 세계로의 여행'
+    description: '새로운 세계로의 여행',
+    likeCount: 0,
+    isLiked: false
   },
   {
     id: 8,
@@ -111,7 +125,9 @@ export const FALLBACK_TICKETS: Ticket[] = [
     height: 450,
     ticketImageUrl: '/ticket/ticket8.png',
     characterImageUrl: '/cara/h_cara8.png',
-    description: '영화보다 더 영화 같은 현실 이야기'
+    description: '영화보다 더 영화 같은 현실 이야기',
+    likeCount: 0,
+    isLiked: false
   },
   {
     id: 9,
@@ -125,7 +141,9 @@ export const FALLBACK_TICKETS: Ticket[] = [
     height: 450,
     ticketImageUrl: '/ticket/ticket9.png',
     characterImageUrl: '/cara/h_cara9.png',
-    description: '오늘 밤 잠들 수 없는 공포'
+    description: '오늘 밤 잠들 수 없는 공포',
+    likeCount: 0,
+    isLiked: false
   },
   {
     id: 10,
@@ -139,7 +157,9 @@ export const FALLBACK_TICKETS: Ticket[] = [
     height: 450,
     ticketImageUrl: '/ticket/ticket10.png',
     characterImageUrl: '/cara/h_cara10.png',
-    description: '연애 세포를 깨우는 달콤한 이야기'
+    description: '연애 세포를 깨우는 달콤한 이야기',
+    likeCount: 0,
+    isLiked: false
   },
   {
     id: 11,
@@ -153,6 +173,8 @@ export const FALLBACK_TICKETS: Ticket[] = [
     height: 450,
     ticketImageUrl: '/ticket/ticket11.png',
     characterImageUrl: '/cara/h_cara11.png',
-    description: '어른들을 위한 동화'
+    description: '어른들을 위한 동화',
+    likeCount: 0,
+    isLiked: false
   }
 ];

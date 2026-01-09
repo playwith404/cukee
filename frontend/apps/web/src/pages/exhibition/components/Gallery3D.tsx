@@ -184,10 +184,10 @@ export const Gallery3D = ({
                         if (onPosterClick) onPosterClick(frame.id);
                       }}
                     />
-                  {/* hover 시 안내 텍스트 */}
-                  <div className={styles.posterOverlay}>
-                    클릭하면<br />영화 줄거리를 볼 수 있어요
-                  </div>
+                    {/* hover 시 안내 텍스트 */}
+                    <div className={styles.posterOverlay}>
+                      클릭하면<br />영화 줄거리를 볼 수 있어요
+                    </div>
                   </>
                 ) : (
                   <div>{frame.content}</div>
