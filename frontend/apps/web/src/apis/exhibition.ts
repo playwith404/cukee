@@ -92,6 +92,8 @@ export interface Ticket {
   curatorMessage: string | null;
   color: string | null;
   description: string | null;
+  likeCount: number;
+  isLiked: boolean;
 }
 
 export interface TicketListResponse {
@@ -217,5 +219,20 @@ export const fetchTickets = async (): Promise<TicketListResponse> => {
  */
 export const fetchTicketDetail = async (ticketCode: string): Promise<TicketDetailResponse> => {
   const response = await api.get<TicketDetailResponse>(`/tickets/${ticketCode}`);
+  return response.data;
+};
+
+/**
+ * 티켓 좋아요 토글
+ * POST /tickets/{ticket_id}/like
+ */
+export interface ToggleLikeResponse {
+  success: boolean;
+  isLiked: boolean;
+  likeCount: number;
+}
+
+export const toggleTicketLike = async (ticketId: number): Promise<ToggleLikeResponse> => {
+  const response = await api.post<ToggleLikeResponse>(`/tickets/${ticketId}/like`);
   return response.data;
 };

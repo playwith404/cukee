@@ -19,6 +19,8 @@ class TicketResponse(BaseModel):
     curatorMessage: Optional[str] = Field(None, description="큐레이터 메시지")
     color: Optional[str] = Field(None, description="테마 색상")
     description: Optional[str] = Field(None, description="설명")
+    likeCount: int = Field(0, description="좋아요 개수")
+    isLiked: bool = Field(False, description="현재 유저의 좋아요 여부")
 
     model_config = ConfigDict(
         populate_by_name=True,
