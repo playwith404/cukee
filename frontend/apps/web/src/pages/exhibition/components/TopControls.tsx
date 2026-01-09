@@ -37,10 +37,57 @@ const SaveModal: React.FC<SaveModalProps> = ({ onClose, onConfirm }) => {
     </div>
   );
 };
+/* ================================
+   전시회 꾸미기 패널 [신규]
+================================ */
+const DecoratePanel = ({ onClose }: { onClose: () => void }) => {
+  return (
+    <div className={styles.decorateOverlay} onClick={onClose}>
+      <div
+        className={styles.decoratePanel}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h3 className={styles.decorateTitle}>♡ 전시회 꾸미기 ♡</h3>
+
+        <div className={styles.decorateRow}>
+          <span>♥ 액자 스타일</span>
+          <div>
+            <button>none</button>
+            <button>액자</button>
+          </div>
+        </div>
+
+        <div className={styles.decorateRow}>
+          <span>♥ 배경 스타일</span>
+          <div className={styles.bgOptions}>
+            <button className={styles.bgWhite} />
+            <button className={styles.bgPink} />
+            <button className={styles.bgOrange} />
+            <button className={styles.bgPattern} />
+          </div>
+        </div>
+
+        <div className={styles.decorateRow}>
+          <span>♥ 쿠키 스타일</span>
+          <div>
+            <button>선</button>
+            <button>선 X</button>
+            <button>안뽀뽀</button>
+          </div>
+        </div>
+
+        <button className={styles.decorateConfirm} onClick={onClose}>
+          ✔
+        </button>
+      </div>
+    </div>
+  );
+};
 
 export const TopControls = ({ onSave, onDecorate }: TopControlsProps) => {
   // ✅ 모달 상태 관리
   const [showSaveModal, setShowSaveModal] = useState(false);
+  const [showDecorate, setShowDecorate] = useState(false);
 
   // 1. "전시회 저장하기" 버튼 클릭 시 모달 열기
   const handleSaveClick = () => {
@@ -60,7 +107,10 @@ export const TopControls = ({ onSave, onDecorate }: TopControlsProps) => {
         <button className={styles.button} onClick={handleSaveClick}>
           전시회 저장하기
         </button>
-        <button className={styles.button} onClick={onDecorate}>
+        <button
+          className={styles.button}
+          onClick={onDecorate}
+        >
           전시회 꾸미기
         </button>
       </div>
@@ -71,6 +121,9 @@ export const TopControls = ({ onSave, onDecorate }: TopControlsProps) => {
           onClose={() => setShowSaveModal(false)} 
           onConfirm={handleConfirmSave} 
         />
+      )}
+      {showDecorate && (
+        <DecoratePanel onClose={() => setShowDecorate(false)} />
       )}
     </>
   );

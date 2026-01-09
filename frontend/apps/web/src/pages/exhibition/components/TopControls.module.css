@@ -11,7 +11,7 @@
 
 /* .control-btn -> .button */
 .button {
-  background-color: #EDE6DD;
+  background-color: transparent; /* 투명 배경 유지 */
   border: 1px solid #8F8784;
   border-radius: 30px;
   padding: 10px 30px;
