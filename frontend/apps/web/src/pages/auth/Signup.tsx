@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import styles from './Auth.module.css';
 import { sendVerificationCode } from '../../apis/auth';
 
-// 아이콘 SVG 컴포넌트
+// --- 아이콘 컴포넌트 ---
 const UserIcon = () => (
   <svg className={styles.inputIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
     <circle cx="12" cy="8" r="4" />
@@ -31,64 +31,124 @@ const ArrowIcon = () => (
   </svg>
 );
 
+// O 아이콘 (유효함)
+const CheckIcon = () => (
+  <svg className={`${styles.validationIcon} ${styles.valid}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <polyline points="20 6 9 17 4 12" />
+  </svg>
+);
+
+// X 아이콘 (유효하지 않음)
+const XIcon = () => (
+  <svg className={`${styles.validationIcon} ${styles.invalid}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <line x1="18" y1="6" x2="6" y2="18" />
+    <line x1="6" y1="6" x2="18" y2="18" />
+  </svg>
+);
+
 export const Signup = () => {
   const navigate = useNavigate();
 
+  // 입력 값 State
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
   const [nickname, setNickname] = useState('');
+  
+  // 유효성 검사 결과 State (null: 입력 전, true: 통과, false: 실패)
+  const [isEmailValid, setIsEmailValid] = useState<boolean | null>(null);
+  const [isPasswordValid, setIsPasswordValid] = useState<boolean | null>(null);
+  const [isConfirmValid, setIsConfirmValid] = useState<boolean | null>(null);
+  const [isNicknameValid, setIsNicknameValid] = useState<boolean | null>(null);
+
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  // --- 유효성 검사 로직 함수들 ---
+
+  // 1. 닉네임: 2~20자, 한글/영문/숫자/언더스코어
+  const validateNickname = (name: string) => {
+    const regex = /^[가-힣a-zA-Z0-9_]{2,20}$/;
+    return regex.test(name);
+  };
+
+  // 2. 이메일: 표준 형식
+  const validateEmail = (email: string) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+  };
+
+  // 3. 비밀번호: 8자 이상, 영문 포함, 숫자 포함
+  const validatePassword = (pwd: string) => {
+    const hasLength = pwd.length >= 8;
+    const hasLetter = /[A-Za-z]/.test(pwd);
+    const hasNumber = /\d/.test(pwd);
+    return hasLength && hasLetter && hasNumber;
+  };
+
+  // --- 이벤트 핸들러 ---
+
+  // 공백(스페이스바) 입력 차단
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === ' ') {
+      e.preventDefault();
+    }
+  };
+
+  const handleNicknameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value.replace(/\s/g, ''); // 공백 제거
+    setNickname(val);
+    if (val.length === 0) setIsNicknameValid(null);
+    else setIsNicknameValid(validateNickname(val));
+  };
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value.replace(/\s/g, '');
+    setEmail(val);
+    if (val.length === 0) setIsEmailValid(null);
+    else setIsEmailValid(validateEmail(val));
+  };
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value.replace(/\s/g, '');
+    setPassword(val);
+    
+    // 비밀번호 유효성 체크
+    if (val.length === 0) setIsPasswordValid(null);
+    else setIsPasswordValid(validatePassword(val));
+
+    // 비밀번호를 바꿀 때, 이미 입력된 '비밀번호 확인' 값과 일치하는지도 갱신해줘야 함
+    if (passwordConfirm.length > 0) {
+      setIsConfirmValid(val === passwordConfirm);
+    }
+  };
+
+  const handleConfirmChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value.replace(/\s/g, '');
+    setPasswordConfirm(val);
+
+    if (val.length === 0) setIsConfirmValid(null);
+    else setIsConfirmValid(val === password); // 현재 비밀번호와 일치하는지 확인
+  };
+
+  // 폼 전체 유효성 검사 (모든 조건이 true여야 버튼 활성화)
+  const isFormValid = 
+    isNicknameValid === true &&
+    isEmailValid === true &&
+    isPasswordValid === true &&
+    isConfirmValid === true;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
-    // --- 유효성 검사 로직 ---
-    if (!email || !password || !nickname) {
-      setError('모든 필드를 입력해주세요');
-      return;
-    }
-
-    if (password !== passwordConfirm) {
-      setError('비밀번호가 일치하지 않습니다');
-      return;
-    }
-
-    if (password.length < 8) {
-      setError('비밀번호는 최소 8자 이상이어야 합니다');
-      return;
-    }
-
-    if (!/[A-Za-z]/.test(password)) {
-      setError('비밀번호는 영문자를 포함해야 합니다');
-      return;
-    }
-
-    if (!/\d/.test(password)) {
-      setError('비밀번호는 숫자를 포함해야 합니다');
-      return;
-    }
-
-    if (nickname.length < 2 || nickname.length > 20) {
-      setError('닉네임은 2-20자 사이여야 합니다');
-      return;
-    }
-
-    if (!/^[가-힣a-zA-Z0-9_]+$/.test(nickname)) {
-      setError('닉네임은 한글, 영문, 숫자, 언더스코어만 사용 가능합니다');
-      return;
-    }
-    // ----------------------
+    // 비활성 버튼이지만 엔터키 등으로 제출될 경우를 대비한 방어 코드
+    if (!isFormValid) return;
 
     setIsLoading(true);
 
     try {
-      // 이메일 인증번호 발송
       await sendVerificationCode(email);
-
-      // 인증 페이지로 이동 (회원가입 정보를 state로 전달)
       navigate('/auth/email/verify', {
         state: { email, password, nickname }
       });
@@ -112,25 +172,22 @@ export const Signup = () => {
 
   return (
     <div className={styles.container}>
-      {/* 네비게이션 바 */}
       <nav className={styles.navbar}>
         <Link to="/" className={styles.navLogo}>cukee</Link>
-        <div className={styles.navLinks}>
+        {/* <div className={styles.navLinks}>
           <Link to="/auth/login" className={styles.navLink}>로그인</Link>
           <Link to="/auth/signup" className={`${styles.navLink} ${styles.navLinkActive}`}>회원가입</Link>
-        </div>
+        </div> */}
       </nav>
 
-      {/* 메인 컨텐츠 */}
       <div className={styles.wrapper}>
         <div className={styles.mainContent}>
           <div className={`${styles.card} ${styles.cardSignup}`}>
-            {/* 타이틀 */}
             <h2 className={styles.title}>회원가입</h2>
             <p className={styles.subtitle}>cukee의 멤버가 되어보세요</p>
 
-            {/* 회원가입 폼 */}
             <form onSubmit={handleSubmit} className={styles.form}>
+              
               {/* 이름(닉네임) */}
               <div className={styles.formGroup}>
                 <label htmlFor="nickname" className={styles.label}>이름</label>
@@ -140,11 +197,15 @@ export const Signup = () => {
                     id="nickname"
                     type="text"
                     value={nickname}
-                    onChange={(e) => setNickname(e.target.value)}
+                    onChange={handleNicknameChange}
+                    onKeyDown={handleKeyDown}
                     placeholder="이름을 입력하세요"
                     className={styles.input}
                     disabled={isLoading}
                   />
+                  {nickname.length > 0 && (
+                    isNicknameValid ? <CheckIcon /> : <XIcon />
+                  )}
                 </div>
               </div>
 
@@ -157,11 +218,15 @@ export const Signup = () => {
                     id="email"
                     type="email"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={handleEmailChange}
+                    onKeyDown={handleKeyDown}
                     placeholder="이메일을 입력하세요"
                     className={styles.input}
                     disabled={isLoading}
                   />
+                  {email.length > 0 && (
+                    isEmailValid ? <CheckIcon /> : <XIcon />
+                  )}
                 </div>
               </div>
 
@@ -174,11 +239,15 @@ export const Signup = () => {
                     id="password"
                     type="password"
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="비밀번호 (6자 이상)"
+                    onChange={handlePasswordChange}
+                    onKeyDown={handleKeyDown}
+                    placeholder="비밀번호 (8자 이상, 영문/숫자)"
                     className={styles.input}
                     disabled={isLoading}
                   />
+                  {password.length > 0 && (
+                    isPasswordValid ? <CheckIcon /> : <XIcon />
+                  )}
                 </div>
               </div>
 
@@ -191,24 +260,31 @@ export const Signup = () => {
                     id="passwordConfirm"
                     type="password"
                     value={passwordConfirm}
-                    onChange={(e) => setPasswordConfirm(e.target.value)}
+                    onChange={handleConfirmChange}
+                    onKeyDown={handleKeyDown}
                     placeholder="비밀번호를 다시 입력하세요"
                     className={styles.input}
                     disabled={isLoading}
                   />
+                  {passwordConfirm.length > 0 && (
+                    isConfirmValid ? <CheckIcon /> : <XIcon />
+                  )}
                 </div>
               </div>
 
               {/* 에러 메시지 */}
               {error && <div className={styles.error}>{error}</div>}
 
-              <button type="submit" disabled={isLoading} className={styles.submitButton}>
+              <button 
+                type="submit" 
+                disabled={isLoading || !isFormValid} 
+                className={styles.submitButton}
+              >
                 {isLoading ? '처리 중...' : '가입하기'}
                 {!isLoading && <ArrowIcon />}
               </button>
             </form>
 
-            {/* 푸터 링크 */}
             <div className={styles.signupPrompt}>
               이미 계정이 있으신가요?
               <Link to="/auth/login" className={styles.signupLink}>로그인</Link>
