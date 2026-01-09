@@ -25,6 +25,8 @@ export const ExhibitionGenerator = ({
   isReadOnly // 👈 [추가] 받아오기
 }: ExhibitionGeneratorProps) => {
   const [prompt, setPrompt] = useState('');
+  const [bottomMode, setBottomMode] = useState<'action' | 'decorate'>('action');
+
 
   // ❌ [삭제] 로딩 상태는 이제 부모가 관리하므로 로컬 state는 필요 없음
   // const [isLoading, setIsLoading] = useState(false);
@@ -85,6 +87,9 @@ export const ExhibitionGenerator = ({
       onSubmit={handleSubmit}
       isLoading={isLoading} // ✅ 부모에게서 받은 loading 상태를 그대로 전달
       isReadOnly={isReadOnly} // 👈 [추가] 자식에게 전달
+      mode={bottomMode}
+      onCloseDecorate={() => setBottomMode('action')}
+      onOpenDecorate={() => setBottomMode('decorate')}
     />
   );
 };

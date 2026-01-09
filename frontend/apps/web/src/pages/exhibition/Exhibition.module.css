@@ -5,7 +5,7 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  background-color: #EDE6DD;
+  background-color: transparent; /* [변경] 기본색은 body에서 유지 */
 }
 
 /* 👇 [추가] 생성/저장 모드일 때만 적용되는 스타일 */
