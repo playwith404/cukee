@@ -4,6 +4,7 @@ import type { CukeeStyle, CukeeId } from '../../types/cukee';
 
 interface ExhibitionDecorateProps {
   onClose: () => void;
+  ticketId: number; // ticket.id를 통해 캐릭터 폴더(c1, c2...) 식별
   cukeeStyle: CukeeStyle;
   onChangeCukeeStyle: (style: CukeeStyle) => void;
 
@@ -14,6 +15,7 @@ interface ExhibitionDecorateProps {
 
 export const ExhibitionDecorate = ({ 
   onClose, 
+  ticketId, // 부모로부터 받은 티켓 ID
   cukeeStyle, 
   onChangeCukeeStyle, 
   // cukeeId, 
@@ -54,6 +56,33 @@ export const ExhibitionDecorate = ({
     };
   }, [bgStyle]);
 
+  // [추가] DB 저장 함수
+  const handleSaveDesign = async () => {
+    const designData = {
+      ticket_id: ticketId,
+      background_style: bgStyle,
+      frame_style: frameStyle,
+      cukee_style: cukeeStyle, // 'line', 'noline', 'unbalance'
+    };
+
+    try {
+      // 실제 API 엔드포인트에 맞춰 수정하세요
+      const response = await fetch('/api/tickets/designs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(designData),
+      });
+
+      if (response.ok) {
+        alert('전시회 디자인이 저장되었습니다! 🎨');
+        onClose(); // 저장 성공 시 창 닫기
+      } else {
+        alert('저장에 실패했습니다.');
+      }
+    } catch (error) {
+      console.error('저장 중 오류 발생:', error);
+    }
+  };
 
   return (
     <div className={`${styles.container} ${styles[bgStyle]}`}>
@@ -120,15 +149,10 @@ export const ExhibitionDecorate = ({
 
         {/* 완료 버튼 */}
         <button className={styles.confirmButton} 
-        onClick={() => {
-            console.log('적용된 스타일:', { frameStyle, bgStyle, cukeeStyle });
-            onClose(); // 닫기
-          }}>
+        onClick={handleSaveDesign}>
           ✔
         </button>
       </div>
     </div>
   );
 };
-
-

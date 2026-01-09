@@ -69,7 +69,7 @@ export const Exhibition = () => {
   const [bottomMode, setBottomMode] = useState<'action' | 'decorate'>('action');
 
   // 큐키 스타일 상태 선언
-  const [cukeeId, setCukeeId] = useState<string | null>(null);
+  const [cukeeId, setCukeeId] = useState<string>(`c${currentTicketId}`);
   const [cukeeStyle, setCukeeStyle] = useState<CukeeStyle>('line');
 
   // [신규] 10초 지연 감지 타이머 로직
@@ -88,20 +88,30 @@ export const Exhibition = () => {
     };
   }, [aiStatus]);
 
+  // 티켓 ID가 바뀔 때 cukeeId도 동기화
   useEffect(() => {
-    if (!ticketIdParam) return;
+    if (currentTicketId) {
+      setCukeeId(`c${currentTicketId}`);
+    }
+  }, [currentTicketId]);
 
-    fetch(`/api/exhibitions?ticket=${ticketIdParam}`)
-      .then(res => res.json())
-      .then(data => {
-        console.log('전시회 데이터:', data);
+  // [수정] DB에서 기존 설정을 불러오는 로직 (스타일 연동)
+  useEffect(() => {
+    if (!exhibitionIdParam) return;
 
-        setCukeeId(data.cukeeId); // 예: "c1"
-        setCukeeStyle(data.cukeeStyle ?? 'line'); // 초기 스타일
-      });
-  }, [ticketIdParam]);
-
-
+    // 전시회 상세 정보를 가져올 때 사용자가 저장했던 스타일(cukeeStyle)을 세팅
+    const loadExhibitionStyle = async () => {
+      try {
+        const data = await getExhibitionById(parseInt(exhibitionIdParam, 10));
+        if (data.cukeeStyle) {
+          setCukeeStyle(data.cukeeStyle);
+        }
+      } catch (err) {
+        console.error("스타일 로드 실패:", err);
+      }
+    };
+    loadExhibitionStyle();
+  }, [exhibitionIdParam]);
 
   // [신규] 상태에 따른 큐레이터 멘트 결정 함수
   const getCuratorMessage = () => {
@@ -416,7 +426,8 @@ export const Exhibition = () => {
           onDecorate={() => setBottomMode('decorate')}
         />
       )}
-
+      
+      {/* 갤러리 영역 */}
       <div className={`${styles.galleryWrapper} ${isReadOnly ? styles.moveDown : ''}`}>
         <Gallery3D
           frames={frames}
@@ -432,7 +443,10 @@ export const Exhibition = () => {
 
       <CuratorGuide
         // API에 이미지가 있으면 그걸 쓰고, 없으면 위에서 만든 규칙(cara + 번호)을 사용
-        characterImageUrl={ticketInfo?.characterImageUrl || dynamicCharacterImage}
+        //characterImageUrl={ticketInfo?.characterImageUrl || dynamicCharacterImage}
+        
+        // [중요] 여기서 사용자가 선택한 스타일이 적용된 이미지를 보여줍니다.
+        characterImageUrl={`/cara_style/${cukeeId}/${cukeeStyle}.png`}
 
         curatorName={loadingTicket ? "로딩 중..." : (ticketInfo?.curatorName || 'MZ 큐레이터')}
         // 여기서 상태에 따른 메시지를 주입합니다.
@@ -448,19 +462,6 @@ export const Exhibition = () => {
           className={styles.ticketImage}
         />
       </div>
-
-      {cukeeId && (
-        <img
-          key={`${cukeeId}-${cukeeStyle}`}
-          src={`/cara_style/${cukeeId}/${cukeeStyle}.png`}
-          alt="큐키"
-          className={styles.cukee}
-          onError={() => {
-          console.error('이미지 로드 실패:', cukeeId, cukeeStyle);
-    }}
-        />
-      )}
-
 
       {/* ✅ [수정] 조건문(!isReadOnly) 제거 -> 항상 렌더링하되 isReadOnly prop 전달 */}
       {bottomMode === 'action' && (
