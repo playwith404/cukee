@@ -425,17 +425,12 @@ export const Exhibition = () => {
     // 1. 현재 티켓 정보가 없으면 중단
     if (!ticketInfo) return;
 
-    // 2. 로그인 여부 체크 (간단히 localStorage 토큰 존재 여부 확인)
-    const token = localStorage.getItem('token');
-    if (!token) {
-      alert('로그인이 필요한 서비스입니다.');
-      return;
-    }
+    // (기존 토큰 체크 제거됨 - Cookie 인증 방식 사용)
 
-    // 3. 현재 상태 저장 (롤백용)
+    // 2. 현재 상태 저장 (롤백용)
     const previousTicketInfo = { ...ticketInfo };
 
-    // 4. 낙관적 업데이트 (UI 즉시 반영)
+    // 3. 낙관적 업데이트 (UI 즉시 반영)
     const newIsLiked = !ticketInfo.isLiked;
     const newLikeCount = newIsLiked
       ? ticketInfo.likeCount + 1
@@ -448,21 +443,28 @@ export const Exhibition = () => {
     });
 
     try {
-      // 5. API 호출
+      // 4. API 호출
       const updatedTicket = await toggleTicketLike(ticketInfo.id);
 
-      // 6. 서버 응답으로 최종 상태 동기화 (확실하게)
+      // 5. 서버 응답으로 최종 상태 동기화 (확실하게)
       setTicketInfo(prev => prev ? {
         ...prev,
         isLiked: updatedTicket.isLiked,
         likeCount: updatedTicket.likeCount
       } : null);
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('좋아요 토글 실패:', error);
-      // 7. 실패 시 롤백
+
+      // 6. 실패 시 롤백
       setTicketInfo(previousTicketInfo);
-      alert('좋아요 처리에 실패했습니다.');
+
+      // 401 에러(비로그인) 처리
+      if (error.response?.status === 401) {
+        alert('로그인이 필요한 서비스입니다.');
+      } else {
+        alert('좋아요 처리에 실패했습니다.');
+      }
     }
   };
 
