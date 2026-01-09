@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import styles from './Auth.module.css';
 import { sendVerificationCode } from '../../apis/auth';
