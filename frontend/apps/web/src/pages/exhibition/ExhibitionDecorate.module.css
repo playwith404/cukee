@@ -10,30 +10,110 @@
   justify-content: center;
 }
 
-/* 배경 스타일 옵션들 */
-.bgWhite { background-color: rgb(255, 248, 219); width: 40px; height: 40px; display: inline-block; }
-.bgPink { background-color: rgb(255, 216, 223); width: 40px; height: 40px; display: inline-block; }
-.bgOrange { background-color: rgb(255, 218, 148); width: 40px; height: 40px; display: inline-block; }
-.bgPattern { background-image: url('pattern1.png'); width: 40px; height: 40px; display: inline-block; background-size: cover; }
+.bubble {
+  position: relative;
+  background-color: #efebe7;
+  color: #373431;                 
+  padding: 22px 80px;             
+  border-radius: 40px;
+  line-height: 1.5;
+  width: 950px;
+  height: 231px;
 
+  box-shadow: 2px 4px 12px rgba(0,0,0,0.08);
+}
+
+.bubble::after {
+  content: "";
+  position: absolute; 
+  width: 1000px;
+  height: 230px;
+  border: 1px solid #ffffff; 
+  border-radius: 50px; 
+  top: 0px;
+  left: -25px;
+
+  pointer-events: none; 
+}
+
+/* 체크 버튼  */
+.confirmButton {
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+
+  width: 50px;             /* 기존 44 → 60px로 키움 */
+  height: 50px;
+  border-radius: 50%;       /* 여전히 원형 */
+  font-size: 28px;          /* 텍스트/아이콘 키우기 */
+  
+  border: 3px solid #FFD700; /* 골드 테두리, 두께 3px */
+  background-color: #FFFAE3; /* 버튼 배경 */
+  color: #373431;            /* 글자 색 */
+  
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2); /* 입체감 */
+  
+  cursor: pointer;
+  z-index: 10;               /* pseudo-element 위로 */
+  
+  transition: all 0.2s ease; /* 호버 효과용 */
+}
+
+.confirmButton:hover {
+  transform: scale(1.1);          /* 살짝 커짐 */
+  box-shadow: 0 6px 16px rgba(0,0,0,0.25); /* 그림자 강화 */
+}
+
+/* 버튼 */
+/* 모든 옵션 버튼 공통 스타일 */
+.optionButton {
+  width: 55px;            /* 버튼 너비 */
+  height: 35px;           /* 버튼 높이 */
+  border-radius: 10px;     /* 둥근 모서리 */
+  border: 1.2px solid #373431; /* 테두리 */
+  background-color: #efebe7;  /* 기본 배경 */
+  font-family: 'Pretendard', sans-serif;
+
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.optionButton:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+/* 배경 스타일 옵션들 */
+.bgNone { background-color: #EDE6DD; }
+.bgPink { background-color: rgb(255, 216, 223); }
+.bgBlue { background-color: rgb(199, 235, 255); }
+.bgPattern { background-image: url('pattern1.png'); background-size: cover; }
 
 .title {
   text-align: center;
   margin-bottom: 20px;
   font-size: 20px;
-  color: #FFFFFF;
+  color: #373431;
 }
 
 .row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  /* justify-content: space-between; */
+  gap: 50px;
   margin-bottom: 16px;
 }
 
 .label {
   font-weight: 600;
-  color: #FFFFFF;
+  color: #373431;
 }
 
 .options button,
@@ -48,14 +128,3 @@
   border-radius: 50%;
   border: none;
 }
-
-.confirmButton {
-  position: absolute;
-  right: 20px;
-  bottom: 20px;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  font-size: 20px;
-}
-

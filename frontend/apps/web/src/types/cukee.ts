@@ -1,17 +1,3 @@
-export type CukeeId =
-  | 'c1'
-  | 'c2'
-  | 'c3'
-  | 'c4'
-  | 'c5'
-  | 'c6'
-  | 'c7'
-  | 'c8'
-  | 'c9'
-  | 'c10'
-  | 'c11';
-
-export type CukeeStyle =
-  | 'line'
-  | 'noline'
-  | 'unbalance';
+// types/cukee.ts
+export type CukeeStyle = 'line' | 'noline' | 'unbalance';
+export type CukeeId = `c${1|2|3|4|5|6|7|8|9|10|11}`;

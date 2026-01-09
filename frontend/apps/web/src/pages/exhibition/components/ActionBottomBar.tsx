@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import styles from './ActionBottomBar.module.css';
-import { ExhibitionDecorate } from '../ExhibitionDecorate';
-import type { CukeeStyle } from '../../../types/cukee';
+// import { ExhibitionDecorate } from '../ExhibitionDecorate';
+// import type { CukeeStyle } from '../../../types/cukee';
 
 interface ActionBottomBarProps {
   promptValue: string;

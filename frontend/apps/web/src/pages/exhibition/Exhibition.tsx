@@ -16,7 +16,7 @@ import { curateMovies, getMovieDetail, clearMovieDetailCache } from '../../apis/
 import { fetchTickets, type Ticket, createExhibition, getExhibitionById } from '../../apis/exhibition';
 
 import { ExhibitionDecorate } from './ExhibitionDecorate';
-// import type { CukeeId, CukeeStyle } from '../../types/cukee';
+import type { CukeeId, CukeeStyle } from '../../types/cukee';
 
 // AI 진행 상태 타입 정의 
 type AIStatus = 'idle' | 'loading' | 'delayed' | 'error';
@@ -40,6 +40,7 @@ export const Exhibition = () => {
   // === 2. URL 파라미터 (React Router 방식) ===
   const [searchParams] = useSearchParams(); // 👈 변경 포인트 2 (배열 반환됨)
   const ticketIdParam = searchParams.get('ticket');
+  console.log('ticketIdParam:', ticketIdParam);
   const exhibitionIdParam = searchParams.get('exhibitionId'); // 전시회 ID 파라미터
   const currentTicketId = ticketIdParam ? parseInt(ticketIdParam, 10) : 1;
   // 예: ticket=1 -> /cara/cara1.png
@@ -68,12 +69,8 @@ export const Exhibition = () => {
   const [bottomMode, setBottomMode] = useState<'action' | 'decorate'>('action');
 
   // 큐키 스타일 상태 선언
-  // const [characterId] = useState<CukeeId>('c1');
-  // const [cukeeStyle, setCukeeStyle] = useState<CukeeStyle>('line');
-
-  // 이미지 URL 계산
-  //const characterImageUrl =
-  //  cukeeImages[characterId][cukeeStyle];
+  const [cukeeId, setCukeeId] = useState<string | null>(null);
+  const [cukeeStyle, setCukeeStyle] = useState<CukeeStyle>('line');
 
   // [신규] 10초 지연 감지 타이머 로직
   useEffect(() => {
@@ -90,6 +87,20 @@ export const Exhibition = () => {
       if (timer) clearTimeout(timer);
     };
   }, [aiStatus]);
+
+  useEffect(() => {
+    if (!ticketIdParam) return;
+
+    fetch(`/api/exhibitions?ticket=${ticketIdParam}`)
+      .then(res => res.json())
+      .then(data => {
+        console.log('전시회 데이터:', data);
+
+        setCukeeId(data.cukeeId); // 예: "c1"
+        setCukeeStyle(data.cukeeStyle ?? 'line'); // 초기 스타일
+      });
+  }, [ticketIdParam]);
+
 
 
   // [신규] 상태에 따른 큐레이터 멘트 결정 함수
@@ -438,6 +449,19 @@ export const Exhibition = () => {
         />
       </div>
 
+      {cukeeId && (
+        <img
+          key={`${cukeeId}-${cukeeStyle}`}
+          src={`/cara_style/${cukeeId}/${cukeeStyle}.png`}
+          alt="큐키"
+          className={styles.cukee}
+          onError={() => {
+          console.error('이미지 로드 실패:', cukeeId, cukeeStyle);
+    }}
+        />
+      )}
+
+
       {/* ✅ [수정] 조건문(!isReadOnly) 제거 -> 항상 렌더링하되 isReadOnly prop 전달 */}
       {bottomMode === 'action' && (
       <ExhibitionGenerator
@@ -458,6 +482,11 @@ export const Exhibition = () => {
     {bottomMode === 'decorate' && (
       <ExhibitionDecorate
         onClose={() => setBottomMode('action')}
+        cukeeStyle={cukeeStyle}
+        onChangeCukeeStyle={(style) => {
+          console.log('부모 cukeeStyle 변경:', style);
+          setCukeeStyle(style);
+  }}
       />
     )}
     </div>
