@@ -16,7 +16,7 @@ interface ActionBottomBarProps {
   onOpenDecorate: () => void;
 }
 
-export const ActionBottomBar = ({ promptValue, setPromptValue, onSubmit, isLoading, isReadOnly, mode, onCloseDecorate, onOpenDecorate, }: ActionBottomBarProps) => {
+export const ActionBottomBar = ({ promptValue, setPromptValue, onSubmit, isLoading, isReadOnly, mode, }: ActionBottomBarProps) => {
   // 모달 표시 상태
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   

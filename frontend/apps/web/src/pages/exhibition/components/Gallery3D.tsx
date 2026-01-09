@@ -13,6 +13,7 @@ export interface Frame {
 interface Gallery3DProps {
   frames: Frame[];
   activeIndex: number;
+  frameStyle: 'none' | 'basic'; // 👈 프롭 추가
   onPrev: () => void;
   onNext: () => void;
   onDelete?: (id: number, index: number) => void;
@@ -66,6 +67,7 @@ interface ModalState {
 export const Gallery3D = ({
   frames,
   activeIndex,
+  frameStyle,
   onPrev,
   onNext,
   onDelete,
@@ -159,7 +161,8 @@ export const Gallery3D = ({
           return (
             <div
               key={frame.id}
-              className={`${styles.frame} ${positionClass}`} // ✅ frame이 가장 바깥 껍데기
+              // ✅ frameStyle이 'none'일 때 styles.noFrame 클래스를 추가
+              className={`${styles.frame} ${positionClass} ${frameStyle === 'none' ? styles.noFrame : ''}`} // ✅ frame이 가장 바깥 껍데기
               onClick={() => onSelect(index)}
             >
               {/* 1. 이미지 영역 (content) */}

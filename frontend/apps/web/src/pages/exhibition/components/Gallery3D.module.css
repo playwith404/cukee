@@ -49,6 +49,13 @@
 
   transform-style: preserve-3d; /* 프레임 그림자 이동시 자연스럽게 따라감 */
 }
+/* ✅ 액자 없음(none) 스타일 추가 */
+.noFrame {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important; /* 액자 여백이 있었다면 제거 */
+}
 
 /* 프레임 하단 그림자 */
 .frame::after {

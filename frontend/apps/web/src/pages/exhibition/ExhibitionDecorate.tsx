@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import styles from './ExhibitionDecorate.module.css';
-import type { CukeeStyle, CukeeId } from '../../types/cukee';
+import type { CukeeStyle} from '../../types/cukee';
 
 interface ExhibitionDecorateProps {
   onClose: () => void;
@@ -11,6 +11,14 @@ interface ExhibitionDecorateProps {
   // 큐키 ID 관련 props 추가
   // cukeeId: CukeeId;
   // onChangeCukeeId: (id: CukeeId) => void;
+
+  // 액자 관련 Props 추가
+  frameStyle: 'none' | 'basic';
+  onChangeFrameStyle: (style: 'none' | 'basic') => void;
+
+  // ✅ 배경 스타일 관련 Props 추가
+  bgStyle: string; 
+  onChangeBgStyle: (style: string) => void;
 }
 
 export const ExhibitionDecorate = ({ 
@@ -20,11 +28,13 @@ export const ExhibitionDecorate = ({
   onChangeCukeeStyle, 
   // cukeeId, 
   // onChangeCukeeId 
+  frameStyle,
+  onChangeFrameStyle,
+  bgStyle,         
+  onChangeBgStyle 
 }: ExhibitionDecorateProps) => {
   // 액자 스타일
-  const [frameStyle, setFrameStyle] = useState('none');
-  // 배경 스타일
-  const [bgStyle, setBgStyle] = useState('white');
+  // const [frameStyle, setFrameStyle] = useState('none');
 
   // bgStyle이 바뀔 때마다 body 배경 적용
   useEffect(() => {
@@ -35,11 +45,11 @@ export const ExhibitionDecorate = ({
         document.body.style.backgroundImage = ''; // 색 비우기 
         break;
       case 'pink':
-        document.body.style.backgroundColor = 'rgba(254, 224, 229, 1)';
+        document.body.style.backgroundColor = 'rgba(244, 224, 227, 1)';
         document.body.style.backgroundImage = '';
         break;
       case 'blue':
-        document.body.style.backgroundColor = 'rgba(199, 235, 255, 1)';
+        document.body.style.backgroundColor = 'rgba(205, 221, 230, 1)';
         document.body.style.backgroundImage = '';
         break;
       case 'pattern':
@@ -95,14 +105,14 @@ export const ExhibitionDecorate = ({
           <span className={styles.label}>♥ 액자 스타일</span>
           <div className={styles.options}>
             <button
-              className={`${styles.optionButton} ${styles.frameOption}`}
-              onClick={() => setFrameStyle('none')}
+              className={`${styles.optionButton} ${frameStyle === 'none' ? styles.active : ''}`}
+              onClick={() => onChangeFrameStyle('none')}
             >
               none
             </button>
             <button
-              className={`${styles.optionButton} ${styles.frameOption}`}
-              onClick={() => setFrameStyle('액자')}
+              className={`${styles.optionButton} ${frameStyle === 'basic' ? styles.active : ''}`}
+              onClick={() => onChangeFrameStyle('basic')}
             >
               액자
             </button>
@@ -113,10 +123,11 @@ export const ExhibitionDecorate = ({
         <div className={styles.row}>
           <span className={styles.label}>♥ 배경 스타일</span>
           <div className={styles.colorOptions}>
-            <button className={`${styles.optionButton} ${styles.bgNone}`} onClick={() => setBgStyle('none')}> </button>
-            <button className={`${styles.optionButton} ${styles.bgPink}`} onClick={() => setBgStyle('pink')}> </button>
-            <button className={`${styles.optionButton} ${styles.bgBlue}`} onClick={() => setBgStyle('blue')}> </button>
-            <button className={`${styles.optionButton} ${styles.bgPattern}`} onClick={() => setBgStyle('pattern')}> </button>
+            {/* ✅ setBgStyle 대신 부모에서 온 onChangeBgStyle 사용 */}
+            <button className={`${styles.optionButton} ${styles.bgNone} ${bgStyle === 'none' ? styles.active : ''}`} onClick={() => onChangeBgStyle('none')}> </button>
+            <button className={`${styles.optionButton} ${styles.bgPink} ${bgStyle === 'pink' ? styles.active : ''}`} onClick={() => onChangeBgStyle('pink')}> </button>
+            <button className={`${styles.optionButton} ${styles.bgBlue} ${bgStyle === 'blue' ? styles.active : ''}`} onClick={() => onChangeBgStyle('blue')}> </button>
+            <button className={`${styles.optionButton} ${styles.bgPattern} ${bgStyle === 'pattern' ? styles.active : ''}`} onClick={() => onChangeBgStyle('pattern')}> </button>
           </div>
         </div>
 

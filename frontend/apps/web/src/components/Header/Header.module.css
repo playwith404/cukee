@@ -18,10 +18,10 @@
   align-items: center;
   padding: 10px 20px;
   border-radius: 9999px;
-  background-color: #EDE6DD;
   box-shadow: inset 0 4px 10px 0 rgba(0, 0, 0, 0.15);
   pointer-events: auto;
   position: relative;
+  background-color: transparent; /* 투명 배경 유지 */
 }
 
 .container {
@@ -215,9 +215,9 @@
   padding: 5px;
 }
 
-.profileName:hover {
-  /* font-weight: 500; */
-}
+/* .profileName:hover {
+  font-weight: 500;
+} */
 
 /* 3. 닉네임 텍스트 */
 .profileName {

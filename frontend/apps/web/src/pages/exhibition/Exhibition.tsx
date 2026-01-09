@@ -16,7 +16,7 @@ import { curateMovies, getMovieDetail, clearMovieDetailCache } from '../../apis/
 import { fetchTickets, type Ticket, createExhibition, getExhibitionById } from '../../apis/exhibition';
 
 import { ExhibitionDecorate } from './ExhibitionDecorate';
-import type { CukeeId, CukeeStyle } from '../../types/cukee';
+import type { CukeeStyle } from '../../types/cukee';
 
 // AI 진행 상태 타입 정의 
 type AIStatus = 'idle' | 'loading' | 'delayed' | 'error';
@@ -45,7 +45,7 @@ export const Exhibition = () => {
   const currentTicketId = ticketIdParam ? parseInt(ticketIdParam, 10) : 1;
   // 예: ticket=1 -> /cara/cara1.png
   // 예: ticket=2 -> /cara/cara2.png
-  const dynamicCharacterImage = `/cara/cara${currentTicketId}.png`;
+  //const dynamicCharacterImage = `/cara/cara${currentTicketId}.png`;
   const dynamicTicketImage = `/ticket/ticket${currentTicketId}.png`;
 
 
@@ -71,6 +71,12 @@ export const Exhibition = () => {
   // 큐키 스타일 상태 선언
   const [cukeeId, setCukeeId] = useState<string>(`c${currentTicketId}`);
   const [cukeeStyle, setCukeeStyle] = useState<CukeeStyle>('line');
+
+  // 프레임 스타일 상태 선언 (기본값이 프레임이 있는 버전이므로 'basic' 혹은 'default'로 설정)
+  const [frameStyle, setFrameStyle] = useState<'none' | 'basic'>('basic');
+
+  // 배경 스타일 상태 선언
+  const [bgStyle, setBgStyle] = useState<string>('none');
 
   // [신규] 10초 지연 감지 타이머 로직
   useEffect(() => {
@@ -334,6 +340,10 @@ export const Exhibition = () => {
         title: exhibitionTitle || `전시회 ${new Date().toLocaleDateString()}`,
         isPublic: true,
         ticketId: currentTicketId, // 티켓 ID 추가
+        // --- 디자인 요소 추가 ---
+        backgroundStyle: bgStyle,   // 예: 'pink', 'pattern'
+        frameStyle: frameStyle,     // 'none' 또는 'basic'
+        cukeeStyle: cukeeStyle,     // 'line', 'noline', 'unbalance'
         movies: frames.map((frame: Frame, index: number) => ({
           movieId: frame.id,
           displayOrder: index,
@@ -432,6 +442,7 @@ export const Exhibition = () => {
         <Gallery3D
           frames={frames}
           activeIndex={activeIndex}
+          frameStyle={frameStyle} // 👈 추가
           onPrev={handlePrev}
           onNext={handleNext}
           onSelect={setActiveIndex}
@@ -483,11 +494,13 @@ export const Exhibition = () => {
     {bottomMode === 'decorate' && (
       <ExhibitionDecorate
         onClose={() => setBottomMode('action')}
+        ticketId={currentTicketId}
         cukeeStyle={cukeeStyle}
-        onChangeCukeeStyle={(style) => {
-          console.log('부모 cukeeStyle 변경:', style);
-          setCukeeStyle(style);
-  }}
+        onChangeCukeeStyle={setCukeeStyle}
+        frameStyle={frameStyle} 
+        onChangeFrameStyle={setFrameStyle}
+        bgStyle={bgStyle}
+        onChangeBgStyle={setBgStyle}
       />
     )}
     </div>
