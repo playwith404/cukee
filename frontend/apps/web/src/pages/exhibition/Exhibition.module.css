@@ -8,6 +8,19 @@
   background-color: transparent; /* [변경] 기본색은 body에서 유지 */
 }
 
+.topControlContainer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+  /* 중요: 위아래 여백 */
+  margin-top: 2000px;    /* 헤더와의 간격 (충분히 주세요) */
+  margin-bottom: 20px; /* 갤러리와의 간격 */
+  
+  height: 50px; /* 버튼이 사라져도 높이를 유지해서 갤러리가 튀어오르지 않게 함 */
+}
+
 /* 👇 [추가] 생성/저장 모드일 때만 적용되는 스타일 */
 .createMode {
   /* 갤러리를 밑으로 내리기 위해 위쪽 여백 추가 */
@@ -38,6 +51,10 @@
 .galleryWrapper {
   width: 100%;
   flex: 1;
+
+  display: flex;
+  justify-content: center;
+  transition: padding-top 0.3s ease; /* 부드럽게 움직이게 */
 }
 
 .moveDown {
@@ -56,3 +73,113 @@
     opacity: 1;
   }
 } */
+
+.topControlSection {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(214, 214, 214, 0.4); /* 뒷배경 어둡게 */
+  z-index: 9999; /* 최상단 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* 글래스모피즘 모달 창 (드롭다운 스타일 계승) */
+.glassModal {
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 30px;
+  backdrop-filter: blur(5px); 
+  background-color: rgba(255, 255, 255, 0.5); 
+  border-radius: 26px; 
+  box-shadow: 35px 35px 68px 0px rgba(0, 0, 0, 0.15), inset -10px -10px 16px 0px rgba(0, 0, 0, 0.15), inset 0px 11px 28px 0px rgb(255, 255, 255);
+
+  /* 크기 및 배치 */
+  width: 700px;
+  max-width: 90%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  animation: slideUp 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.modalTitle {
+  font-size: 30px;
+  font-weight: 500;
+  color: #373431;
+  margin: 0;
+}
+
+.modalDesc {
+  font-size: 18px;
+  font-weight: 300;
+  color: #555;
+  margin: 0;
+  line-height: 1.6;
+}
+.promptDesc {
+  font-weight: 400;
+  display: block;
+  /* 줄바꿈 효과 */
+  font-weight: 500;
+  color: #373431;
+  margin-top: 0px;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+/* 모달 내부 버튼 스타일 */
+.btnCancel, .btnConfirm {
+  padding: 10px 24px;
+  border-radius: 9999px;
+  font-size: 15px;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+}
+
+.btnCancel {
+  background-color: transparent;
+  border: 1px solid #8F8784;
+  color: #8F8784;
+}
+.btnCancel:hover {
+  background-color: rgba(143, 135, 132, 0.1);
+}
+
+.btnConfirm {
+  background-color: #8F8784;
+  color: white;
+  font-weight: 500;
+}
+.btnConfirm:hover {
+  background-color: #7a7370;
+}
+
+/* 애니메이션 */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}

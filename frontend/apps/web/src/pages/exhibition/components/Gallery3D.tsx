@@ -13,7 +13,7 @@ export interface Frame {
 interface Gallery3DProps {
   frames: Frame[];
   activeIndex: number;
-  frameStyle: 'none' | 'basic'; // 👈 프롭 추가
+  frameStyle: 'none' | 'basic' | 'frame2'; // 👈 프롭 추가
   onPrev: () => void;
   onNext: () => void;
   onDelete?: (id: number, index: number) => void;
@@ -162,7 +162,11 @@ export const Gallery3D = ({
             <div
               key={frame.id}
               // ✅ frameStyle이 'none'일 때 styles.noFrame 클래스를 추가
-              className={`${styles.frame} ${positionClass} ${frameStyle === 'none' ? styles.noFrame : ''}`} // ✅ frame이 가장 바깥 껍데기
+              className={`
+                ${styles.frame} 
+                ${positionClass} 
+                ${styles[`style_${frameStyle}`]}
+            `} 
               onClick={() => onSelect(index)}
             >
               {/* 1. 이미지 영역 (content) */}
@@ -172,7 +176,7 @@ export const Gallery3D = ({
                     <img
                       src={frame.imageUrl}
                       alt={`Movie ${frame.id}`}
-                      className={styles.posterImage}
+                      className={`${styles.posterImage}`}
                       style={{
                         width: '100%',
                         height: '100%',
@@ -190,7 +194,7 @@ export const Gallery3D = ({
                     </div>
                   </>
                 ) : (
-                  <div>{frame.content}</div>
+                  <div className={styles.emptyContent}>{frame.content}</div>
                 )}
               </div>
               {isEditMode && (
