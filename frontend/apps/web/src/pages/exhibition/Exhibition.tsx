@@ -107,43 +107,41 @@ export const Exhibition = () => {
     }
   }, [currentTicketId]);
 
-  // [수정] DB에서 기존 설정을 불러오는 로직 (스타일 연동)
   useEffect(() => {
-    if (!exhibitionIdParam) return;
+    // 1. 초기화: ID가 바뀌면 일단 현재 화면의 스타일을 기본값으로 싹 비웁니다.
+    // 이 과정이 없으면 다음 데이터를 불러오는 0.5초 동안 이전 전시회 디자인이 보입니다.
+    setCukeeStyle('line'); 
+    setFrameStyle('basic');
+    setBgStyle('none');
 
-    // 전시회 상세 정보를 가져올 때 사용자가 저장했던 스타일(cukeeStyle)을 세팅
+    if (!exhibitionIdParam) {
+      setBottomMode('action');
+      return;
+    }
+
     const loadExhibitionStyle = async () => {
       try {
         const data = await getExhibitionById(parseInt(exhibitionIdParam, 10));
-        console.log("서버 응답 데이터 전체:", data); // 디버그용 전체 데이터 출력(구조 확인용)
+        console.log(`[ID: ${exhibitionIdParam}] 로드 데이터:`, data);
 
-        // ✅ 서버에서 받아온 디자인 정보가 있다면 모두 상태에 반영
         if (data) {
-          // 1. 만약 데이터가 design 객체 안에 들어있다면
-          const design = data.design; 
+          // 데이터 구조에 따른 유연한 할당 (Optional Chaining 활용)
+          const design = data.design || data; 
 
-          if (design) {
-            if (design.cukeeStyle) setCukeeStyle(design.cukeeStyle);
-            if (design.frameStyle) setFrameStyle(design.frameStyle);
-            if (design.bgStyle) setBgStyle(design.bgStyle);
-          } 
-          // 2. 혹시나 data 직속에 들어있을 경우를 대비 (fallback)
-          else {
-            if (data.cukeeStyle) setCukeeStyle(data.cukeeStyle);
-            if (data.frameStyle) setFrameStyle(data.frameStyle);
-            if (data.bgStyle) setBgStyle(data.bgStyle);
-          }
+          // 데이터가 있으면 그 값으로, 없으면 기본값('line' 등)으로 세팅
+          setCukeeStyle(design.cukeeStyle || 'line');
+          setFrameStyle(design.frameStyle || 'basic');
+          setBgStyle(design.bgStyle || 'none');
+          
           setBottomMode('action');
-        
-        // 만약 서버 데이터가 'design'이라는 객체 안에 묶여 있다면:
-        // if (data.design?.frameStyle) setFrameStyle(data.design.frameStyle);
         }
       } catch (err) {
         console.error("스타일 로드 실패:", err);
       }
     };
+
     loadExhibitionStyle();
-  }, [exhibitionIdParam]);
+  }, [exhibitionIdParam]); // ID 파라미터가 변경될 때마다 전체 로직 재실행
 
   // [신규] 상태에 따른 큐레이터 멘트 결정 함수
   const getCuratorMessage = () => {

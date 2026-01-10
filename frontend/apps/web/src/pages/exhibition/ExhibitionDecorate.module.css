@@ -94,7 +94,7 @@
 .bgNone { background-color: #EDE6DD; }
 .bgPink { background-color: rgb(244, 224, 227); }
 .bgBlue { background-color: rgb(205, 221, 230); }
-.bgPattern { background-image: url('pattern1.png'); background-size: cover; }
+.bgPattern { background-image: url('/pattern1.png'); background-size: cover; }
 
 .title {
   text-align: center;
