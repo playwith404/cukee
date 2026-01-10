@@ -28,7 +28,7 @@ async def generate_exhibition(request: GenerateRequest, db: Session = Depends(ge
                     "design": {
                         "font": "Pretendard",
                         "colorScheme": "dark",
-                        "layoutType": "grid",
+                        "cukeeStyle": "grid",
                         "frameStyle": "modern",
                         "background": "#1a1a1a",
                         "backgroundImage": ""
@@ -141,7 +141,7 @@ Write a warm welcome message in Korean (30-60 characters) based on the context.
             "design": {
                 "font": "Pretendard",
                 "colorScheme": "dark",
-                "layoutType": "grid",
+                "cukeeStyle": "grid",
                 "frameStyle": "modern",
                 "background": "#1a1a1a",
                 "backgroundImage": ""

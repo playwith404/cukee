@@ -64,7 +64,7 @@ class ExhibitionDesign(BaseModel):
     """전시회 디자인"""
     font: str
     colorScheme: str
-    layoutType: str
+    cukeeStyle: str
     frameStyle: str
     background: str
     backgroundImage: str

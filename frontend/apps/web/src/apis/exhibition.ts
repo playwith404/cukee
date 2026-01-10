@@ -9,7 +9,7 @@ import api from './index';
 export interface ExhibitionDesign {
   font: string;
   colorScheme: string;
-  layoutType: string;
+  cukeeStyle: string;
   frameStyle: string;
   background: string;
   backgroundImage: string;

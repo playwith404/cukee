@@ -9,7 +9,7 @@ class ExhibitionDesign(BaseModel):
     """전시회 디자인"""
     font: str
     colorScheme: str
-    layoutType: str
+    cukeeStyle: str
     frameStyle: str
     background: str
     backgroundImage: str
@@ -20,7 +20,7 @@ class ExhibitionDesign(BaseModel):
             "example": {
                 "font": "Pretendard",
                 "colorScheme": "dark",
-                "layoutType": "grid",
+                "cukeeStyle": "grid",
                 "frameStyle": "modern",
                 "background": "#000000",
                 "backgroundImage": "https://example.com/bg.jpg"
@@ -77,7 +77,7 @@ class AIGenerateResponse(BaseModel):
                     "design": {
                         "font": "Pretendard",
                         "colorScheme": "soft",
-                        "layoutType": "grid",
+                        "cukeeStyle": "grid",
                         "frameStyle": "minimal",
                         "background": "#F5F5F5",
                         "backgroundImage": ""
