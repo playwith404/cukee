@@ -115,13 +115,24 @@ export const Exhibition = () => {
     const loadExhibitionStyle = async () => {
       try {
         const data = await getExhibitionById(parseInt(exhibitionIdParam, 10));
+        console.log("서버 응답 데이터 전체:", data); // 디버그용 전체 데이터 출력(구조 확인용)
 
         // ✅ 서버에서 받아온 디자인 정보가 있다면 모두 상태에 반영
         if (data) {
-          if (data.cukeeStyle) setCukeeStyle(data.cukeeStyle);
-          if (data.frameStyle) setFrameStyle(data.frameStyle); // 👈 추가
-          if (data.bgStyle) setBgStyle(data.bgStyle);       // 👈 추가
-          // 2. ✅ [추가] 목록에서 들어온 경우, 꾸미기 창이 아닌 원래 프롬프트(action) 창이 뜨도록 설정
+          // 1. 만약 데이터가 design 객체 안에 들어있다면
+          const design = data.design; 
+
+          if (design) {
+            if (design.cukeeStyle) setCukeeStyle(design.cukeeStyle);
+            if (design.frameStyle) setFrameStyle(design.frameStyle);
+            if (design.bgStyle) setBgStyle(design.bgStyle);
+          } 
+          // 2. 혹시나 data 직속에 들어있을 경우를 대비 (fallback)
+          else {
+            if (data.cukeeStyle) setCukeeStyle(data.cukeeStyle);
+            if (data.frameStyle) setFrameStyle(data.frameStyle);
+            if (data.bgStyle) setBgStyle(data.bgStyle);
+          }
           setBottomMode('action');
         
         // 만약 서버 데이터가 'design'이라는 객체 안에 묶여 있다면:
