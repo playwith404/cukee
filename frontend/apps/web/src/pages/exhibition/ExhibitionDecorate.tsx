@@ -3,38 +3,37 @@ import styles from './ExhibitionDecorate.module.css';
 import type { CukeeStyle} from '../../types/cukee';
 
 interface ExhibitionDecorateProps {
+  exhibitionId: number | null;    // ✅ 추가
+  exhibitionTitle: string; // ✅ 추가
   onClose: () => void;
   ticketId: number; // ticket.id를 통해 캐릭터 폴더(c1, c2...) 식별
   cukeeStyle: CukeeStyle;
   onChangeCukeeStyle: (style: CukeeStyle) => void;
 
-  // 큐키 ID 관련 props 추가
-  // cukeeId: CukeeId;
-  // onChangeCukeeId: (id: CukeeId) => void;
-
   // 액자 관련 Props 추가
-  frameStyle: 'none' | 'basic';
-  onChangeFrameStyle: (style: 'none' | 'basic') => void;
+  frameStyle: 'none' | 'basic' | 'frame2';
+  onChangeFrameStyle: (style: 'none' | 'basic' | 'frame2') => void;
 
   // ✅ 배경 스타일 관련 Props 추가
   bgStyle: string; 
   onChangeBgStyle: (style: string) => void;
+
+  onSaveClick: () => void; // 저장(체크) 버튼 클릭 시 호출되는 함수(모달)
 }
 
 export const ExhibitionDecorate = ({ 
-  onClose, 
-  ticketId, // 부모로부터 받은 티켓 ID
+  // exhibitionId,   
+  // exhibitionTitle, 
+  // onClose, 
+  // ticketId, // 부모로부터 받은 티켓 ID
   cukeeStyle, 
-  onChangeCukeeStyle, 
-  // cukeeId, 
-  // onChangeCukeeId 
+  onChangeCukeeStyle,
   frameStyle,
   onChangeFrameStyle,
   bgStyle,         
-  onChangeBgStyle 
+  onChangeBgStyle,
+  onSaveClick, // ✅ 추가
 }: ExhibitionDecorateProps) => {
-  // 액자 스타일
-  // const [frameStyle, setFrameStyle] = useState('none');
 
   // bgStyle이 바뀔 때마다 body 배경 적용
   useEffect(() => {
@@ -67,32 +66,35 @@ export const ExhibitionDecorate = ({
   }, [bgStyle]);
 
   // [추가] DB 저장 함수
-  const handleSaveDesign = async () => {
-    const designData = {
-      ticket_id: ticketId,
-      background_style: bgStyle,
-      frame_style: frameStyle,
-      cukee_style: cukeeStyle, // 'line', 'noline', 'unbalance'
-    };
+  // const handleSaveDesign = async () => {
+  //   const designData = {
+  //     title: exhibitionTitle, // 기존 제목 유지
+  //     ticket_id: ticketId,
+  //     design: {
+  //       frame_style: frameStyle,
+  //       background_style: bgStyle,
+  //       cukee_style: cukeeStyle, // 'line', 'noline', 'unbalance'
+  //     }
+  //   };
 
-    try {
-      // 실제 API 엔드포인트에 맞춰 수정하세요
-      const response = await fetch('/api/tickets/designs', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(designData),
-      });
+  //   try {
+  //     // PUT 요청으로 기존 전시회 ID의 디자인을 수정
+  //     const response = await fetch(`/api/exhibitions/${exhibitionId}`, {
+  //       method: 'PUT',
+  //       headers: { 'Content-Type': 'application/json' },
+  //       body: JSON.stringify(designData),
+  //     });
 
-      if (response.ok) {
-        alert('전시회 디자인이 저장되었습니다! 🎨');
-        onClose(); // 저장 성공 시 창 닫기
-      } else {
-        alert('저장에 실패했습니다.');
-      }
-    } catch (error) {
-      console.error('저장 중 오류 발생:', error);
-    }
-  };
+  //     if (response.ok) {
+  //       alert('디자인이 저장되었습니다! 🎨');
+  //       onClose(); // 저장 성공 시 창 닫기
+  //     } else {
+  //       alert('디자인 저장에 실패했습니다.');
+  //     }
+  //   } catch (error) {
+  //     console.error('저장 중 오류 발생:', error);
+  //   }
+  // };
 
   return (
     <div className={`${styles.container} ${styles[bgStyle]}`}>
@@ -114,7 +116,13 @@ export const ExhibitionDecorate = ({
               className={`${styles.optionButton} ${frameStyle === 'basic' ? styles.active : ''}`}
               onClick={() => onChangeFrameStyle('basic')}
             >
-              액자
+              나무
+            </button>
+            <button
+              className={`${styles.optionButton} ${frameStyle === 'frame2' ? styles.active : ''}`}
+              onClick={() => onChangeFrameStyle('frame2')}
+            >
+              구름
             </button>
           </div>
         </div>
@@ -160,7 +168,7 @@ export const ExhibitionDecorate = ({
 
         {/* 완료 버튼 */}
         <button className={styles.confirmButton} 
-        onClick={handleSaveDesign}>
+        onClick={onSaveClick}>
           ✔
         </button>
       </div>

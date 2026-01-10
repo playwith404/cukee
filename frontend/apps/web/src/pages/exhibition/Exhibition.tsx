@@ -19,7 +19,7 @@ import { ExhibitionDecorate } from './ExhibitionDecorate';
 import type { CukeeStyle } from '../../types/cukee';
 
 // AI 진행 상태 타입 정의 
-type AIStatus = 'idle' | 'loading' | 'delayed' | 'error';
+type AIStatus = 'idle' | 'loading' | 'delayed' | 'error' | 'decorate';
 
 const INITIAL_FRAMES = [
   { id: 1, content: 'Frame 1' },
@@ -42,6 +42,9 @@ export const Exhibition = () => {
   const ticketIdParam = searchParams.get('ticket');
   console.log('ticketIdParam:', ticketIdParam);
   const exhibitionIdParam = searchParams.get('exhibitionId'); // 전시회 ID 파라미터
+  const exhibitionId: number | null = exhibitionIdParam 
+    ? parseInt(exhibitionIdParam, 10) 
+    : null;
   const currentTicketId = ticketIdParam ? parseInt(ticketIdParam, 10) : 1;
   // 예: ticket=1 -> /cara/cara1.png
   // 예: ticket=2 -> /cara/cara2.png
@@ -73,10 +76,13 @@ export const Exhibition = () => {
   const [cukeeStyle, setCukeeStyle] = useState<CukeeStyle>('line');
 
   // 프레임 스타일 상태 선언 (기본값이 프레임이 있는 버전이므로 'basic' 혹은 'default'로 설정)
-  const [frameStyle, setFrameStyle] = useState<'none' | 'basic'>('basic');
+  const [frameStyle, setFrameStyle] = useState<'none' | 'basic' | 'frame2'>('basic');
 
   // 배경 스타일 상태 선언
   const [bgStyle, setBgStyle] = useState<string>('none');
+
+  // 꾸미기 모달 상태 추가
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
 
   // [신규] 10초 지연 감지 타이머 로직
   useEffect(() => {
@@ -135,7 +141,9 @@ export const Exhibition = () => {
     if (exhibitionIdParam && aiStatus === 'idle') {
       return `${exhibitionTitle}`;
     }
-
+    if (bottomMode === 'decorate') {
+      return "전시회를 예쁘게 꾸며볼까요?";
+    }
     switch (aiStatus) {
       case 'loading':
         return "AI가 전시회를 구상하고 있어요! 잠시만 기다려주세요...";
@@ -341,9 +349,11 @@ export const Exhibition = () => {
         isPublic: true,
         ticketId: currentTicketId, // 티켓 ID 추가
         // --- 디자인 요소 추가 ---
-        backgroundStyle: bgStyle,   // 예: 'pink', 'pattern'
-        frameStyle: frameStyle,     // 'none' 또는 'basic'
-        cukeeStyle: cukeeStyle,     // 'line', 'noline', 'unbalance'
+        design: {
+          frameStyle: frameStyle,     // 'none', 'basic', 'frame2'
+          backgroundStyle: bgStyle,   // 'pink', 'pattern' 등
+          cukeeStyle: cukeeStyle,     // 'line', 'noline', 'unbalance'
+        },
         movies: frames.map((frame: Frame, index: number) => ({
           movieId: frame.id,
           displayOrder: index,
@@ -356,9 +366,49 @@ export const Exhibition = () => {
       alert('전시회가 저장되었습니다!');
     } catch (error) {
       console.error('전시회 저장 실패:', error);
-      alert('전시회 저장에 실패했습니다. 로그인이 필요할 수 있습니다.');
+      alert('전시회 저장에 실패했습니다.');
     }
   };
+
+  // 디자인만 저장하는 핸들러 (부모 쪽으로 이동)
+const handleSaveDesign = async () => {
+  try {
+    // URL에 exhibitionId가 없는 경우 (최초 저장 전)에 대한 처리
+    if (!exhibitionId) {
+      alert("전시회를 먼저 최종 저장한 후 디자인 수정이 가능합니다.");
+      return;
+    }
+
+    const designData = {
+      title: exhibitionTitle,
+      design: {
+        frameStyle: frameStyle,
+        backgroundStyle: bgStyle,
+        cukeeStyle: cukeeStyle,
+      }
+    };
+
+    const response = await fetch(`/api/exhibitions/${exhibitionId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(designData),
+    });
+
+    if (response.ok) {
+      alert('디자인이 성공적으로 수정되었습니다! ✨');
+      setBottomMode('action'); // 꾸미기 모드 종료
+    }
+  } catch (error) {
+    console.error('디자인 수정 실패:', error);
+    alert('디자인 저장 중 오류가 발생했습니다.');
+  }
+};
+
+// 모달 '확인' 클릭 시 실행될 함수
+const handleConfirmDesign = async () => {
+  setIsConfirmModalOpen(false); // 모달 닫기
+  await handleSaveDesign();      // 실제 저장 실행
+};
 
   // === 영화 고정 핸들러 ===
   const handlePin = (frameId: number) => {
@@ -429,16 +479,18 @@ export const Exhibition = () => {
         exhibitionTitle={exhibitionTitle}
       />
 
-      {/*  1. 저장된 전시회(isReadOnly)라면 상단 컨트롤(저장/꾸미기) 숨기기 */}
-      {!isReadOnly && (
-        <TopControls
-          onSave={handleSave}
-          onDecorate={() => setBottomMode('decorate')}
-        />
-      )}
+      {/* 1. ReadOnly가 아니고, 동시에 bottomMode가 'action'일 때만 컨트롤바 표시 */}
+      <div className={styles.topControlSection}>
+        {!isReadOnly && bottomMode === 'action' && (
+          <TopControls
+            onSave={handleSave}
+            onDecorate={() => setBottomMode('decorate')}
+          />
+        )}
+      </div>
       
       {/* 갤러리 영역 */}
-      <div className={`${styles.galleryWrapper} ${isReadOnly ? styles.moveDown : ''}`}>
+      <div className={`${styles.galleryWrapper} ${isReadOnly ? styles.moveDown : ''} ${bottomMode === 'decorate' ? styles.extraPadding : ''}`} >
         <Gallery3D
           frames={frames}
           activeIndex={activeIndex}
@@ -491,9 +543,14 @@ export const Exhibition = () => {
       />
     )}
 
+    {/* 하단 컨트롤바/꾸미기 창 */}
     {bottomMode === 'decorate' && (
       <ExhibitionDecorate
+        exhibitionId={exhibitionId}     // ✅ 전달 확인
+        exhibitionTitle={exhibitionTitle} // ✅ 전달 확인
         onClose={() => setBottomMode('action')}
+        // ✅ 체크 버튼을 누르면 부모의 모달을 열도록 함수 전달
+        onSaveClick={() => setIsConfirmModalOpen(true)}
         ticketId={currentTicketId}
         cukeeStyle={cukeeStyle}
         onChangeCukeeStyle={setCukeeStyle}
@@ -502,6 +559,33 @@ export const Exhibition = () => {
         bgStyle={bgStyle}
         onChangeBgStyle={setBgStyle}
       />
+    )}
+
+    {isConfirmModalOpen && (
+      <div className={styles.modalOverlay}>
+        <div className={styles.glassModal}>
+          <h3 className={styles.modalTitle}>디자인 적용</h3>
+          <p className={styles.modalDesc}>
+            이대로 전시회 디자인을 적용하시겠습니까? <br />
+            <span className={styles.promptDesc}>꾸미기 모드를 종료하고 저장합니다.</span>
+          </p>
+          
+          <div className={styles.modalActions}>
+            <button 
+              className={styles.btnCancel} 
+              onClick={() => setIsConfirmModalOpen(false)}
+            >
+              취소
+            </button>
+            <button 
+              className={styles.btnConfirm} 
+              onClick={handleConfirmDesign}
+            >
+              확인
+            </button>
+          </div>
+        </div>
+      </div>
     )}
     </div>
   );
