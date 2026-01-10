@@ -22,6 +22,7 @@ interface ExhibitionDecorateProps {
 }
 
 export const ExhibitionDecorate = ({ 
+  // exhibitionId,   
   // exhibitionTitle, 
   // onClose, 
   // ticketId, // 부모로부터 받은 티켓 ID
