@@ -108,22 +108,9 @@ export const Exhibition = () => {
   }, [currentTicketId]);
 
   useEffect(() => {
-<<<<<<< HEAD
-    // 1. 초기화: ID가 바뀌면 일단 현재 화면의 스타일을 기본값으로 싹 비웁니다.
-    // 이 과정이 없으면 다음 데이터를 불러오는 0.5초 동안 이전 전시회 디자인이 보입니다.
-    setCukeeStyle('line'); 
-    setFrameStyle('basic');
-    setBgStyle('none');
-
-    if (!exhibitionIdParam) {
-      setBottomMode('action');
-      return;
-    }
-=======
     // 초기값 설정(전시회 목록 딜레이 때 기본이 basic이라서 none으로 변경)
     setFrameStyle('none');
     if (!exhibitionIdParam) return;
->>>>>>> c03b4db (CUK-129-exh)
 
     const loadExhibitionStyle = async () => {
       try {
@@ -131,17 +118,6 @@ export const Exhibition = () => {
         console.log(`[ID: ${exhibitionIdParam}] 로드 데이터:`, data);
 
         if (data) {
-<<<<<<< HEAD
-          // 데이터 구조에 따른 유연한 할당 (Optional Chaining 활용)
-          const design = data.design || data; 
-
-          // 데이터가 있으면 그 값으로, 없으면 기본값('line' 등)으로 세팅
-          setCukeeStyle(design.cukeeStyle || 'line');
-          setFrameStyle(design.frameStyle || 'basic');
-          setBgStyle(design.bgStyle || 'none');
-          
-          setBottomMode('action');
-=======
           const savedTicketId = data.ticketId;
           if (savedTicketId) {
             setCukeeId(`c${savedTicketId}`);
@@ -156,7 +132,6 @@ export const Exhibition = () => {
           // 2. ✅ [추가] 목록에서 들어온 경우, 꾸미기 창이 아닌 원래 프롬프트(action) 창이 뜨도록 설정
           setBottomMode('action');
 
->>>>>>> c03b4db (CUK-129-exh)
         }
       } catch (err) {
         console.error("스타일 로드 실패:", err);
