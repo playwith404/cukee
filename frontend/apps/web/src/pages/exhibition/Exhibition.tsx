@@ -42,9 +42,9 @@ export const Exhibition = () => {
   const ticketIdParam = searchParams.get('ticket');
   console.log('ticketIdParam:', ticketIdParam);
   const exhibitionIdParam = searchParams.get('exhibitionId'); // 전시회 ID 파라미터
-  const exhibitionId: number | null = exhibitionIdParam 
-    ? parseInt(exhibitionIdParam, 10) 
-    : null;
+  const [exhibitionId, setExhibitionId] = useState<number | null>(
+    exhibitionIdParam ? parseInt(exhibitionIdParam, 10) : null
+  );
   const currentTicketId = ticketIdParam ? parseInt(ticketIdParam, 10) : 1;
   // 예: ticket=1 -> /cara/cara1.png
   // 예: ticket=2 -> /cara/cara2.png
@@ -115,8 +115,17 @@ export const Exhibition = () => {
     const loadExhibitionStyle = async () => {
       try {
         const data = await getExhibitionById(parseInt(exhibitionIdParam, 10));
-        if (data.cukeeStyle) {
-          setCukeeStyle(data.cukeeStyle);
+
+        // ✅ 서버에서 받아온 디자인 정보가 있다면 모두 상태에 반영
+        if (data) {
+          if (data.cukeeStyle) setCukeeStyle(data.cukeeStyle);
+          if (data.frameStyle) setFrameStyle(data.frameStyle); // 👈 추가
+          if (data.bgStyle) setBgStyle(data.bgStyle);       // 👈 추가
+          // 2. ✅ [추가] 목록에서 들어온 경우, 꾸미기 창이 아닌 원래 프롬프트(action) 창이 뜨도록 설정
+          setBottomMode('action');
+        
+        // 만약 서버 데이터가 'design'이라는 객체 안에 묶여 있다면:
+        // if (data.design?.frameStyle) setFrameStyle(data.design.frameStyle);
         }
       } catch (err) {
         console.error("스타일 로드 실패:", err);
@@ -351,7 +360,7 @@ export const Exhibition = () => {
         // --- 디자인 요소 추가 ---
         design: {
           frameStyle: frameStyle,     // 'none', 'basic', 'frame2'
-          backgroundStyle: bgStyle,   // 'pink', 'pattern' 등
+          bgStyle: bgStyle,   // 'pink', 'pattern' 등
           cukeeStyle: cukeeStyle,     // 'line', 'noline', 'unbalance'
         },
         movies: frames.map((frame: Frame, index: number) => ({
@@ -372,36 +381,48 @@ export const Exhibition = () => {
 
   // 디자인만 저장하는 핸들러 (부모 쪽으로 이동)
 const handleSaveDesign = async () => {
-  try {
-    // URL에 exhibitionId가 없는 경우 (최초 저장 전)에 대한 처리
-    if (!exhibitionId) {
-      alert("전시회를 먼저 최종 저장한 후 디자인 수정이 가능합니다.");
-      return;
-    }
-
-    const designData = {
+  const designData = {
       title: exhibitionTitle,
       design: {
         frameStyle: frameStyle,
-        backgroundStyle: bgStyle,
+        bgStyle: bgStyle,
         cukeeStyle: cukeeStyle,
-      }
+      },
+      // 처음 생성 시에는 영화 목록도 필요할 수 있습니다. (여기 확인 필요)
+      movies: frames.map((frame: Frame, index: number) => ({
+      movieId: frame.id,
+      displayOrder: index,
+      isPinned: frame.isPinned || false
+    }))
     };
 
-    const response = await fetch(`/api/exhibitions/${exhibitionId}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(designData),
-    });
+    try {
+    if (!exhibitionId) {
+      // ✅ 1. 전시회 ID가 없는 경우: 새로 만들기 (POST)
+      const result = await createExhibition(designData); // 기존 handleSave 로직 활용
+      if (result?.id) {
+        setExhibitionId(result.id); // 새로 생성된 ID 저장
+        alert('전시회가 생성되고 디자인이 저장되었습니다! ✨');
+      }
+    } else {
+      // ✅ 2. 전시회 ID가 있는 경우: 기존 것 수정 (PUT)
+      const response = await fetch(`/api/exhibitions/${exhibitionId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(designData),
+      });
 
-    if (response.ok) {
-      alert('디자인이 성공적으로 수정되었습니다! ✨');
-      setBottomMode('action'); // 꾸미기 모드 종료
+      if (response.ok) {
+        alert('전시회 디자인이 수정되었습니다! 🎨');
+      }
     }
+    
+    setBottomMode('action'); // 저장 후 꾸미기 모드 종료
   } catch (error) {
-    console.error('디자인 수정 실패:', error);
-    alert('디자인 저장 중 오류가 발생했습니다.');
+    console.error('저장 중 오류 발생:', error);
+    alert('저장에 실패했습니다.');
   }
+  
 };
 
 // 모달 '확인' 클릭 시 실행될 함수
