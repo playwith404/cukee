@@ -114,7 +114,7 @@ class ExhibitionDesignCreate(BaseModel):
     """전시회 디자인 생성 스키마"""
     font: Optional[str] = Field(None, max_length=50)
     colorScheme: Optional[str] = Field(None, max_length=50, alias="color_scheme")
-    layoutType: Optional[str] = Field(None, max_length=50, alias="layout_type")
+    cukeeStyle: Optional[str] = Field(None, max_length=50, alias="cukee_style")
     frameStyle: Optional[str] = Field(None, max_length=20, alias="frame_style")
     background: Optional[str] = Field(None, max_length=100)
     backgroundImage: Optional[str] = Field(None, alias="background_image")

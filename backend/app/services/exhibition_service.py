@@ -36,7 +36,7 @@ def create_exhibition(
             user_id=user_id,
             font=exhibition_data.design.font,
             color_scheme=exhibition_data.design.colorScheme,
-            layout_type=exhibition_data.design.layoutType,
+            cukee_style=exhibition_data.design.cukeeStyle,
             frame_style=exhibition_data.design.frameStyle,
             background=exhibition_data.design.background,
             background_image=exhibition_data.design.backgroundImage
@@ -145,8 +145,8 @@ def update_exhibition(
                 design.font = exhibition_data.design.font
             if exhibition_data.design.colorScheme is not None:
                 design.color_scheme = exhibition_data.design.colorScheme
-            if exhibition_data.design.layoutType is not None:
-                design.layout_type = exhibition_data.design.layoutType
+            if exhibition_data.design.cukeeStyle is not None:
+                design.cukee_style = exhibition_data.design.cukeeStyle
             if exhibition_data.design.frameStyle is not None:
                 design.frame_style = exhibition_data.design.frameStyle
             if exhibition_data.design.background is not None:
@@ -160,7 +160,7 @@ def update_exhibition(
                 user_id=user_id,
                 font=exhibition_data.design.font,
                 color_scheme=exhibition_data.design.colorScheme,
-                layout_type=exhibition_data.design.layoutType,
+                cukee_style=exhibition_data.design.cukeeStyle,
                 frame_style=exhibition_data.design.frameStyle,
                 background=exhibition_data.design.background,
                 background_image=exhibition_data.design.backgroundImage

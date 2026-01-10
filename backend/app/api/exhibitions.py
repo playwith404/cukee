@@ -182,7 +182,7 @@ def get_exhibition_detail(
         response["design"] = {
             "font": exhibition.design.font,
             "colorScheme": exhibition.design.color_scheme,
-            "layoutType": exhibition.design.layout_type,
+            "cukeeStyle": exhibition.design.cukee_style,
             "frameStyle": exhibition.design.frame_style,
             "background": exhibition.design.background,
             "backgroundImage": exhibition.design.background_image
