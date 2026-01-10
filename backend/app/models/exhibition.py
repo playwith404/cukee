@@ -36,7 +36,7 @@ class ExhibitionDesign(Base):
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     font = Column(String(50), nullable=True)
     color_scheme = Column(String(50), nullable=True)
-    layout_type = Column(String(50), nullable=True)
+    cukee_style = Column(String(50), nullable=True)
     frame_style = Column(String(20), nullable=True)
     background = Column(String(100), nullable=True)
     background_image = Column(Text, nullable=True)

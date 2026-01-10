@@ -15,7 +15,7 @@ export interface AIExhibitionRequest {
 export interface ExhibitionDesign {
   font: string;
   colorScheme: string;
-  layoutType: string;
+  cukeeStyle: string;
   frameStyle: string;
   background: string;
   backgroundImage: string;

@@ -204,7 +204,7 @@ CREATE TABLE exhibition_designs (
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     font VARCHAR(50),
     color_scheme VARCHAR(50),
-    layout_type VARCHAR(50),
+    cukee_style VARCHAR(50),
     frame_style VARCHAR(20) CHECK (frame_style IN ('none', 'frame', NULL)),
     background VARCHAR(100),
     background_image TEXT,
