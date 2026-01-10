@@ -15,8 +15,8 @@ interface ExhibitionDecorateProps {
   onChangeFrameStyle: (style: 'none' | 'basic' | 'frame2') => void;
 
   // ✅ 배경 스타일 관련 Props 추가
-  bgStyle: string; 
-  onChangeBgStyle: (style: string) => void;
+  background: string; 
+  onChangeBackground: (style: string) => void;
 
   onSaveClick: () => void; // 저장(체크) 버튼 클릭 시 호출되는 함수(모달)
 }
@@ -29,15 +29,15 @@ export const ExhibitionDecorate = ({
   onChangeCukeeStyle,
   frameStyle,
   onChangeFrameStyle,
-  bgStyle,         
-  onChangeBgStyle,
+  background,         
+  onChangeBackground,
   onSaveClick, // ✅ 추가
 }: ExhibitionDecorateProps) => {
 
-  // bgStyle이 바뀔 때마다 body 배경 적용
+  // background이 바뀔 때마다 body 배경 적용
   useEffect(() => {
-    // console.log('bgStyle:', bgStyle);
-    switch (bgStyle) {
+    // console.log('background:', background);
+    switch (background) {
       case 'none':
         document.body.style.backgroundColor = '#EDE6DD';
         document.body.style.backgroundImage = ''; // 색 비우기 
@@ -62,7 +62,7 @@ export const ExhibitionDecorate = ({
       document.body.style.backgroundColor = '#EDE6DD';
       document.body.style.backgroundImage = '';
     };
-  }, [bgStyle]);
+  }, [background]);
 
   // [추가] DB 저장 함수
   // const handleSaveDesign = async () => {
@@ -71,7 +71,7 @@ export const ExhibitionDecorate = ({
   //     ticket_id: ticketId,
   //     design: {
   //       frame_style: frameStyle,
-  //       background_style: bgStyle,
+  //       background: background,
   //       cukee_style: cukeeStyle, // 'line', 'noline', 'unbalance'
   //     }
   //   };
@@ -96,7 +96,7 @@ export const ExhibitionDecorate = ({
   // };
 
   return (
-    <div className={`${styles.container} ${styles[bgStyle]}`}>
+    <div className={`${styles.container} ${styles[background]}`}>
       <div className={styles.bubble}>
         {/* 상단 타이틀 */}
         <h3 className={styles.title}>♡ 전시회 꾸미기 ♡</h3>
@@ -130,11 +130,11 @@ export const ExhibitionDecorate = ({
         <div className={styles.row}>
           <span className={styles.label}>♥ 배경 스타일</span>
           <div className={styles.colorOptions}>
-            {/* ✅ setBgStyle 대신 부모에서 온 onChangeBgStyle 사용 */}
-            <button className={`${styles.optionButton} ${styles.bgNone} ${bgStyle === 'none' ? styles.active : ''}`} onClick={() => onChangeBgStyle('none')}> </button>
-            <button className={`${styles.optionButton} ${styles.bgPink} ${bgStyle === 'pink' ? styles.active : ''}`} onClick={() => onChangeBgStyle('pink')}> </button>
-            <button className={`${styles.optionButton} ${styles.bgBlue} ${bgStyle === 'blue' ? styles.active : ''}`} onClick={() => onChangeBgStyle('blue')}> </button>
-            <button className={`${styles.optionButton} ${styles.bgPattern} ${bgStyle === 'pattern' ? styles.active : ''}`} onClick={() => onChangeBgStyle('pattern')}> </button>
+            {/* ✅ setBackground 대신 부모에서 온 onChangeBackground 사용 */}
+            <button className={`${styles.optionButton} ${styles.bgNone} ${background === 'none' ? styles.active : ''}`} onClick={() => onChangeBackground('none')}> </button>
+            <button className={`${styles.optionButton} ${styles.bgPink} ${background === 'pink' ? styles.active : ''}`} onClick={() => onChangeBackground('pink')}> </button>
+            <button className={`${styles.optionButton} ${styles.bgBlue} ${background === 'blue' ? styles.active : ''}`} onClick={() => onChangeBackground('blue')}> </button>
+            <button className={`${styles.optionButton} ${styles.bgPattern} ${background === 'pattern' ? styles.active : ''}`} onClick={() => onChangeBackground('pattern')}> </button>
           </div>
         </div>
 

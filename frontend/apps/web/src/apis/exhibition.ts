@@ -77,12 +77,12 @@ export interface ExhibitionDetailResponse {
 
 // 전시회 꾸미기 
 export type FrameStyle = 'none' | 'frame'
-export type bgStyle = 'white' | 'pink' | 'orange' | 'pattern' | 'image'
+export type background = 'white' | 'pink' | 'orange' | 'pattern' | 'image'
 export type CukeeStyle = 'line' | 'none' | 'vintage'
 
 export interface ExhibitionStyle {
   frame: FrameStyle
-  background: bgStyle
+  background: background
   cukee: CukeeStyle
 }
 

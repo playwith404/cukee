@@ -79,7 +79,7 @@ export const Exhibition = () => {
   const [frameStyle, setFrameStyle] = useState<'none' | 'basic' | 'frame2'>('basic');
 
   // 배경 스타일 상태 선언
-  const [bgStyle, setBgStyle] = useState<string>('none');
+  const [background, setBackground] = useState<string>('none');
 
   // 꾸미기 모달 상태 추가
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
@@ -108,6 +108,7 @@ export const Exhibition = () => {
   }, [currentTicketId]);
 
   useEffect(() => {
+<<<<<<< HEAD
     // 1. 초기화: ID가 바뀌면 일단 현재 화면의 스타일을 기본값으로 싹 비웁니다.
     // 이 과정이 없으면 다음 데이터를 불러오는 0.5초 동안 이전 전시회 디자인이 보입니다.
     setCukeeStyle('line'); 
@@ -118,6 +119,11 @@ export const Exhibition = () => {
       setBottomMode('action');
       return;
     }
+=======
+    // 초기값 설정(전시회 목록 딜레이 때 기본이 basic이라서 none으로 변경)
+    setFrameStyle('none');
+    if (!exhibitionIdParam) return;
+>>>>>>> c03b4db (CUK-129-exh)
 
     const loadExhibitionStyle = async () => {
       try {
@@ -125,6 +131,7 @@ export const Exhibition = () => {
         console.log(`[ID: ${exhibitionIdParam}] 로드 데이터:`, data);
 
         if (data) {
+<<<<<<< HEAD
           // 데이터 구조에 따른 유연한 할당 (Optional Chaining 활용)
           const design = data.design || data; 
 
@@ -134,6 +141,22 @@ export const Exhibition = () => {
           setBgStyle(design.bgStyle || 'none');
           
           setBottomMode('action');
+=======
+          const savedTicketId = data.ticketId;
+          if (savedTicketId) {
+            setCukeeId(`c${savedTicketId}`);
+          }
+          // 저장할 때 'design' 객체에 넣었으므로 꺼낼 때도 확인
+          const design = data.design || data;
+
+          // 값이 존재할 때만 세팅 (OR 연산자로 기본값 방어)
+          setCukeeStyle(design.cukeeStyle || '1');
+          setFrameStyle(design.frameStyle || 'none');
+          setBackground(design.background || 'none');
+          // 2. ✅ [추가] 목록에서 들어온 경우, 꾸미기 창이 아닌 원래 프롬프트(action) 창이 뜨도록 설정
+          setBottomMode('action');
+
+>>>>>>> c03b4db (CUK-129-exh)
         }
       } catch (err) {
         console.error("스타일 로드 실패:", err);
@@ -369,7 +392,7 @@ export const Exhibition = () => {
         // --- 디자인 요소 추가 ---
         design: {
           frameStyle: frameStyle,     // 'none', 'basic', 'frame2'
-          bgStyle: bgStyle,   // 'pink', 'pattern' 등
+          background: background,   // 'pink', 'pattern' 등
           cukeeStyle: cukeeStyle,     // 'line', 'noline', 'unbalance'
         },
         movies: frames.map((frame: Frame, index: number) => ({
@@ -394,7 +417,7 @@ const handleSaveDesign = async () => {
       title: exhibitionTitle,
       design: {
         frameStyle: frameStyle,
-        bgStyle: bgStyle,
+        background: background,
         cukeeStyle: cukeeStyle,
       },
       // 처음 생성 시에는 영화 목록도 필요할 수 있습니다. (여기 확인 필요)
@@ -639,8 +662,8 @@ const handleConfirmDesign = async () => {
         onChangeCukeeStyle={setCukeeStyle}
         frameStyle={frameStyle} 
         onChangeFrameStyle={setFrameStyle}
-        bgStyle={bgStyle}
-        onChangeBgStyle={setBgStyle}
+        background={background}
+        onChangeBackground={setBackground}
       />
     )}
 
