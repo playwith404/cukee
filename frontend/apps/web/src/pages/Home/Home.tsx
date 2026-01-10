@@ -3,25 +3,24 @@ import { useNavigate } from 'react-router-dom';
 import { MainLayout } from '@repo/ui';
 import { MainCarousel } from './MainCarousel';
 import { Header } from '../../components/Header/Header';
-import { fetchTickets, type Ticket } from '../../apis/exhibition';
+import { fetchTickets, toggleTicketLike, type Ticket } from '../../apis/exhibition';
 import { useAuth } from '../../contexts/AuthContext';
 import styles from './Home.module.css';
 import { FALLBACK_TICKETS } from './fallbackData';
+import { HiHeart, HiOutlineHeart } from "react-icons/hi"; // 하트 아이콘 추가
 
 // --- 고정 데이터 ---
-const likeCount = 103;
 const curatorIntroText = "안녕하세요. MZ 큐레이터 김엠지예요. 밝고 도파민 터지는 영화만 추천해줄게요.";
 
 export default function HomePage() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(true);
   const [animatingTicketId, setAnimatingTicketId] = useState<number | null>(null);
-  //const [error, setError] = useState<string | null>(null);
-  
+
   // 뷰 모드 상태 관리
   const [viewMode, setViewMode] = useState<'default' | 'viewAll'>('default');
 
@@ -33,7 +32,6 @@ export default function HomePage() {
     const loadData = async () => {
       try {
         setLoading(true);
-        //setError(null);
         const ticketResponse = await fetchTickets();
         if (ticketResponse.data && ticketResponse.data.length > 0) {
           const fixedTickets = ticketResponse.data.map(t => ({
@@ -52,16 +50,10 @@ export default function HomePage() {
     loadData();
   }, []);
 
-  // const handleNext = () => {
-  //   if (currentIndex < tickets.length - 1) setCurrentIndex(currentIndex + 1);
-  // };
   const handleNext = () => {
     setCurrentIndex((prev) => (prev + 1) % tickets.length);
   };
 
-  // const handlePrev = () => {
-  //   if (currentIndex > 0) setCurrentIndex(currentIndex - 1);
-  // };
   const handlePrev = () => {
     setCurrentIndex((prev) => (prev === 0 ? tickets.length - 1 : prev - 1));
   };
@@ -73,6 +65,56 @@ export default function HomePage() {
       navigate(`/exhibition?ticket=${ticketId}`);
       setAnimatingTicketId(null);
     }, 500);
+  };
+
+  // 좋아요 핸들러 추가
+  const handleLike = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    // null 체크 및 로그인 체크 - user 객체 확인
+    if (!currentTicket) return;
+    if (!user) { // useAuth()에서 가져온 user 객체로 로그인 여부 확인
+      alert("로그인이 필요한 기능입니다.");
+      return;
+    }
+
+    const ticketId = currentTicket.id;
+
+    try {
+      // Optimistic Update
+      setTickets(prevTickets =>
+        prevTickets.map(ticket => {
+          if (ticket.id === ticketId) {
+            return {
+              ...ticket,
+              isLiked: !ticket.isLiked,
+              likeCount: ticket.isLiked ? ticket.likeCount - 1 : ticket.likeCount + 1
+            };
+          }
+          return ticket;
+        })
+      );
+
+      const result = await toggleTicketLike(ticketId);
+
+      if (result.success) {
+        setTickets(prevTickets =>
+          prevTickets.map(ticket => {
+            if (ticket.id === ticketId) {
+              return {
+                ...ticket,
+                isLiked: result.isLiked,
+                likeCount: result.likeCount
+              };
+            }
+            return ticket;
+          })
+        );
+      }
+    } catch (error) {
+      console.error('좋아요 처리 실패:', error);
+      // 에러 시 롤백 로직은 생략하거나 다시 fetch
+    }
   };
 
   // 모드 토글 함수
@@ -100,21 +142,21 @@ export default function HomePage() {
 
         {/* 티켓만 보기 전용 헤더 (카운터) */}
         <div className={`${styles.viewAllHeader} ${viewMode === 'viewAll' ? styles.visible : ''}`}>
-           {/* 1. 카운터 */}
-           <div className={styles.centerCounter}>
-              <span className={styles.bigCount}>{(currentIndex + 1).toString().padStart(2, '0')}</span>
-              <span className={styles.smallCount}>/{totalTickets.toString().padStart(2, '0')}</span>
-           </div>
-           {/* 2. 큐레이터 이름 & 메시지 */}
-           <div className={styles.separatorLine} />
-           <div className={styles.viewAllTextWrapper}>
-              <h2 className={styles.viewAllCuratorName}>
-                {currentTicket?.curatorName || '큐레이터'}
-              </h2>
-              <p className={styles.viewAllCuratorMessage}>
-                {currentTicket?.curatorMessage || curatorIntroText}
-              </p>
-           </div>
+          {/* 1. 카운터 */}
+          <div className={styles.centerCounter}>
+            <span className={styles.bigCount}>{(currentIndex + 1).toString().padStart(2, '0')}</span>
+            <span className={styles.smallCount}>/{totalTickets.toString().padStart(2, '0')}</span>
+          </div>
+          {/* 2. 큐레이터 이름 & 메시지 */}
+          <div className={styles.separatorLine} />
+          <div className={styles.viewAllTextWrapper}>
+            <h2 className={styles.viewAllCuratorName}>
+              {currentTicket?.curatorName || '큐레이터'}
+            </h2>
+            <p className={styles.viewAllCuratorMessage}>
+              {currentTicket?.curatorMessage || curatorIntroText}
+            </p>
+          </div>
         </div>
 
         <div className={styles.innerContainer}>
@@ -175,7 +217,25 @@ export default function HomePage() {
               {currentTicket?.curatorName || '큐레이터'}
             </h2>
             <div className={styles.curatorLikesInfo}>
-              <p style={{ margin: '0 0 4px 0' }}>♥ {likeCount}명의 유저가 이 전시회를 좋아해요.</p>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  marginBottom: '4px',
+                  cursor: 'pointer'
+                }}
+                onClick={handleLike}
+              >
+                {currentTicket?.isLiked ? (
+                  <HiHeart size={20} color="#ff4b4b" />
+                ) : (
+                  <HiOutlineHeart size={20} color="#666" />
+                )}
+                <p style={{ margin: 0 }}>
+                  {currentTicket?.likeCount ?? 0}명의 유저가 이 전시회를 좋아해요.
+                </p>
+              </div>
               <div className={styles.speechBubble}>
                 {currentTicket?.curatorMessage || curatorIntroText}
               </div>
