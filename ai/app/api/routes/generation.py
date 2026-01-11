@@ -74,7 +74,7 @@ async def generate_exhibition(request: GenerateRequest, db: Session = Depends(ge
         logger.info(f"Retrieved {len(retrieved_movies)} movies from PGVECTOR")
         
         # 2. 큐레이션 전체에 대한 소개 생성 (추천된 영화 리스트 활용)
-        movie_titles = ", ".join([movie['title_ko'] for movie in final_movies])
+        movie_titles = ", ".join([movie['title'] for movie in final_movies])
         
         curation_prompt = f"""[Role]
 You are a professional movie curator with a distinct personality matching the '{request.theme}' theme.
