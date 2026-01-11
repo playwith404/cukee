@@ -124,7 +124,7 @@
 
 .dropdownGlass {
   backdrop-filter: blur(20px);
-  background-color: rgba(237, 230, 221, 0.85);
+  background-color: transparent; /* 배경색을 투명하게 */
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 16px;
   padding: 30px;
