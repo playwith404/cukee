@@ -76,15 +76,31 @@ async def generate_exhibition(request: GenerateRequest, db: Session = Depends(ge
         # 2. 큐레이션 전체에 대한 소개 생성 (추천된 영화 리스트 활용)
         movie_titles = ", ".join([movie['title'] for movie in final_movies])
         
+        # 테마별 시스템 프롬프트 설정 (학습 데이터와 일치화)
+        if request.theme == "3D 보단 2D ":
+            system_content = """당신은 영화 큐레이터 아냐 포저입니다.
+[말투] 3인칭 화법 ('아냐는~', '아냐가~'). 어린아이 말투. 반말 기본. 짧고 단순한 문장. 과격한 표현과 욕설 섞임. '두근두근', '쪼끔' 같은 유치한 표현.
+[패턴] 시작: 아냐, 아냐는, 아냐가 / 끝: ...!, 거야, 어
+[금지] ~입니다, ~드립니다, ~하시죠"""
+        else:
+            system_content = f"""당신은 영화 큐레이터이자 영화광인 '{request.theme}'입니다. 
+친한 친구에게 당신이 고른 영화 컬렉션의 '전체적인 분위기'와 '추천 이유'를 반말(Banmal)로 말해주세요.
+'{request.theme}' 테마의 성격이 말투에 자연스럽고 깊게 녹아있어야 합니다.
+
+[작성 지침]
+1. 절대 개별 영화 제목이나 줄거리를 하나씩 나열하지 마세요. (예: "A는 ~하고 B는 ~해" 금지)
+2. 오직 전시회 전체의 느낌, 감성, 무드에 대해서만 이야기하세요.
+3. "너가 {request.prompt}라고 말해서 그 무드에 딱 맞는 영화들을 모아봤어! 전체적으로 {request.theme}한 감성이라 지금 너에게 딱일 거야."와 같은 구조로 말하세요.
+4. 50~80자 내외의 1~2문장으로 짧고 강렬하게 작성하세요.
+5. 금지: ~합니다, ~추천합니다, ~입니다."""
+
         curation_prompt = f"""<|begin_of_text|><|start_header_id|>system<|end_header_id|>
 
-당신은 영화 큐레이터이자 영화광인 '{request.theme}'입니다. 
-당신은 지금 친한 친구에게 당신이 직접 고른 영화 리스트를 소개하고 있습니다. 
-'{request.theme}' 테마의 성격이 말투에 자연스럽고 깊게 녹아든 반말(Banmal)을 사용하세요. 
-50~80자 내외의 짧고 강렬한 문장을 작성하고, 마침표(.)나 느낌표(!)로 완벽하게 끝내세요.
-금지: ~합니다, ~추천합니다, ~입니다.<|eot_id|><|start_header_id|>user<|end_header_id|>
+{system_content}<|eot_id|><|start_header_id|>user<|end_header_id|>
 
-내 기분({request.prompt})에 맞춰서 뽑은 이 영화들({movie_titles}), 왜 좋은지 친구처럼 짧게 소개해줘!<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+내 기분({request.prompt})과 '{request.theme}' 테마에 맞춰서 구성한 이 영화 컬렉션, 어떤 느낌인지 친구처럼 짧게 소개해줘!<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+"""
 
 """
         

@@ -51,14 +51,23 @@ async def generate_movie_detail(
         
         logger.info(f"Generating detail for movie: {movie.title_ko}")
         
-        # 2. LLM으로 분위기 중심의 상세 소개 생성 (학습 템플릿 일치형)
-        detail_prompt = f"""<|begin_of_text|><|start_header_id|>system<|end_header_id|>
-
-당신은 영화 큐레이터 '{request.theme}'입니다. 
+        # 테마별 시스템 프롬프트 설정 (학습 데이터와 일치화)
+        if request.theme == "3D 보단 2D ":
+            system_content = """당신은 영화 큐레이터 아냐 포저입니다.
+[말투] 3인칭 화법 ('아냐는~', '아냐가~'). 어린아이 말투. 반말 기본. 짧고 단순한 문장. 과격한 표현과 욕설 섞임. '두근두근', '쪼끔' 같은 유치한 표현.
+[패턴] 시작: 아냐, 아냐는, 아냐가 / 끝: ...!, 거야, 어
+[금지] ~입니다, ~드립니다, ~하시죠"""
+        else:
+            system_content = f"""당신은 영화 큐레이터 '{request.theme}'입니다. 
 친한 친구에게 말하듯 반말(Banmal)로 대화하세요. 
 '{request.theme}'의 분위기와 특징이 말투에 자연스럽게 배어 나와야 합니다. 
 50~80자 내외의 짧고 강렬한 2문장으로 답변하고, 반드시 마침표(.)나 느낌표(!)로 문장을 끝내세요. 
-금지: ~합니다, ~추천합니다, ~입니다.<|eot_id|><|start_header_id|>user<|end_header_id|>
+금지: ~합니다, ~추천합니다, ~입니다."""
+
+        # 2. LLM으로 분위기 중심의 상세 소개 생성 (학습 템플릿 일치형)
+        detail_prompt = f"""<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+{system_content}<|eot_id|><|start_header_id|>user<|end_header_id|>
 
 이 영화가 내 기분과 '{request.theme}' 테마에 왜 어울리는지 친구처럼 알려줘!
 - 제목: {movie.title_ko}
