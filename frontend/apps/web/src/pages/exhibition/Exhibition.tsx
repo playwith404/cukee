@@ -18,8 +18,11 @@ import { fetchTickets, type Ticket, createExhibition, getExhibitionById, toggleT
 import { ExhibitionDecorate } from './ExhibitionDecorate';
 import type { CukeeStyle } from '../../types/cukee';
 
+// 상대 경로를 이용한 임포트
+import api from '../../apis/index';
+
 // AI 진행 상태 타입 정의 
-type AIStatus = 'idle' | 'loading' | 'delayed' | 'error' | 'decorate';
+type AIStatus = 'idle' | 'loading' | 'delayed' | 'error';
 
 const INITIAL_FRAMES = [
   { id: 1, content: 'Frame 1' },
@@ -40,7 +43,6 @@ export const Exhibition = () => {
   // === 2. URL 파라미터 (React Router 방식) ===
   const [searchParams] = useSearchParams(); // 👈 변경 포인트 2 (배열 반환됨)
   const ticketIdParam = searchParams.get('ticket');
-  console.log('ticketIdParam:', ticketIdParam);
   const exhibitionIdParam = searchParams.get('exhibitionId'); // 전시회 ID 파라미터
   const [exhibitionId, setExhibitionId] = useState<number | null>(
     exhibitionIdParam ? parseInt(exhibitionIdParam, 10) : null
@@ -118,9 +120,10 @@ export const Exhibition = () => {
         console.log(`[ID: ${exhibitionIdParam}] 로드 데이터:`, data);
 
         if (data) {
-          const savedTicketId = data.ticketId;
-          if (savedTicketId) {
-            setCukeeId(`c${savedTicketId}`);
+          // ✅ ticket_group_id = 큐키 번호
+          const savedCukeeNo = data.ticketGroupId || data.ticket_group_id;
+          if (savedCukeeNo) {
+            setCukeeId(`c${savedCukeeNo}`);
           }
           // 저장할 때 'design' 객체에 넣었으므로 꺼낼 때도 확인
           const design = data.design || data;
@@ -388,8 +391,11 @@ export const Exhibition = () => {
 
   // 디자인만 저장하는 핸들러 (부모 쪽으로 이동)
 const handleSaveDesign = async () => {
+  // exhibitionId가 없으면 Param에서라도 가져와야 함
+  const targetId = exhibitionId || (exhibitionIdParam ? parseInt(exhibitionIdParam, 10) : null);
   const designData = {
       title: exhibitionTitle,
+      ticketId: currentTicketId, // 👈 이 값이 정확해야 영화 정보가 안 깨짐
       design: {
         frameStyle: frameStyle,
         background: background,
@@ -404,32 +410,21 @@ const handleSaveDesign = async () => {
     };
 
     try {
-    if (!exhibitionId) {
-      // ✅ 1. 전시회 ID가 없는 경우: 새로 만들기 (POST)
-      const result = await createExhibition(designData); // 기존 handleSave 로직 활용
-      if (result?.id) {
-        setExhibitionId(result.id); // 새로 생성된 ID 저장
-        alert('전시회가 생성되고 디자인이 저장되었습니다! ✨');
+      if (!targetId) {
+        // 신규 생성 (POST)
+        const result = await createExhibition(designData);
+        if (result?.id) setExhibitionId(result.id);
+        alert('전시회가 저장되었습니다!');
+      } else {
+        // 기존 수정 (PUT)
+        await api.put(`/exhibitions/${targetId}`, designData);
+        alert('디자인이 수정되었습니다!');
       }
-    } else {
-      // ✅ 2. 전시회 ID가 있는 경우: 기존 것 수정 (PUT)
-      const response = await fetch(`/api/exhibitions/${exhibitionId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(designData),
-      });
-
-      if (response.ok) {
-        alert('전시회 디자인이 수정되었습니다! 🎨');
-      }
+      setBottomMode('action');
+    } catch (error: any) {
+      console.error("저장 실패:", error.response?.data || error.message);
+      alert(`저장 실패: ${error.response?.status === 405 ? '허용되지 않는 방식입니다.' : '서버 오류'}`);
     }
-    
-    setBottomMode('action'); // 저장 후 꾸미기 모드 종료
-  } catch (error) {
-    console.error('저장 중 오류 발생:', error);
-    alert('저장에 실패했습니다.');
-  }
-  
 };
 
 // 모달 '확인' 클릭 시 실행될 함수
