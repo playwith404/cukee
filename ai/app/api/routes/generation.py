@@ -101,7 +101,7 @@ The introduction should explain why these movies ({movie_titles}) were selected 
         curator_comment = model_manager.generate(
             prompt=curation_prompt,
             theme=request.theme,
-            max_length=180,  
+            max_new_tokens=100,  # 입력 길이에 영향받지 않도록 max_new_tokens 사용
             temperature=0.3,
             top_p=0.9,
             top_k=50
@@ -127,6 +127,12 @@ The introduction should explain why these movies ({movie_titles}) were selected 
                 curator_comment = curator_comment.split("Example:")[0].strip()
         
         curator_comment = curator_comment.strip('"').strip("'")
+        
+        # 후처리: 마지막 마침표(., !, ?) 이후의 불완전한 문장 제거
+        import re
+        punctuations = [m.start() for m in re.finditer(r'[.!?]', curator_comment)]
+        if punctuations:
+            curator_comment = curator_comment[:punctuations[-1] + 1].strip()
         
         logger.info(f"Generated curation comment: {curator_comment}")
         
