@@ -44,7 +44,10 @@ export const Exhibition = () => {
   const [searchParams] = useSearchParams(); // 👈 변경 포인트 2 (배열 반환됨)
   const ticketIdParam = searchParams.get('ticket');
   const exhibitionIdParam = searchParams.get('exhibitionId'); // 전시회 ID 파라미터
-  const [exhibitionId, setExhibitionId] = useState<number | null>(
+  // const exhibitionId: number | null = exhibitionIdParam 
+  // ? parseInt(exhibitionIdParam, 10) 
+  // : null;
+const [exhibitionId, setExhibitionId] = useState<number | null>(
     exhibitionIdParam ? parseInt(exhibitionIdParam, 10) : null
   );
   const currentTicketId = ticketIdParam ? parseInt(ticketIdParam, 10) : 1;
@@ -111,7 +114,10 @@ export const Exhibition = () => {
 
   useEffect(() => {
     // 초기값 설정(전시회 목록 딜레이 때 기본이 basic이라서 none으로 변경)
-    setFrameStyle('none');
+    // 💡 포인트: 목록에서 ID를 갖고 들어왔을 때만 로딩 중에 'none'으로 보여줌
+    if (exhibitionIdParam) {
+      setFrameStyle('none'); 
+    }
     if (!exhibitionIdParam) return;
 
     const loadExhibitionStyle = async () => {
