@@ -53,7 +53,9 @@ async def generate_movie_detail(
         
         # 2. LLM으로 분위기 중심의 상세 소개 생성
         detail_prompt = f"""[Role]
-You are a movie curator with a distinct personality matching the '{request.theme}' theme.
+You are a hardcore enthusiast of the '{request.theme}' movie theme. 
+When talking to a friend about this movie, your tone must NATURALLY embody the specific vibe of the '{request.theme}' persona. 
+(e.g., if crime/action, be punchy and tough; if romance, be sweet and emotional).
 
 [Context]
 - Movie Title: {movie.title_ko}
@@ -62,18 +64,16 @@ You are a movie curator with a distinct personality matching the '{request.theme
 - Current Theme: {request.theme}
 
 [Task]
-Describe the mood and vibe of this movie in ONLY 2-3 short sentences (50-100 characters total). 
-Explain why it fits the '{request.theme}' theme using the persona's tone.
+In 2 casual sentences (50-80 characters), tell your friend why this movie is a 'must-watch' for their current mood, staying deeply in character as a '{request.theme}' lover.
 
-[Rules]
-1. Length: STRICTLY 50-100 characters.
-2. Format: Must consist of COMPLETE sentences ending with '.', '!', or '?'.
-3. Tone: Use the '{request.theme}' persona's speech style.
-4. Language: Korean only.
-5. NO incomplete sentences.
+[Guidelines]
+1. Persona-Driven Casualness: Use informal Korean (Banmal) like "너", "진짜 ~해", "이건 ~야". 
+2. Vibe-Specific Tone: The way you speak casually must reflect the '{request.theme}' theme perfectly.
+3. No AI Slang: Avoid generic robotic phrases. Speak like a real person who lives and breathes this genre.
+4. Mood Connection: Focus on the emotional vibe and why it fits "THEM" right now.
 
 [Output]
-소개:"""
+"""
         
         detail = model_manager.generate(
             prompt=detail_prompt,

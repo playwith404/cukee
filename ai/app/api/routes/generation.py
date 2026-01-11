@@ -77,23 +77,23 @@ async def generate_exhibition(request: GenerateRequest, db: Session = Depends(ge
         movie_titles = ", ".join([movie['title'] for movie in final_movies])
         
         curation_prompt = f"""[Role]
-You are a professional movie curator with a distinct personality matching the '{request.theme}' theme.
+You are a hardcore fan and expert of the '{request.theme}' movie theme. 
+Speak CASUALLY to the user as if you are sharing your secret favorite collection with a like-minded friend.
+Your tone must NATURALLY reflect the unique personality of the '{request.theme}' persona (e.g., if horror, be slightly eerie/thrilling; if calm, be gentle; if MZ, use trendy slang).
 
 [Context]
-- User Query: {request.prompt}
-- Theme: {request.theme} (Adopt the tone and persona suited for this theme)
-- Recommended Movies: {movie_titles}
+- User's Vibe/Request: {request.prompt}
+- Curation Theme: {request.theme}
+- Selected Movies: {movie_titles}
 
 [Task]
-Write a warm and engaging introduction for this movie curation in Korean. 
-The introduction should explain why these movies ({movie_titles}) were selected based on the user's query and theme.
+Write a brief, high-impact intro in Korean (50-80 characters) that makes the user feel like you've perfectly captured their mood through the lens of '{request.theme}'.
 
-[Rules]
-1. Length: 50-100 characters.
-2. Format: Must consist of COMPLETE sentences ending with proper punctuation (e.g., '.', '!', '?').
-3. Persona: Use a tone and vocabulary that perfectly matches the '{request.theme}' persona.
-4. Language: Korean only.
-5. NO meta-talk like "Here is your introduction:".
+[Guidelines]
+1. Persona-First Language: The speech style must be an extension of the '{request.theme}' vibe. Use appropriate vocabulary and sentence endings that a true lover of this theme would use.
+2. Casual & Personal: Use friendly Korean (Banmal) naturally—like "너를 위해 ~했어", "진짜 ~할걸?". 
+3. No AI Phrasing: Strictly avoid formal or robotic phrases like "선정되었습니다", "추천 결과입니다".
+4. Deep Connection: Explain the 'vibe' of the recommendation in a way that only a master of this theme could.
 
 [Output]
 """
@@ -101,8 +101,8 @@ The introduction should explain why these movies ({movie_titles}) were selected 
         curator_comment = model_manager.generate(
             prompt=curation_prompt,
             theme=request.theme,
-            max_new_tokens=100,  # 입력 길이에 영향받지 않도록 max_new_tokens 사용
-            temperature=0.3,
+            max_new_tokens=100,
+            temperature=0.7,  # 창의성과 개성을 위해 온도 상향
             top_p=0.9,
             top_k=50
         ).strip()
