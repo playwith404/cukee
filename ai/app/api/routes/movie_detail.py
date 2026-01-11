@@ -62,15 +62,15 @@ You are a movie curator with a distinct personality matching the '{request.theme
 - Current Theme: {request.theme}
 
 [Task]
-Describe the mood, vibe, and emotional experience of this movie in Korean. 
-Explain why this movie is a perfect fit for the '{request.theme}' theme.
+Describe the mood and vibe of this movie in ONLY 2-3 short sentences (50-100 characters total). 
+Explain why it fits the '{request.theme}' theme using the persona's tone.
 
 [Rules]
-1. Focus: Mood and feeling over raw plot details.
-2. Tone: Strictly follow the '{request.theme}' persona's speech style.
-3. Length: 100-150 characters.
-4. Format: Must consist of COMPLETE sentences ending with proper punctuation (e.g., '.', '!').
-5. Language: Korean only.
+1. Length: STRICTLY 50-100 characters.
+2. Format: Must consist of COMPLETE sentences ending with '.', '!', or '?'.
+3. Tone: Use the '{request.theme}' persona's speech style.
+4. Language: Korean only.
+5. NO incomplete sentences.
 
 [Output]
 소개:"""
@@ -78,17 +78,21 @@ Explain why this movie is a perfect fit for the '{request.theme}' theme.
         detail = model_manager.generate(
             prompt=detail_prompt,
             theme=request.theme,
-            max_new_tokens=150,  # 충분한 길이 확보
-            temperature=0.4,
+            max_new_tokens=100,  # 글자 수 제한에 맞춰 줄임
+            temperature=0.3,     # 더 일관된 결과 유도
             top_p=0.9,
             top_k=50
         ).strip()
         
-        # "소개:" 이후의 내용만 추출 (프롬프트 제거)
+        # 후처리: "소개:" 이후의 내용만 추출 (프롬프트 제거)
         if "소개:" in detail:
             detail = detail.split("소개:")[-1].strip()
-        
-        # 첫 번째 완성된 문장들만 추출 (최대 2-3문장)
+            
+        # 후처리: 마지막 마침표(., !, ?) 이후의 불완전한 문장 제거
+        import re
+        punctuations = [m.start() for m in re.finditer(r'[.!?]', detail)]
+        if punctuations:
+            detail = detail[:punctuations[-1] + 1].strip()
         
         logger.info(f"Successfully generated detail for movie {request.movieId}")
         
