@@ -97,29 +97,18 @@ async def generate_exhibition(request: GenerateRequest, db: Session = Depends(ge
             top_k=50
         ).strip()
         
-        # 후처리: 어시스턴트 답변만 추출 및 불필요한 토큰 제거
-        if "<|start_header_id|>assistant<|end_header_id|>" in curator_comment:
-            curator_comment = curator_comment.split("<|start_header_id|>assistant<|end_header_id|>")[-1].strip()
-            
-        # 특수 토큰 및 역할 키워드 강제 제거
-        for token in ["<|begin_of_text|>", "<|eot_id|>", "<|end_header_id|>", "<|start_header_id|>", "system", "user", "assistant", "### Response:", "```python", "```"]:
-            curator_comment = curator_comment.replace(token, "")
-
-        # 코멘트 라인 필터링
+        # 코멘트 라인 필터링 (불필요한 레이블이나 코드 블록 제거)
+        curator_comment = curator_comment.split("Example:")[0].split("```")[0].strip('"').strip("'").strip()
+        
         lines = curator_comment.split('\n')
         filtered_lines = []
         for line in lines:
             clean_line = line.strip()
-            if any(x in clean_line.lower() for x in ["user query:", "theme:", "###", "<|", "[instruction]", "assistant"]):
-                continue
-            if not clean_line:
+            if not clean_line or any(x in clean_line.lower() for x in ["user query:", "theme:", "assistant"]):
                 continue
             filtered_lines.append(clean_line)
             
-        # 첫 번째 유효한 줄 사용
         curator_comment = filtered_lines[0] if filtered_lines else curator_comment
-        
-        curator_comment = curator_comment.strip('"').strip("'").strip()
         
         # 마지막 마침표(., !, ?) 이후의 불완전한 문장 제거
         import re

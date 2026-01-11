@@ -174,10 +174,10 @@ class ModelManager:
             # LoRA 어댑터 가중치 적용 (페르소나 강조)
             if hasattr(model, "set_adapter_weights"):
                 try:
-                    # 기본 어댑터 이름인 "default"에 대해 가중치 설정
-                    model.set_adapter_weights(weighted_adapters={"default": settings.LORA_WEIGHT})
+                    # 로드된 테마 이름을 어댑터 이름으로 사용하여 가중치 설정
+                    model.set_adapter_weights(weighted_adapters={theme: settings.LORA_WEIGHT})
                 except Exception as e:
-                    logger.warning(f"Could not set adapter weights: {e}")
+                    logger.warning(f"Could not set adapter weights for {theme}: {e}")
             
             # 입력 토큰화
             inputs = self.tokenizer(
@@ -208,12 +208,10 @@ class ModelManager:
             with torch.no_grad():
                 outputs = model.generate(**inputs, **gen_kwargs)
             
-            # 디코딩
-            generated_text = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
-            
-            # 프롬프트 제거하고 생성된 부분만 반환
-            if generated_text.startswith(prompt):
-                generated_text = generated_text[len(prompt):].strip()
+            # 디코딩: 입력 토큰 이후의 새로운 토큰들만 추출하여 디코딩
+            input_length = inputs.input_ids.shape[-1]
+            generated_tokens = outputs[0][input_length:]
+            generated_text = self.tokenizer.decode(generated_tokens, skip_special_tokens=True).strip()
             
             return generated_text
             

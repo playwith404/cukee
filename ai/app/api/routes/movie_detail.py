@@ -76,15 +76,8 @@ async def generate_movie_detail(
             top_k=50
         ).strip()
         
-        # 후처리: 어시스턴트 답변만 추출 및 불필요한 토큰 제거
-        if "<|start_header_id|>assistant<|end_header_id|>" in detail:
-            detail = detail.split("<|start_header_id|>assistant<|end_header_id|>")[-1].strip()
-        
-        # 특수 토큰 및 역할 키워드 강제 제거
-        for token in ["<|begin_of_text|>", "<|eot_id|>", "<|end_header_id|>", "<|start_header_id|>", "system", "user", "assistant", "### Response:", "```python", "```"]:
-            detail = detail.replace(token, "")
-            
-        detail = detail.strip()
+        # 후처리: 불필요한 레이블이나 코드 블록 제거
+        detail = detail.split("Example:")[0].split("```")[0].strip()
             
         # 마지막 마침표(., !, ?) 이후의 불완전한 문장 제거
         import re
