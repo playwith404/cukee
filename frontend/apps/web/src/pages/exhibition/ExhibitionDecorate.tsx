@@ -56,13 +56,16 @@ export const ExhibitionDecorate = ({
         document.body.style.backgroundSize = 'cover';
         break;
     }
-
-    // 페이지를 벗어나면 원래대로 복원
-    return () => {
-      document.body.style.backgroundColor = '#EDE6DD';
-      document.body.style.backgroundImage = '';
-    };
   }, [background]);
+
+  // 2. 페이지를 아예 떠날 때(언마운트)만 복구하는 로직
+  // useEffect(() => {
+  //   return () => {
+  //     // 의존성 배열이 []이면 이 함수는 컴포넌트가 사라질 때 딱 한 번 실행됩니다.
+  //     document.body.style.backgroundColor = '#EDE6DD';
+  //     document.body.style.backgroundImage = '';
+  //   };
+  // }, []);
 
   // [추가] DB 저장 함수
   // const handleSaveDesign = async () => {
