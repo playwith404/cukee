@@ -73,22 +73,27 @@ async def generate_exhibition(request: GenerateRequest, db: Session = Depends(ge
         
         logger.info(f"Retrieved {len(retrieved_movies)} movies from PGVECTOR")
         
-        # 2. 큐레이션 전체에 대한 코멘트 생성 (사용자 프롬프트에 맞게 추천했다는 메시지)
+        # 2. 큐레이션 전체에 대한 소개 생성 (추천된 영화 리스트 활용)
+        movie_titles = ", ".join([movie['title_ko'] for movie in final_movies])
+        
         curation_prompt = f"""[Role]
-You are a friendly movie curator.
+You are a professional movie curator with a distinct personality matching the '{request.theme}' theme.
 
 [Context]
-- User Input: {request.prompt}
-- Theme: {request.theme}
-- Number of movies: {len(final_movies)}
+- User Query: {request.prompt}
+- Theme: {request.theme} (Adopt the tone and persona suited for this theme)
+- Recommended Movies: {movie_titles}
 
 [Task]
-Write a warm welcome message in Korean (30-60 characters) based on the context.
+Write a warm and engaging introduction for this movie curation in Korean. 
+The introduction should explain why these movies ({movie_titles}) were selected based on the user's query and theme.
 
 [Rules]
-1. Write ONLY the message text.
-2. DO NOT include "User Request:", "Theme:", or "Example:".
-3. Do not use quotation marks.
+1. Length: 50-100 characters.
+2. Format: Must consist of COMPLETE sentences ending with proper punctuation (e.g., '.', '!', '?').
+3. Persona: Use a tone and vocabulary that perfectly matches the '{request.theme}' persona.
+4. Language: Korean only.
+5. NO meta-talk like "Here is your introduction:".
 
 [Output]
 """

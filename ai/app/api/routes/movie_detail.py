@@ -29,11 +29,18 @@ async def generate_movie_detail(
         if not model_manager.is_ready():
             raise HTTPException(status_code=503, detail="Model not ready")
         
-        # 1. DB에서 영화 정보 조회
+        # 1. DB에서 영화 정보 조회 (장르 포함, 키워드 제외)
         query = text("""
-            SELECT id, title_ko, overview_ko, directors, release_date_kr, runtime
-            FROM movies
-            WHERE id = :movie_id
+            SELECT 
+                m.id, 
+                m.title_ko, 
+                m.overview_ko,
+                COALESCE(string_agg(DISTINCT g.name, ', '), '') as genres
+            FROM movies m
+            LEFT JOIN movie_genres mg ON m.id = mg.movie_id
+            LEFT JOIN genres g ON mg.genre_id = g.id
+            WHERE m.id = :movie_id
+            GROUP BY m.id
         """)
         
         result = db.execute(query, {"movie_id": request.movieId})
@@ -44,23 +51,35 @@ async def generate_movie_detail(
         
         logger.info(f"Generating detail for movie: {movie.title_ko}")
         
-        # 2. LLM으로 상세 소개 생성 (영화 제목과 줄거리만 사용)
-        detail_prompt = f"""영화를 한국어로 간결하게 소개하세요 (100-150자).
+        # 2. LLM으로 분위기 중심의 상세 소개 생성
+        detail_prompt = f"""[Role]
+You are a movie curator with a distinct personality matching the '{request.theme}' theme.
 
-영화 제목: {movie.title_ko}
-줄거리: {movie.overview_ko or '정보 없음'}
-테마: {request.theme}
+[Context]
+- Movie Title: {movie.title_ko}
+- Genres: {movie.genres}
+- Plot Summary: {movie.overview_ko or '정보 없음'}
+- Current Theme: {request.theme}
 
-이 영화가 '{request.theme}' 테마에 맞는 이유를 짧고 명확하게 설명하세요.
-완전한 문장으로 작성하고, 100-150자 이내로 끝내세요:
+[Task]
+Describe the mood, vibe, and emotional experience of this movie in Korean. 
+Explain why this movie is a perfect fit for the '{request.theme}' theme.
 
+[Rules]
+1. Focus: Mood and feeling over raw plot details.
+2. Tone: Strictly follow the '{request.theme}' persona's speech style.
+3. Length: 100-150 characters.
+4. Format: Must consist of COMPLETE sentences ending with proper punctuation (e.g., '.', '!').
+5. Language: Korean only.
+
+[Output]
 소개:"""
         
         detail = model_manager.generate(
             prompt=detail_prompt,
             theme=request.theme,
-            max_new_tokens=80,  # 짧고 명확한 소개 (약 100-120자)
-            temperature=0.3,  # 더 일관된 출력
+            max_new_tokens=150,  # 충분한 길이 확보
+            temperature=0.4,
             top_p=0.9,
             top_k=50
         ).strip()
