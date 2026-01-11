@@ -64,6 +64,7 @@ async def generate_movie_detail(
 - 제목: {movie.title_ko}
 - 장르: {movie.genres}
 - 줄거리: {movie.overview_ko or '정보 없음'}<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
 """
         
         detail = model_manager.generate(
@@ -79,8 +80,8 @@ async def generate_movie_detail(
         if "<|start_header_id|>assistant<|end_header_id|>" in detail:
             detail = detail.split("<|start_header_id|>assistant<|end_header_id|>")[-1].strip()
         
-        # 특수 토큰 및 쓰레기 문자 제거
-        for token in ["<|begin_of_text|>", "<|eot_id|>", "<|end_header_id|>", "### Response:", "```python", "```"]:
+        # 특수 토큰 및 역할 키워드 강제 제거
+        for token in ["<|begin_of_text|>", "<|eot_id|>", "<|end_header_id|>", "<|start_header_id|>", "system", "user", "assistant", "### Response:", "```python", "```"]:
             detail = detail.replace(token, "")
             
         detail = detail.strip()

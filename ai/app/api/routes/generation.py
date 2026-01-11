@@ -85,6 +85,7 @@ async def generate_exhibition(request: GenerateRequest, db: Session = Depends(ge
 금지: ~합니다, ~추천합니다, ~입니다.<|eot_id|><|start_header_id|>user<|end_header_id|>
 
 내 기분({request.prompt})에 맞춰서 뽑은 이 영화들({movie_titles}), 왜 좋은지 친구처럼 짧게 소개해줘!<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
 """
         
         curator_comment = model_manager.generate(
@@ -100,8 +101,8 @@ async def generate_exhibition(request: GenerateRequest, db: Session = Depends(ge
         if "<|start_header_id|>assistant<|end_header_id|>" in curator_comment:
             curator_comment = curator_comment.split("<|start_header_id|>assistant<|end_header_id|>")[-1].strip()
             
-        # 특수 토큰 및 쓰레기 문자 제거
-        for token in ["<|begin_of_text|>", "<|eot_id|>", "<|end_header_id|>", "### Response:", "```python", "```"]:
+        # 특수 토큰 및 역할 키워드 강제 제거
+        for token in ["<|begin_of_text|>", "<|eot_id|>", "<|end_header_id|>", "<|start_header_id|>", "system", "user", "assistant", "### Response:", "```python", "```"]:
             curator_comment = curator_comment.replace(token, "")
 
         # 코멘트 라인 필터링
@@ -109,15 +110,14 @@ async def generate_exhibition(request: GenerateRequest, db: Session = Depends(ge
         filtered_lines = []
         for line in lines:
             clean_line = line.strip()
-            if any(x in clean_line for x in ["User Query:", "Theme:", "###", "<|", "[Instruction]"]):
+            if any(x in clean_line.lower() for x in ["user query:", "theme:", "###", "<|", "[instruction]", "assistant"]):
                 continue
             if not clean_line:
                 continue
             filtered_lines.append(clean_line)
             
-        # 남은 줄이 있다면 첫 번째 줄 사용
-        if filtered_lines:
-            curator_comment = filtered_lines[0]
+        # 첫 번째 유효한 줄 사용
+        curator_comment = filtered_lines[0] if filtered_lines else curator_comment
         
         curator_comment = curator_comment.strip('"').strip("'").strip()
         
