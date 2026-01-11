@@ -118,9 +118,14 @@ const [exhibitionId, setExhibitionId] = useState<number | null>(
     setFrameStyle('none'); 
     setBackground('none');
 
+    // 이 코드가 있어야 이전에 남은 패턴이나 색상이 확실히 사라집니다.
+    document.body.style.backgroundColor = '#EDE6DD'; // 기본 배경색
+    document.body.style.backgroundImage = 'none';    // 패턴 이미지 제거
+
     // 목록에서 들어온 게 아니라면(새 생성 모드) 기본 나무 프레임 설정
     if (!exhibitionIdParam) {
       setFrameStyle('basic'); 
+      setBackground('none');
       return;
     }
 
