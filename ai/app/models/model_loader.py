@@ -171,6 +171,14 @@ class ModelManager:
             # 해당 테마의 모델 선택
             model = self.lora_adapters[theme]
             
+            # LoRA 어댑터 가중치 적용 (페르소나 강조)
+            if hasattr(model, "set_adapter_weights"):
+                try:
+                    # 기본 어댑터 이름인 "default"에 대해 가중치 설정
+                    model.set_adapter_weights(weighted_adapters={"default": settings.LORA_WEIGHT})
+                except Exception as e:
+                    logger.warning(f"Could not set adapter weights: {e}")
+            
             # 입력 토큰화
             inputs = self.tokenizer(
                 prompt,

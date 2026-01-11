@@ -76,59 +76,52 @@ async def generate_exhibition(request: GenerateRequest, db: Session = Depends(ge
         # 2. 큐레이션 전체에 대한 소개 생성 (추천된 영화 리스트 활용)
         movie_titles = ", ".join([movie['title'] for movie in final_movies])
         
-        curation_prompt = f"""[Role]
-You are a hardcore fan and expert of the '{request.theme}' movie theme. 
-Speak CASUALLY to the user as if you are sharing your secret favorite collection with a like-minded friend.
-Your tone must NATURALLY reflect the unique personality of the '{request.theme}' persona (e.g., if horror, be slightly eerie/thrilling; if calm, be gentle; if MZ, use trendy slang).
+        curation_prompt = f"""<|begin_of_text|><|start_header_id|>system<|end_header_id|>
 
-[Context]
-- User's Vibe/Request: {request.prompt}
-- Curation Theme: {request.theme}
-- Selected Movies: {movie_titles}
+당신은 영화 큐레이터이자 영화광인 '{request.theme}'입니다. 
+당신은 지금 친한 친구에게 당신이 직접 고른 영화 리스트를 소개하고 있습니다. 
+'{request.theme}' 테마의 성격이 말투에 자연스럽고 깊게 녹아든 반말(Banmal)을 사용하세요. 
+50~80자 내외의 짧고 강렬한 문장을 작성하고, 마침표(.)나 느낌표(!)로 완벽하게 끝내세요.
+금지: ~합니다, ~추천합니다, ~입니다.<|eot_id|><|start_header_id|>user<|end_header_id|>
 
-[Task]
-Write a brief, high-impact intro in Korean (50-80 characters) that makes the user feel like you've perfectly captured their mood through the lens of '{request.theme}'.
-
-[Guidelines]
-1. Persona-First Language: The speech style must be an extension of the '{request.theme}' vibe. Use appropriate vocabulary and sentence endings that a true lover of this theme would use.
-2. Casual & Personal: Use friendly Korean (Banmal) naturally—like "너를 위해 ~했어", "진짜 ~할걸?". 
-3. No AI Phrasing: Strictly avoid formal or robotic phrases like "선정되었습니다", "추천 결과입니다".
-4. Deep Connection: Explain the 'vibe' of the recommendation in a way that only a master of this theme could.
-
-[Output]
+내 기분({request.prompt})에 맞춰서 뽑은 이 영화들({movie_titles}), 왜 좋은지 친구처럼 짧게 소개해줘!<|eot_id|><|start_header_id|>assistant<|end_header_id|>
 """
         
         curator_comment = model_manager.generate(
             prompt=curation_prompt,
             theme=request.theme,
             max_new_tokens=100,
-            temperature=0.7,  # 창의성과 개성을 위해 온도 상향
+            temperature=0.7,
             top_p=0.9,
             top_k=50
         ).strip()
         
-        # 코멘트 후처리 (강력한 필터링)
+        # 후처리: 어시스턴트 답변만 추출 및 불필요한 토큰 제거
+        if "<|start_header_id|>assistant<|end_header_id|>" in curator_comment:
+            curator_comment = curator_comment.split("<|start_header_id|>assistant<|end_header_id|>")[-1].strip()
+            
+        # 특수 토큰 및 쓰레기 문자 제거
+        for token in ["<|begin_of_text|>", "<|eot_id|>", "<|end_header_id|>", "### Response:", "```python", "```"]:
+            curator_comment = curator_comment.replace(token, "")
+
+        # 코멘트 라인 필터링
         lines = curator_comment.split('\n')
         filtered_lines = []
         for line in lines:
             clean_line = line.strip()
-            # 불필요한 시스템 텍스트가 포함된 줄 제거
-            if any(x in clean_line for x in ["User Request:", "Theme:", "Example:", "[Output]", "[Role]", "[Context]", "[Task]", "[Rules]"]):
+            if any(x in clean_line for x in ["User Query:", "Theme:", "###", "<|", "[Instruction]"]):
                 continue
             if not clean_line:
                 continue
             filtered_lines.append(clean_line)
             
-        # 남은 줄이 있다면 첫 번째 줄 사용, 없으면 원본(정제 시도) 사용
+        # 남은 줄이 있다면 첫 번째 줄 사용
         if filtered_lines:
             curator_comment = filtered_lines[0]
-        else:
-            if "Example:" in curator_comment:
-                curator_comment = curator_comment.split("Example:")[0].strip()
         
-        curator_comment = curator_comment.strip('"').strip("'")
+        curator_comment = curator_comment.strip('"').strip("'").strip()
         
-        # 후처리: 마지막 마침표(., !, ?) 이후의 불완전한 문장 제거
+        # 마지막 마침표(., !, ?) 이후의 불완전한 문장 제거
         import re
         punctuations = [m.start() for m in re.finditer(r'[.!?]', curator_comment)]
         if punctuations:

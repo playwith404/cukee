@@ -51,44 +51,41 @@ async def generate_movie_detail(
         
         logger.info(f"Generating detail for movie: {movie.title_ko}")
         
-        # 2. LLM으로 분위기 중심의 상세 소개 생성
-        detail_prompt = f"""[Role]
-You are a hardcore enthusiast of the '{request.theme}' movie theme. 
-When talking to a friend about this movie, your tone must NATURALLY embody the specific vibe of the '{request.theme}' persona. 
-(e.g., if crime/action, be punchy and tough; if romance, be sweet and emotional).
+        # 2. LLM으로 분위기 중심의 상세 소개 생성 (학습 템플릿 일치형)
+        detail_prompt = f"""<|begin_of_text|><|start_header_id|>system<|end_header_id|>
 
-[Context]
-- Movie Title: {movie.title_ko}
-- Genres: {movie.genres}
-- Plot Summary: {movie.overview_ko or '정보 없음'}
-- Current Theme: {request.theme}
+당신은 영화 큐레이터 '{request.theme}'입니다. 
+친한 친구에게 말하듯 반말(Banmal)로 대화하세요. 
+'{request.theme}'의 분위기와 특징이 말투에 자연스럽게 배어 나와야 합니다. 
+50~80자 내외의 짧고 강렬한 2문장으로 답변하고, 반드시 마침표(.)나 느낌표(!)로 문장을 끝내세요. 
+금지: ~합니다, ~추천합니다, ~입니다.<|eot_id|><|start_header_id|>user<|end_header_id|>
 
-[Task]
-In 2 casual sentences (50-80 characters), tell your friend why this movie is a 'must-watch' for their current mood, staying deeply in character as a '{request.theme}' lover.
-
-[Guidelines]
-1. Persona-Driven Casualness: Use informal Korean (Banmal) like "너", "진짜 ~해", "이건 ~야". 
-2. Vibe-Specific Tone: The way you speak casually must reflect the '{request.theme}' theme perfectly.
-3. No AI Slang: Avoid generic robotic phrases. Speak like a real person who lives and breathes this genre.
-4. Mood Connection: Focus on the emotional vibe and why it fits "THEM" right now.
-
-[Output]
+이 영화가 내 기분과 '{request.theme}' 테마에 왜 어울리는지 친구처럼 알려줘!
+- 제목: {movie.title_ko}
+- 장르: {movie.genres}
+- 줄거리: {movie.overview_ko or '정보 없음'}<|eot_id|><|start_header_id|>assistant<|end_header_id|>
 """
         
         detail = model_manager.generate(
             prompt=detail_prompt,
             theme=request.theme,
-            max_new_tokens=100,  # 글자 수 제한에 맞춰 줄임
-            temperature=0.3,     # 더 일관된 결과 유도
+            max_new_tokens=100,
+            temperature=0.7,
             top_p=0.9,
             top_k=50
         ).strip()
         
-        # 후처리: "소개:" 이후의 내용만 추출 (프롬프트 제거)
-        if "소개:" in detail:
-            detail = detail.split("소개:")[-1].strip()
+        # 후처리: 어시스턴트 답변만 추출 및 불필요한 토큰 제거
+        if "<|start_header_id|>assistant<|end_header_id|>" in detail:
+            detail = detail.split("<|start_header_id|>assistant<|end_header_id|>")[-1].strip()
+        
+        # 특수 토큰 및 쓰레기 문자 제거
+        for token in ["<|begin_of_text|>", "<|eot_id|>", "<|end_header_id|>", "### Response:", "```python", "```"]:
+            detail = detail.replace(token, "")
             
-        # 후처리: 마지막 마침표(., !, ?) 이후의 불완전한 문장 제거
+        detail = detail.strip()
+            
+        # 마지막 마침표(., !, ?) 이후의 불완전한 문장 제거
         import re
         punctuations = [m.start() for m in re.finditer(r'[.!?]', detail)]
         if punctuations:

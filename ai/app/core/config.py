@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     TEMPERATURE: float = 0.7
     TOP_P: float = 0.9
     TOP_K: int = 50
+    LORA_WEIGHT: float = 1.5  # LoRA 어댑터 가중치 (1.0~2.0 추천, 최고 권장 1.5~2.0)
     
     # Server Settings
     HOST: str = "0.0.0.0"
