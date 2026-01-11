@@ -100,10 +100,7 @@ async def generate_exhibition(request: GenerateRequest, db: Session = Depends(ge
 
 내 기분({request.prompt})과 '{request.theme}' 테마에 맞춰서 구성한 이 영화 컬렉션, 어떤 느낌인지 친구처럼 짧게 소개해줘!<|eot_id|><|start_header_id|>assistant<|end_header_id|>
 
-"""
 
-"""
-        
         curator_comment = model_manager.generate(
             prompt=curation_prompt,
             theme=request.theme,
