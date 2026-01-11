@@ -115,10 +115,19 @@ const [exhibitionId, setExhibitionId] = useState<number | null>(
   useEffect(() => {
     // 초기값 설정(전시회 목록 딜레이 때 기본이 basic이라서 none으로 변경)
     // 💡 포인트: 목록에서 ID를 갖고 들어왔을 때만 로딩 중에 'none'으로 보여줌
-    if (exhibitionIdParam) {
-      setFrameStyle('none'); 
+    setFrameStyle('none'); 
+    setBackground('none');
+
+    // 이 코드가 있어야 이전에 남은 패턴이나 색상이 확실히 사라집니다.
+    document.body.style.backgroundColor = '#EDE6DD'; // 기본 배경색
+    document.body.style.backgroundImage = 'none';    // 패턴 이미지 제거
+
+    // 목록에서 들어온 게 아니라면(새 생성 모드) 기본 나무 프레임 설정
+    if (!exhibitionIdParam) {
+      setFrameStyle('basic'); 
+      setBackground('none');
+      return;
     }
-    if (!exhibitionIdParam) return;
 
     const loadExhibitionStyle = async () => {
       try {
@@ -135,9 +144,9 @@ const [exhibitionId, setExhibitionId] = useState<number | null>(
           const design = data.design || data;
 
           // 값이 존재할 때만 세팅 (OR 연산자로 기본값 방어)
-          setCukeeStyle(design.cukeeStyle || '1');
           setFrameStyle(design.frameStyle || 'none');
           setBackground(design.background || 'none');
+          setCukeeStyle(design.cukeeStyle || 'line');
           // 2. ✅ [추가] 목록에서 들어온 경우, 꾸미기 창이 아닌 원래 프롬프트(action) 창이 뜨도록 설정
           setBottomMode('action');
 
