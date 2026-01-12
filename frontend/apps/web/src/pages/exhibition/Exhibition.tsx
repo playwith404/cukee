@@ -44,12 +44,9 @@ export const Exhibition = () => {
   const [searchParams] = useSearchParams(); // 👈 변경 포인트 2 (배열 반환됨)
   const ticketIdParam = searchParams.get('ticket');
   const exhibitionIdParam = searchParams.get('exhibitionId'); // 전시회 ID 파라미터
-  // const exhibitionId: number | null = exhibitionIdParam 
-  // ? parseInt(exhibitionIdParam, 10) 
-  // : null;
-const [exhibitionId, setExhibitionId] = useState<number | null>(
-    exhibitionIdParam ? parseInt(exhibitionIdParam, 10) : null
-  );
+  const [exhibitionId, setExhibitionId] = useState<number | null>(
+      exhibitionIdParam ? parseInt(exhibitionIdParam, 10) : null
+    );
   const currentTicketId = ticketIdParam ? parseInt(ticketIdParam, 10) : 1;
   // 예: ticket=1 -> /cara/cara1.png
   // 예: ticket=2 -> /cara/cara2.png
@@ -461,23 +458,6 @@ const [exhibitionId, setExhibitionId] = useState<number | null>(
         isPinned: frame.isPinned || false
       }))
     };
-
-      // try {
-      //   if (!targetId) {
-      //     // 신규 생성 (POST)
-      //     const result = await createExhibition(designData);
-      //     if (result?.id) setExhibitionId(result.id);
-      //     alert('전시회가 저장되었습니다!');
-      //   } else {
-      //     // 기존 수정 (PUT)
-      //     await api.put(`/exhibitions/${targetId}`, designData);
-      //     alert('디자인이 수정되었습니다!');
-      //   }
-      //   setBottomMode('action');
-      // } catch (error: any) {
-      //   console.error("저장 실패:", error.response?.data || error.message);
-      //   alert(`저장 실패: ${error.response?.status === 405 ? '허용되지 않는 방식입니다.' : '서버 오류'}`);
-      // }
     try {
       await api.put(`/exhibitions/${targetId}`, designData);
       setBottomMode('action');
