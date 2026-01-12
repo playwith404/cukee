@@ -65,29 +65,51 @@ async def generate_movie_detail(
 반드시 위 [Persona]의 말투를 사용하여, 마치 직접 친구나 손님에게 이야기하듯 쓰세요.
 절대로 "이 영화는..." 이라고 시작하지 마세요. 바로 훅 들어가는 첫 문장을 쓰세요.
 100-150자 내외로 작성하세요.
-**형식 금지**: '작성 내용:', '소개:', '예시:' 같은 머리말을 절대 붙이지 마세요. 그냥 대사만 출력하세요.
+**형식 금지**: '작성 내용:', '소개:', '예시:', '[결과]' 같은 머리말을 절대 붙이지 마세요. 그냥 대사만 출력하세요.
 **생각 과정 생략**: `<think>` 태그나 내부 추론 과정은 절대 출력하지 마세요. 결과만 출력하세요.
 
 작성 내용:"""
         
-        detail = model_manager.generate(
+        detail_comment = model_manager.generate(
             prompt=detail_prompt,
             theme=request.theme,
-            max_new_tokens=200,  # 충분한 길이 확보
-            temperature=0.7,  # 창의적인 표현 허용 (기존 0.3 -> 0.7)
+            max_new_tokens=150, # 200 -> 150 축소
+            temperature=0.7, 
             top_p=0.9,
             top_k=50
         ).strip()
         
+        # 코멘트 후처리 (강력한 필터링)
+        # <think> 태그 제거
+        import re
+        detail_comment = re.sub(r'<think>.*?</think>', '', detail_comment, flags=re.DOTALL).strip()
         
-        # 첫 번째 완성된 문장들만 추출 (최대 2-3문장)
+        lines = detail_comment.split('\n')
+        filtered_lines = []
+        for line in lines:
+            clean_line = line.strip()
+            # 불필요한 시스템 텍스트/헤더 제거
+            if any(x in clean_line for x in ["User Request:", "Theme:", "Example:", "예시:", "[Output]", "[Role]", "[Context]", "[Task]", "[Rules]", "[결과]"]):
+                continue
+            if not clean_line:
+                continue
+            filtered_lines.append(clean_line)
+            
+        # 남은 줄들을 공백으로 이어붙임 (기존처럼 첫 줄만 가져오는 버그 수정)
+        if filtered_lines:
+            detail_comment = " ".join(filtered_lines)
+        else:
+            if "Example:" in detail_comment:
+                detail_comment = detail_comment.split("Example:")[1].strip()
+            elif "[결과]" in detail_comment:
+                 detail_comment = detail_comment.split("[결과]")[1].strip()
         
         logger.info(f"Successfully generated detail for movie {request.movieId}")
         
         return MovieDetailResponse(
             movieId=movie.id,
             title=movie.title_ko,
-            detail=detail
+            detail=detail_comment
         )
         
     except HTTPException:

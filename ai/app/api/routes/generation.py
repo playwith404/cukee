@@ -77,6 +77,9 @@ async def generate_exhibition(request: GenerateRequest, db: Session = Depends(ge
         from app.core.prompts import get_persona
         persona = get_persona(request.theme)
         
+        # 영화 제목 추출 (환각 방지용)
+        movie_titles_str = ", ".join([f"<{m['title']}>" for m in final_movies])
+        
         curation_prompt = f"""[System]
 당신은 '{request.theme}' 테마의 영화 큐레이터입니다.
 다음 페르소나 지침을 완벽하게 따라 연기하세요.
@@ -87,14 +90,18 @@ async def generate_exhibition(request: GenerateRequest, db: Session = Depends(ge
 
 [Context]
 사용자 요청: "{request.prompt}"
-추천 영화 수: {len(final_movies)}편
+추천 영화 목록: {movie_titles_str} (총 {len(final_movies)}편)
 
 [Instruction]
-위 [Persona]의 말투를 200% 살려서 사용자에게 멘트를 날리세요.
-상투적인 인사말("안녕하세요")은 생략하고, 바로 본론이나 감탄사로 시작하세요.
-한국어로 자연스럽게, 50-80자 내외로 임팩트 있게 작성하세요.
+위 [Persona]의 말투를 200% 살려서, **사용자의 요청("{request.prompt}")에 대해 공감하거나 반응하는** 멘트를 작성하세요.
+**지침**:
+1. 구체적인 영화 제목을 나열하지 마세요. (예: "<영화이름> 추천해요" X)
+2. 대신 "이런 따뜻한 영화들을 모아봤어요", "완전 취향 저격일 거예요" 처럼 묶어서 추천하세요.
+3. 상투적인 인사말("안녕하세요")은 생략하고, 바로 본론이나 감탄사로 시작하세요.
+4. 한국어로 자연스럽게, 40-60자 내외로 짧고 강렬하게 작성하세요.
+
 따옴표(")는 쓰지 마세요.
-**형식 금지**: '멘트:', '답변:', '예시:' 같은 머리말을 절대 붙이지 마세요. 그냥 대사만 출력하세요.
+**형식 금지**: '멘트:', '답변:', '예시:', '[결과]' 같은 머리말을 절대 붙이지 마세요. 그냥 대사만 출력하세요.
 **생각 과정 생략**: `<think>` 태그나 내부 추론 과정은 절대 출력하지 마세요. 결과만 출력하세요.
 
 멘트:"""
@@ -102,14 +109,13 @@ async def generate_exhibition(request: GenerateRequest, db: Session = Depends(ge
         curator_comment = model_manager.generate(
             prompt=curation_prompt,
             theme=request.theme,
-            max_new_tokens=200,  
-            # temperature=0.3, # 주석 처리: 기본값 0.7 사용 (페르소나 연기 위해 창의성 UP)
+            max_new_tokens=120, 
             top_p=0.9,
             top_k=50
         ).strip()
         
         # 코멘트 후처리 (강력한 필터링)
-        # <think> 태그 제거 (만약 포함되어 있다면)
+        # <think> 태그 제거
         import re
         curator_comment = re.sub(r'<think>.*?</think>', '', curator_comment, flags=re.DOTALL).strip()
         
@@ -117,22 +123,24 @@ async def generate_exhibition(request: GenerateRequest, db: Session = Depends(ge
         filtered_lines = []
         for line in lines:
             clean_line = line.strip()
-            # 불필요한 시스템 텍스트가 포함된 줄 제거
-            if any(x in clean_line for x in ["User Request:", "Theme:", "Example:", "예시:", "[Output]", "[Role]", "[Context]", "[Task]", "[Rules]"]):
+            # 불필요한 시스템 텍스트/헤더 제거
+            if any(x in clean_line for x in ["User Request:", "Theme:", "Example:", "예시:", "[Output]", "[Role]", "[Context]", "[Task]", "[Rules]", "[결과]"]):
                 continue
             if not clean_line:
                 continue
             filtered_lines.append(clean_line)
             
-        # 남은 줄이 있다면 첫 번째 줄 사용, 없으면 원본(정제 시도) 사용
+        # 남은 줄들을 공백으로 이어붙임 (기존처럼 첫 줄만 가져오는 버그 수정)
         if filtered_lines:
-            curator_comment = filtered_lines[0]
+            curator_comment = " ".join(filtered_lines)
         else:
-            # 예시/Example 라벨 제거 시도
+            # 예시/Example 라벨 제거 시도 (백업 로직)
             if "Example:" in curator_comment:
                 curator_comment = curator_comment.split("Example:")[1].strip()
             elif "예시:" in curator_comment:
                 curator_comment = curator_comment.split("예시:")[1].strip()
+            elif "[결과]" in curator_comment:
+                 curator_comment = curator_comment.split("[결과]")[1].strip()
         
         curator_comment = curator_comment.strip('"').strip("'")
         
