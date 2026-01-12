@@ -95,11 +95,33 @@ async def generate_movie_detail(
         filtered_lines = []
         for line in lines:
             clean_line = line.strip()
-            # 불필요한 시스템 텍스트/헤더 제거
-            if any(x in clean_line for x in ["User Request:", "Theme:", "Example:", "예시:", "[Output]", "[Role]", "[Context]", "[Task]", "[Rules]", "[결과]"]):
-                continue
+            # 불필요한 공백/빈줄 제거
             if not clean_line:
                 continue
+                
+            # 영화 제목 제거 (정규식으로 정교하게 처리)
+            # 패턴: ^(제목)(공백/특수문자/조사|$)
+            # 예: "주토피아", "주토피아 ", "주토피아:", "주토피아!", "주토피아?" 등 매칭
+            # 예외: "업" 영화인데 "업그레이드"는 매칭 안됨
+            escaped_title = re.escape(movie.title_ko)
+            pattern = f"^{escaped_title}(?:\\s|[:.,!?]|은|는|이|가|을|를|$)"
+            
+            match = re.match(pattern, clean_line)
+            if match:
+                # 매칭된 부분(제목+조사) 제거
+                clean_line = clean_line[match.end():].strip()
+                
+            # 제거 후 빈 줄이면 건너뛰기
+            if not clean_line:
+                continue
+
+            # 시스템 헤더 제거
+            if any(x in clean_line for x in ["User Request:", "Theme:", "Example:", "예시:", "[Output]", "[Role]", "[Context]", "[Task]", "[Rules]", "[결과]"]):
+                continue
+            
+            if not clean_line:
+                continue
+                
             filtered_lines.append(clean_line)
             
         # 남은 줄들을 공백으로 이어붙임 (기존처럼 첫 줄만 가져오는 버그 수정)
