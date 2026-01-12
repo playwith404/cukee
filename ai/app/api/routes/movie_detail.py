@@ -115,7 +115,7 @@ async def generate_movie_detail(
             if "Example:" in detail_comment:
                 detail_comment = detail_comment.split("Example:")[1].strip()
             elif "[결과]" in detail_comment:
-                 detail_comment = detail_comment.split("[결과]")[1].strip()
+                detail_comment = detail_comment.split("[결과]")[1].strip()
         
         logger.info(f"Successfully generated detail for movie {request.movieId}")
         
