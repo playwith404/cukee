@@ -61,6 +61,8 @@ async def generate_movie_detail(
 절대로 "이 영화는..." 이라고 시작하지 마세요. 바로 훅 들어가는 첫 문장을 쓰세요.
 100-150자 내외로 작성하세요.
 **형식 금지**: '작성 내용:', '소개:', '예시:', '[결과]' 같은 머리말을 절대 붙이지 마세요. 그냥 대사만 출력하세요.
+**내용 금지**: 영화 제목을 첫 줄에 쓰거나 다시 언급하지 마세요. 이미 화면에 포스터가 있으니, 제목 없이 바로 내용으로 시작하세요.
+**구성 금지**: 중간에 줄바꿈을 하지 마세요. 처음부터 끝까지 한 문단으로 이어 쓰세요.
 **생각 과정 생략**: `<think>` 태그나 내부 추론 과정은 절대 출력하지 마세요. 결과만 출력하세요."""
 
         user_content = f"""[Data]
@@ -78,7 +80,7 @@ async def generate_movie_detail(
         detail_comment = model_manager.generate(
             prompt=messages, # list 전달
             theme=request.theme,
-            max_new_tokens=150, # 200 -> 150 축소
+            max_new_tokens=120, # 150 -> 120 더 축소
             temperature=0.7, 
             top_p=0.9,
             top_k=50

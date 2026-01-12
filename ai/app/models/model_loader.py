@@ -1,5 +1,4 @@
-"""
-AI Model Loader - 11개 테마의 LoRA 어댑터를 로드
+AI Model Loader - Single Model (Qwen) with System Prompting
 """
 import os
 import torch

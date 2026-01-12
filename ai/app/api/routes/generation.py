@@ -114,7 +114,7 @@ async def generate_exhibition(request: GenerateRequest, db: Session = Depends(ge
         curator_comment = model_manager.generate(
             prompt=messages, # 이제 list를 넘김
             theme=request.theme,
-            max_new_tokens=120, 
+            max_new_tokens=90, # 120 -> 90 더 축소 (속도 극대화)
             top_p=0.9,
             top_k=50
         ).strip()
