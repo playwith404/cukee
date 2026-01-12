@@ -80,20 +80,15 @@ async def generate_exhibition(request: GenerateRequest, db: Session = Depends(ge
         # 영화 제목 추출 (환각 방지용)
         movie_titles_str = ", ".join([f"<{m['title']}>" for m in final_movies])
         
-        curation_prompt = f"""[System]
-당신은 '{request.theme}' 테마의 영화 큐레이터입니다.
+        system_instruction = f"""당신은 '{request.theme}' 테마의 영화 큐레이터입니다.
 다음 페르소나 지침을 완벽하게 따라 연기하세요.
 
 [Persona]
 - 말투/스타일: {persona['style']}
 - 행동 지침: {persona['instruction']}
 
-[Context]
-사용자 요청: "{request.prompt}"
-추천 영화 목록: {movie_titles_str} (총 {len(final_movies)}편)
-
 [Instruction]
-위 [Persona]의 말투를 200% 살려서, **사용자의 요청("{request.prompt}")에 대해 공감하거나 반응하는** 멘트를 작성하세요.
+위 [Persona]의 말투를 200% 살려서, **사용자의 요청에 대해 공감하거나 반응하는** 멘트를 작성하세요.
 **지침**:
 1. 구체적인 영화 제목을 나열하지 마세요. (예: "<영화이름> 추천해요" X)
 2. 대신 "이런 따뜻한 영화들을 모아봤어요", "완전 취향 저격일 거예요" 처럼 묶어서 추천하세요.
@@ -102,12 +97,22 @@ async def generate_exhibition(request: GenerateRequest, db: Session = Depends(ge
 
 따옴표(")는 쓰지 마세요.
 **형식 금지**: '멘트:', '답변:', '예시:', '[결과]' 같은 머리말을 절대 붙이지 마세요. 그냥 대사만 출력하세요.
-**생각 과정 생략**: `<think>` 태그나 내부 추론 과정은 절대 출력하지 마세요. 결과만 출력하세요.
+**생각 과정 생략**: `<think>` 태그나 내부 추론 과정은 절대 출력하지 마세요. 결과만 출력하세요."""
+
+        user_content = f"""[Context]
+사용자 요청: "{request.prompt}"
+추천 영화 목록: {movie_titles_str} (총 {len(final_movies)}편)
 
 멘트:"""
+
+        # ChatML 구조로 메시지 생성
+        messages = [
+            {"role": "system", "content": system_instruction},
+            {"role": "user", "content": user_content}
+        ]
         
         curator_comment = model_manager.generate(
-            prompt=curation_prompt,
+            prompt=messages, # 이제 list를 넘김
             theme=request.theme,
             max_new_tokens=120, 
             top_p=0.9,

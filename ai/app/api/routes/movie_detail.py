@@ -48,30 +48,35 @@ async def generate_movie_detail(
         from app.core.prompts import get_persona
         persona = get_persona(request.theme)
 
-        detail_prompt = f"""[Role]
-당신은 '{request.theme}' 테마의 큐레이터입니다.
+        system_instruction = f"""당신은 '{request.theme}' 테마의 큐레이터입니다.
 다음 페르소나에 맞춰 영화를 소개하세요.
 
 [Persona]
 - 말투/스타일: {persona['style']}
 - 행동 지침: {persona['instruction']}
 
-[Data]
-- 영화 제목: {movie.title_ko}
-- 원본 줄거리: {movie.overview_ko or '정보 없음'}
-
 [Task]
-위 '원본 줄거리'를 바탕으로, 이 영화가 왜 '{request.theme}' 테마에 어울리는지 설명하세요.
+제공된 '원본 줄거리'를 바탕으로, 이 영화가 왜 '{request.theme}' 테마에 어울리는지 설명하세요.
 반드시 위 [Persona]의 말투를 사용하여, 마치 직접 친구나 손님에게 이야기하듯 쓰세요.
 절대로 "이 영화는..." 이라고 시작하지 마세요. 바로 훅 들어가는 첫 문장을 쓰세요.
 100-150자 내외로 작성하세요.
 **형식 금지**: '작성 내용:', '소개:', '예시:', '[결과]' 같은 머리말을 절대 붙이지 마세요. 그냥 대사만 출력하세요.
-**생각 과정 생략**: `<think>` 태그나 내부 추론 과정은 절대 출력하지 마세요. 결과만 출력하세요.
+**생각 과정 생략**: `<think>` 태그나 내부 추론 과정은 절대 출력하지 마세요. 결과만 출력하세요."""
+
+        user_content = f"""[Data]
+- 영화 제목: {movie.title_ko}
+- 원본 줄거리: {movie.overview_ko or '정보 없음'}
 
 작성 내용:"""
         
+        # ChatML 구조
+        messages = [
+            {"role": "system", "content": system_instruction},
+            {"role": "user", "content": user_content}
+        ]
+
         detail_comment = model_manager.generate(
-            prompt=detail_prompt,
+            prompt=messages, # list 전달
             theme=request.theme,
             max_new_tokens=150, # 200 -> 150 축소
             temperature=0.7, 

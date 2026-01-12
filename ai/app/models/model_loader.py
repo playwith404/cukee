@@ -31,7 +31,7 @@ class ModelManager:
                 load_in_4bit=True,
                 bnb_4bit_use_double_quant=True,
                 bnb_4bit_quant_type="nf4",
-                bnb_4bit_compute_dtype=torch.bfloat16
+                bnb_4bit_compute_dtype=torch.float16
             )
             
             # 토크나이저 로드
@@ -50,7 +50,7 @@ class ModelManager:
                 quantization_config=bnb_config,
                 device_map="auto",
                 trust_remote_code=True,
-                dtype=torch.bfloat16
+                dtype=torch.float16
             )
             
             logger.info("✓ Model loaded successfully")
@@ -61,15 +61,15 @@ class ModelManager:
     
     def generate(
         self,
-        prompt: str,
-        theme: str = None, # 하위 호환성을 위해 남겨둠 (실제로는 프롬프트에 녹임)
+        prompt: str | list, # str 또는 list[dict] 지원
+        theme: str = None, 
         max_length: Optional[int] = None,
         max_new_tokens: Optional[int] = None,
         temperature: Optional[float] = None,
         top_p: Optional[float] = None,
         top_k: Optional[int] = None
     ) -> str:
-        """텍스트 생성"""
+        """텍스트 생성 (Chat Template 적용)"""
         if self.model is None:
             raise RuntimeError("Model is not initialized")
             
@@ -80,54 +80,63 @@ class ModelManager:
         top_k = top_k if top_k is not None else settings.TOP_K
         
         try:
-            # Chat 템플릿 적용 (Qwen 등 최신 모델은 apply_chat_template 권장)
-            # 입력된 prompt가 이미 시스템 프롬프트를 포함한 전체 텍스트라고 가정하지 않고,
-            # 역할별 메시지 구조로 변환하는 것이 이상적이나, 
-            # 현재는 기존 호출부에서 prompt를 완성해서 넘겨주고 있으므로 raw text 생성을 유지하되
-            # 필요한 경우 여기서 템플릿 처리를 추가할 수 있음.
-            # Qwen은 ChatML 형식을 선호하므로, 토크나이저의 템플릿 기능을 활용하면 좋음.
-            
-            # 토크나이징
-            inputs = self.tokenizer(
-                prompt,
+            # 1. ChatML 템플릿 적용
+            if isinstance(prompt, str):
+                # 구형 호환: 문자열로 들어오면 유저 메시지로 포장
+                messages = [{"role": "user", "content": prompt}]
+            else:
+                messages = prompt
+                
+            # 토크나이징 (apply_chat_template 사용)
+            # add_generation_prompt=True ensures model generates 'assistant' response
+            model_inputs = self.tokenizer.apply_chat_template(
+                messages, 
+                tokenize=True, 
+                add_generation_prompt=True, 
                 return_tensors="pt",
-                padding=True,
-                truncation=True,
-                max_length=max_length
+                return_dict=True
             ).to(self.device)
             
-            # 생성 파라미터
+            # 2. 생성 파라미터 구성
             gen_kwargs = {
+                "max_new_tokens": max_new_tokens if max_new_tokens else 512,
                 "temperature": temperature,
                 "top_p": top_p,
                 "top_k": top_k,
                 "do_sample": True,
                 "pad_token_id": self.tokenizer.pad_token_id,
                 "eos_token_id": self.tokenizer.eos_token_id,
-                "repetition_penalty": 1.1, # 반복 방지 추가
+                "repetition_penalty": 1.1,
             }
             
-            if max_new_tokens is not None:
-                gen_kwargs["max_new_tokens"] = max_new_tokens
-            else:
-                gen_kwargs["max_length"] = max_length
-            
-            # 생성
+            # 3. 생성
             with torch.no_grad():
-                outputs = self.model.generate(**inputs, **gen_kwargs)
+                outputs = self.model.generate(
+                    model_inputs.input_ids,
+                    attention_mask=model_inputs.attention_mask,
+                    **gen_kwargs
+                )
             
-            # 디코딩
-            generated_text = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
+            # 4. 디코딩 (입력 토큰 이후부터 디코딩)
+            # outputs[0] contains [input_ids + generated_ids]
+            new_tokens = outputs[0][model_inputs.input_ids.shape[1]:]
+            generated_text = self.tokenizer.decode(new_tokens, skip_special_tokens=True)
             
-            # 프롬프트 부분 제거 (간단한 처리)
-            # Chat 템플릿을 쓰면 이 부분이 더 깔끔해지지만, raw prompt를 쓰는 경우 수동 제거 필요
-            if generated_text.startswith(prompt):
-                generated_text = generated_text[len(prompt):].strip()
+            # 5. Qwen 특화 후처리 (<think> 등 제거)
+            generated_text = generated_text.replace("<|im_start|>", "").replace("<|im_end|>", "")
             
-            # Qwen 특성상 <|im_start|>, <|im_end|> 등의 태그가 남을 수 있으므로 정리
-            generated_text = generated_text.replace("<|im_start|>", "").replace("<|im_end|>", "").strip()
+            # 강력한 <think> 태그 제거 (정규식)
+            import re
+            # <think> 내용 </think> 제거
+            generated_text = re.sub(r'<think>.*?</think>', '', generated_text, flags=re.DOTALL)
+            # 닫히지 않은 <think>가 있을 경우 (끝까지 제거)
+            if "<think>" in generated_text:
+                 generated_text = generated_text.split("<think>")[0]
+            # 닫는 태그만 남은 경우 (앞부분이 잘린 경우)
+            if "</think>" in generated_text:
+                generated_text = generated_text.split("</think>")[-1]
             
-            return generated_text
+            return generated_text.strip()
             
         except Exception as e:
             logger.error(f"Generation failed: {e}")
