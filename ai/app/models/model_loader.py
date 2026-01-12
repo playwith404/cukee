@@ -1,67 +1,61 @@
 """
-AI Model Loader - Single Model (Qwen) with System Prompting
+AI Model Loader - vLLM Backend (High Performance)
 """
 import os
-import torch
-from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
-
 import logging
-from typing import Dict, Optional
+from typing import Dict, Optional, List, Union
 from app.core.config import settings
+
+# vLLM 임포트 (Linux/WSL 환경 필수)
+try:
+    from vllm import LLM, SamplingParams
+except ImportError:
+    # 윈도우 로컬 개발 시 에러 방지용 더미 (실제 실행 시엔 에러남)
+    LLM = None
+    SamplingParams = None
 
 logger = logging.getLogger(__name__)
 
-
 class ModelManager:
-    """Qwen-14B 단일 모델 관리 클래스 (시스템 프롬프팅 전용)"""
+    """Qwen-14B vLLM 관리 클래스 (고성능 추론)"""
     
     def __init__(self):
-        self.model = None
+        self.llm = None
         self.tokenizer = None
-        self.device = "cuda" if torch.cuda.is_available() else "cpu"
-        logger.info(f"Using device: {self.device}")
         
     def initialize(self):
-        """모델 및 토크나이저 로드"""
+        """vLLM 엔진 초기화"""
         try:
-            logger.info(f"Loading model: {settings.BASE_MODEL}")
+            logger.info(f"Loading model with vLLM: {settings.BASE_MODEL}")
             
-            # 4-bit 양자화 설정 (메모리 절약)
-            bnb_config = BitsAndBytesConfig(
-                load_in_4bit=True,
-                bnb_4bit_use_double_quant=True,
-                bnb_4bit_quant_type="nf4",
-                bnb_4bit_compute_dtype=torch.float16
-            )
-            
-            # 토크나이저 로드
-            self.tokenizer = AutoTokenizer.from_pretrained(
-                settings.BASE_MODEL,
-                trust_remote_code=True
-            )
-            
-            # 패딩 토큰 설정
-            if self.tokenizer.pad_token is None:
-                self.tokenizer.pad_token = self.tokenizer.eos_token
-            
-            # 모델 로드
-            self.model = AutoModelForCausalLM.from_pretrained(
-                settings.BASE_MODEL,
-                quantization_config=bnb_config,
-                device_map="auto",
+            if LLM is None:
+                raise ImportError("vLLM module not found. Please install vllm (Linux only).")
+
+            # vLLM 엔진 로드
+            # gpu_memory_utilization=0.90: VRAM 90%까지만 사용 (OOM 방지 안전장치)
+            # quantization="bitsandbytes": 4bit 양자화 모델 로드 (메모리 절약)
+            self.llm = LLM(
+                model=settings.BASE_MODEL,
+                dtype="float16",
+                gpu_memory_utilization=0.90, 
                 trust_remote_code=True,
-                dtype=torch.float16
+                quantization="bitsandbytes", # Qwen 14B 원본 모델일 경우 4bit 로드 필요
+                load_format="bitsandbytes",
+                enforce_eager=True # 메모리 절약을 위해 Eager 모드 권장 (선택사항)
             )
             
-            logger.info("✓ Model loaded successfully")
+            # 토크나이저는 vLLM 내부에서 가져옴
+            self.tokenizer = self.llm.get_tokenizer()
+            
+            logger.info("✓ vLLM engine loaded successfully")
             
         except Exception as e:
-            logger.error(f"Failed to load model: {e}")
+            logger.error(f"Failed to load vLLM: {e}")
             raise
     
     def generate(
         self,
-        prompt: str | list, # str 또는 list[dict] 지원
+        prompt: Union[str, List[Dict]], 
         theme: str = None, 
         max_length: Optional[int] = None,
         max_new_tokens: Optional[int] = None,
@@ -69,87 +63,72 @@ class ModelManager:
         top_p: Optional[float] = None,
         top_k: Optional[int] = None
     ) -> str:
-        """텍스트 생성 (Chat Template 적용)"""
-        if self.model is None:
-            raise RuntimeError("Model is not initialized")
+        """vLLM 기반 고속 텍스트 생성"""
+        if self.llm is None:
+            raise RuntimeError("vLLM Model is not initialized")
             
         # 기본값 설정
-        max_length = max_length or settings.MAX_LENGTH
+        max_new_tokens = max_new_tokens or 512
         temperature = temperature if temperature is not None else settings.TEMPERATURE
         top_p = top_p if top_p is not None else settings.TOP_P
         top_k = top_k if top_k is not None else settings.TOP_K
         
         try:
-            # 1. ChatML 템플릿 적용
+            # 1. Chat Template 적용 (Token ID로 변환)
             if isinstance(prompt, str):
-                # 구형 호환: 문자열로 들어오면 유저 메시지로 포장
                 messages = [{"role": "user", "content": prompt}]
             else:
                 messages = prompt
                 
-            # 토크나이징 (apply_chat_template 사용)
-            # add_generation_prompt=True ensures model generates 'assistant' response
-            model_inputs = self.tokenizer.apply_chat_template(
+            prompt_token_ids = self.tokenizer.apply_chat_template(
                 messages, 
                 tokenize=True, 
-                add_generation_prompt=True, 
-                return_tensors="pt",
-                return_dict=True
-            ).to(self.device)
+                add_generation_prompt=True
+            )
             
-            # 2. 생성 파라미터 구성
-            gen_kwargs = {
-                "max_new_tokens": max_new_tokens if max_new_tokens else 512,
-                "temperature": temperature,
-                "top_p": top_p,
-                "top_k": top_k,
-                "do_sample": True,
-                "pad_token_id": self.tokenizer.pad_token_id,
-                "eos_token_id": self.tokenizer.eos_token_id,
-                "repetition_penalty": 1.1,
-            }
+            # 2. Sampling Params 설정
+            sampling_params = SamplingParams(
+                temperature=temperature,
+                top_p=top_p,
+                top_k=top_k,
+                max_tokens=max_new_tokens,
+                stop=["<|im_end|>", "<|endoftext|>"], # Qwen 종료 토큰 명시
+                repetition_penalty=1.1
+            )
             
-            # 3. 생성
-            with torch.no_grad():
-                outputs = self.model.generate(
-                    model_inputs.input_ids,
-                    attention_mask=model_inputs.attention_mask,
-                    **gen_kwargs
-                )
+            # 3. 비동기 생성 (vLLM은 기본적으로 배치 처리에 강하지만 여기선 단일 요청 처리)
+            # vLLM의 LLM 클래스는 동기 함수처럼 호출 가능
+            outputs = self.llm.generate(
+                prompt_token_ids=[prompt_token_ids],
+                sampling_params=sampling_params,
+                use_tqdm=False
+            )
             
-            # 4. 디코딩 (입력 토큰 이후부터 디코딩)
-            # outputs[0] contains [input_ids + generated_ids]
-            new_tokens = outputs[0][model_inputs.input_ids.shape[1]:]
-            generated_text = self.tokenizer.decode(new_tokens, skip_special_tokens=True)
+            # 4. 결과 추출
+            generated_text = outputs[0].outputs[0].text
             
-            # 5. Qwen 특화 후처리 (<think> 등 제거)
-            generated_text = generated_text.replace("<|im_start|>", "").replace("<|im_end|>", "")
-            
-            # 강력한 <think> 태그 제거 (정규식)
+            # 5. 후처리 (<think> 제거 등)
             import re
-            # <think> 내용 </think> 제거
             generated_text = re.sub(r'<think>.*?</think>', '', generated_text, flags=re.DOTALL)
-            # 닫히지 않은 <think>가 있을 경우 (끝까지 제거)
+            
+            # 잔여 태그 정리
             if "<think>" in generated_text:
                  generated_text = generated_text.split("<think>")[0]
-            # 닫는 태그만 남은 경우 (앞부분이 잘린 경우)
             if "</think>" in generated_text:
                 generated_text = generated_text.split("</think>")[-1]
             
             return generated_text.strip()
             
         except Exception as e:
-            logger.error(f"Generation failed: {e}")
+            logger.error(f"vLLM Generation failed: {e}")
             raise
     
     def get_loaded_themes(self) -> list:
-        """하위 호환성: 모든 테마 지원 가능"""
         return ModelManager.THEMES
     
     def is_ready(self) -> bool:
-        return self.model is not None
+        return self.llm is not None
 
-    # 테마 목록 유지 (유효성 검사용)
     THEMES = [
         "3D 보단 2D ",
         "뇌 빼고도 볼 수 있는 레전드 코미디 ",
