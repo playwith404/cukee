@@ -152,7 +152,7 @@ export const Exhibition = () => {
 
       setCurrentTicketId(initialId);
       setCukeeId(`c${initialId}`); // 새 생성 모드일 때 캐릭터를 즉시 할당
-      
+
       setFrameStyle('basic'); 
       setBackground('none');
       return;
@@ -192,7 +192,7 @@ export const Exhibition = () => {
     };
 
     loadExhibitionStyle();
-  }, [exhibitionIdParam]); // ID 파라미터가 변경될 때마다 전체 로직 재실행
+  }, [exhibitionIdParam, ticketIdParam]); // ID 파라미터가 변경될 때마다 전체 로직 재실행
 
   // [신규] 상태에 따른 큐레이터 멘트 결정 함수
   const getCuratorMessage = () => {
