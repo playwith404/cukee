@@ -73,31 +73,35 @@ async def generate_exhibition(request: GenerateRequest, db: Session = Depends(ge
         
         logger.info(f"Retrieved {len(retrieved_movies)} movies from PGVECTOR")
         
-        # 2. 큐레이션 전체에 대한 코멘트 생성 (사용자 프롬프트에 맞게 추천했다는 메시지)
-        curation_prompt = f"""[Role]
-You are a friendly movie curator.
+        # 2. 큐레이션 전체에 대한 코멘트 생성 (시스템 프롬프팅으로 페르소나 주입)
+        from app.core.prompts import get_persona
+        persona = get_persona(request.theme)
+        
+        curation_prompt = f"""[System]
+당신은 '{request.theme}' 테마의 영화 큐레이터입니다.
+다음 페르소나 지침을 완벽하게 따라 연기하세요.
+
+[Persona]
+- 말투/스타일: {persona['style']}
+- 행동 지침: {persona['instruction']}
 
 [Context]
-- User Input: {request.prompt}
-- Theme: {request.theme}
-- Number of movies: {len(final_movies)}
+사용자 요청: "{request.prompt}"
+추천 영화 수: {len(final_movies)}편
 
-[Task]
-Write a warm welcome message in Korean (30-60 characters) based on the context.
+[Instruction]
+위 [Persona]의 말투를 200% 살려서 사용자에게 멘트를 날리세요.
+상투적인 인사말("안녕하세요")은 생략하고, 바로 본론이나 감탄사로 시작하세요.
+한국어로 자연스럽게, 50-80자 내외로 임팩트 있게 작성하세요.
+따옴표(")는 쓰지 마세요.
 
-[Rules]
-1. Write ONLY the message text.
-2. DO NOT include "User Request:", "Theme:", or "Example:".
-3. Do not use quotation marks.
-
-[Output]
-"""
+멘트:"""
         
         curator_comment = model_manager.generate(
             prompt=curation_prompt,
             theme=request.theme,
             max_length=180,  
-            temperature=0.3,
+            # temperature=0.3, # 주석 처리: 기본값 0.7 사용 (페르소나 연기 위해 창의성 UP)
             top_p=0.9,
             top_k=50
         ).strip()

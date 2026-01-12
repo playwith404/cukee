@@ -9,8 +9,8 @@ class Settings(BaseSettings):
     """AI 서버 설정"""
     
     # AI Model Settings
-    BASE_MODEL: str = "unsloth/Meta-Llama-3.1-8B-Instruct-bnb-4bit"
-    MODEL_PATH: str = "/app/model/Llama-3.1-8B-Instruct"
+    BASE_MODEL: str = "Qwen/Qwen3-14B"  # User requested model
+    # MODEL_PATH: str = "/app/model/Llama-3.1-8B-Instruct" # Deprecated (LoRA removed)
     EMBEDDING_MODEL_PATH: str = "/app/model/bge-m3"
     MAX_LENGTH: int = 2048
     TEMPERATURE: float = 0.7
