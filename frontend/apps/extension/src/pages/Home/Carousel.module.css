@@ -225,7 +225,7 @@
   background: none;
   border: none;
   font-size: 70px;
-  color: #3e3e3e;
+  color: #cccccc;
   cursor: pointer;
   transition: color 0.2s ease;
 
@@ -240,7 +240,7 @@
 
 .prevBtn:hover,
 .nextBtn:hover {
-  color: #000;
+  color: #ffffff;
 }
 
 /* 애니메이션 중 버튼 비활성화 스타일 */
@@ -299,7 +299,7 @@
   width: 100%;     /* 가로는 화면 꽉 차게 (반응형) */
   height: 250px;   /* 높이는 고정 */
   
-  background-color: #373431; /* 큐레이터 박스 색상 */
+  background-color: #594D4D; /* 큐레이터 박스 색상 */
   z-index: 0;      /* 티켓 뒤 */
   
   opacity: 0;      /* 기본 모드에선 안 보임 */
@@ -317,7 +317,7 @@
   right: 12%;        
   transform: translateY(-50%);
   font-size: 30px;
-  color: #EDE6DD;
+  color: #ffffff;
   cursor: pointer;
   opacity: 0;
   animation: fadeInButton 0.5s ease 0.5s forwards;

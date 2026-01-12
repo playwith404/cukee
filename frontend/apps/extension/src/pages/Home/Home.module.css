@@ -9,7 +9,7 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    background-color: #EDE6DD;
+    background-color: #373737;
 }
 
 .mainContent {
@@ -45,7 +45,7 @@
     bottom: 0;
     left: 0; 
     width: 0px;
-    border-right: 1px solid #373431;
+    border-right: 1px solid #5e5e5e;
     pointer-events: none;
     opacity: 1;
 }
@@ -63,20 +63,21 @@
 }
 
 .title {
+    color: #f3f0eb;
     font-size: 102px;
     font-weight: 500;
     line-height: 1.1;
     letter-spacing: -0.05em;
     margin: 20px 0 14px 0;
-    border: 1px solid #000000;
+    border: 2px solid #EDE6DD;
     width: 1200px;
     padding: 20px 20px 20px 80px;
 }
 
 .subText {
     font-size: 30px;
-    color: #000000;
-    border-bottom: 1px solid #000000;
+    color: #f3f0eb;
+    border-bottom: 2px solid #EDE6DD;
     padding: 5px 5px 5px 80px;
     width: fit-content; 
     margin: 0;
@@ -89,7 +90,7 @@
     display: flex;
     align-items: baseline;
     font-weight: 500;
-    color: #373431;
+    color: #ffffff;
     letter-spacing: -0.05em;
 }
 
@@ -103,14 +104,14 @@
 .counterTotal {
     font-size: 36px;
     margin-left: 8px;
-    color: #373431;
+    color: #ffffff;
 }
 
 /* --- 하단 큐레이터 박스 --- */
 .curatorBox {
     width: 100%;
     min-height: 250px;
-    background-color: #373431;
+    background-color: #594D4D;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -133,7 +134,7 @@
     font-weight: 500;
     transform: scaleY(1.05);
     transform-origin: left bottom;
-    color: #EDE6DD;
+    color: #ffffff;
     margin: 0 0 4px 0;
 }
 
@@ -205,8 +206,8 @@
     left: calc(50% - 750px);
     
     width: 0px;
-    border-right: 1px solid #373431;
-    z-index: 40; /* 티켓들 뒤, 배경 앞 */
+    border-right: 2px solid #EDE6DD;
+    /* z-index: 40; */
     
     /* 등장 애니메이션 */
     opacity: 0;
@@ -250,7 +251,7 @@
 /* 1. 카운터 스타일 (기존 유지 + 마진 조절) */
 .centerCounter {
   text-align: left;
-  color: #373431;
+  color: #ffffff;
   display: flex;
   align-items: baseline;
   /* [수정] 구분선과의 간격 (위쪽 br 효과) */
@@ -266,7 +267,7 @@
 
 .smallCount {
   font-size: 40px;
-  color: #6e6e6e;
+  color: #ffffff;
   margin-left: 5px;
 }
 
@@ -275,7 +276,7 @@
   width: 700px;      /* 부모(텍스트 길이)에 맞춰 꽉 차게 */
   max-width: 500px;  /* 너무 길어지지 않게 제한 (선택사항) */
   height: 1px;       /* 얇은 선 두께 */
-  background-color: #373431; /* 선 색상 (테마색) */
+  background-color: #ffffff; /* 선 색상 (테마색) */
   
   /* [수정] 이름과의 간격 (아래쪽 br 효과) */
   margin-bottom: 34px; 
@@ -295,7 +296,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  color: #373431;
+  color: #ffffff;
 }
 
 .viewAllCuratorName {
@@ -312,7 +313,7 @@
   margin: 0;
   max-width: 400px; /* 너무 길어지면 줄바꿈 */
   word-break: keep-all; /* 단어 단위 줄바꿈 */
-  color: #5a5a5a;
+  color: #ffffff;
 }
 
 /* 4. 큐레이터 박스 (배경) - 위치 고정 */
