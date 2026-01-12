@@ -73,53 +73,79 @@ async def generate_exhibition(request: GenerateRequest, db: Session = Depends(ge
         
         logger.info(f"Retrieved {len(retrieved_movies)} movies from PGVECTOR")
         
-        # 2. 큐레이션 전체에 대한 코멘트 생성 (사용자 프롬프트에 맞게 추천했다는 메시지)
-        curation_prompt = f"""[Role]
-You are a friendly movie curator.
+        # 2. 큐레이션 전체에 대한 코멘트 생성 (시스템 프롬프팅으로 페르소나 주입)
+        from app.core.prompts import get_persona
+        persona = get_persona(request.theme)
+        
+        # 영화 제목 추출 (환각 방지용)
+        movie_titles_str = ", ".join([f"<{m['title']}>" for m in final_movies])
+        
+        system_instruction = f"""당신은 '{request.theme}' 테마의 영화 큐레이터입니다.
+다음 페르소나 지침을 완벽하게 따라 연기하세요.
 
-[Context]
-- User Input: {request.prompt}
-- Theme: {request.theme}
-- Number of movies: {len(final_movies)}
+[Persona]
+- 말투/스타일: {persona['style']}
+- 행동 지침: {persona['instruction']}
 
-[Task]
-Write a warm welcome message in Korean (30-60 characters) based on the context.
+[Instruction]
+위 [Persona]의 말투를 200% 살려서, **사용자의 요청에 대해 공감하거나 반응하는** 멘트를 작성하세요.
+**지침**:
+1. 구체적인 영화 제목을 나열하지 마세요. (예: "<영화이름> 추천해요" X)
+2. 대신 "이런 따뜻한 영화들을 모아봤어요", "완전 취향 저격일 거예요" 처럼 묶어서 추천하세요.
+3. 상투적인 인사말("안녕하세요")은 생략하고, 바로 본론이나 감탄사로 시작하세요.
+4. 한국어로 자연스럽게, 40-60자 내외로 짧고 강렬하게 작성하세요.
 
-[Rules]
-1. Write ONLY the message text.
-2. DO NOT include "User Request:", "Theme:", or "Example:".
-3. Do not use quotation marks.
+따옴표(")는 쓰지 마세요.
+**형식 금지**: '멘트:', '답변:', '예시:', '[결과]' 같은 머리말을 절대 붙이지 마세요. 그냥 대사만 출력하세요.
+**생각 과정 생략**: `<think>` 태그나 내부 추론 과정은 절대 출력하지 마세요. 결과만 출력하세요."""
 
-[Output]
-"""
+        user_content = f"""[Context]
+사용자 요청: "{request.prompt}"
+추천 영화 목록: {movie_titles_str} (총 {len(final_movies)}편)
+
+멘트:"""
+
+        # ChatML 구조로 메시지 생성
+        messages = [
+            {"role": "system", "content": system_instruction},
+            {"role": "user", "content": user_content}
+        ]
         
         curator_comment = model_manager.generate(
-            prompt=curation_prompt,
+            prompt=messages, # 이제 list를 넘김
             theme=request.theme,
-            max_length=180,  
-            temperature=0.3,
+            max_new_tokens=90, # 120 -> 90 더 축소 (속도 극대화)
             top_p=0.9,
             top_k=50
         ).strip()
         
         # 코멘트 후처리 (강력한 필터링)
+        # <think> 태그 제거
+        import re
+        curator_comment = re.sub(r'<think>.*?</think>', '', curator_comment, flags=re.DOTALL).strip()
+        
         lines = curator_comment.split('\n')
         filtered_lines = []
         for line in lines:
             clean_line = line.strip()
-            # 불필요한 시스템 텍스트가 포함된 줄 제거
-            if any(x in clean_line for x in ["User Request:", "Theme:", "Example:", "[Output]", "[Role]", "[Context]", "[Task]", "[Rules]"]):
+            # 불필요한 시스템 텍스트/헤더 제거
+            if any(x in clean_line for x in ["User Request:", "Theme:", "Example:", "예시:", "[Output]", "[Role]", "[Context]", "[Task]", "[Rules]", "[결과]"]):
                 continue
             if not clean_line:
                 continue
             filtered_lines.append(clean_line)
             
-        # 남은 줄이 있다면 첫 번째 줄 사용, 없으면 원본(정제 시도) 사용
+        # 남은 줄들을 공백으로 이어붙임 (기존처럼 첫 줄만 가져오는 버그 수정)
         if filtered_lines:
-            curator_comment = filtered_lines[0]
+            curator_comment = " ".join(filtered_lines)
         else:
+            # 예시/Example 라벨 제거 시도 (백업 로직)
             if "Example:" in curator_comment:
-                curator_comment = curator_comment.split("Example:")[0].strip()
+                curator_comment = curator_comment.split("Example:")[1].strip()
+            elif "예시:" in curator_comment:
+                curator_comment = curator_comment.split("예시:")[1].strip()
+            elif "[결과]" in curator_comment:
+                 curator_comment = curator_comment.split("[결과]")[1].strip()
         
         curator_comment = curator_comment.strip('"').strip("'")
         
