@@ -154,12 +154,12 @@ export function useTypingAnimation(
     setIsTyping(true);
     setIsComplete(false);
 
-    // 사운드 배치 로드 (비동기)
+    // 사운드 배치 로드 (완료될 때까지 대기)
     if (soundEnabled) {
-      fetchSounds(text);
+      await fetchSounds(text);
     }
 
-    // 타이핑 시작
+    // 사운드 로드 완료 후 타이핑 시작
     timerRef.current = setTimeout(typeNextChar, typingSpeed);
   }, [typingSpeed, soundEnabled, fetchSounds, typeNextChar]);
 
