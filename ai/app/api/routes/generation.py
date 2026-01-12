@@ -94,6 +94,8 @@ async def generate_exhibition(request: GenerateRequest, db: Session = Depends(ge
 상투적인 인사말("안녕하세요")은 생략하고, 바로 본론이나 감탄사로 시작하세요.
 한국어로 자연스럽게, 50-80자 내외로 임팩트 있게 작성하세요.
 따옴표(")는 쓰지 마세요.
+**형식 금지**: '멘트:', '답변:', '예시:' 같은 머리말을 절대 붙이지 마세요. 그냥 대사만 출력하세요.
+**생각 과정 생략**: `<think>` 태그나 내부 추론 과정은 절대 출력하지 마세요. 결과만 출력하세요.
 
 멘트:"""
         
@@ -107,12 +109,16 @@ async def generate_exhibition(request: GenerateRequest, db: Session = Depends(ge
         ).strip()
         
         # 코멘트 후처리 (강력한 필터링)
+        # <think> 태그 제거 (만약 포함되어 있다면)
+        import re
+        curator_comment = re.sub(r'<think>.*?</think>', '', curator_comment, flags=re.DOTALL).strip()
+        
         lines = curator_comment.split('\n')
         filtered_lines = []
         for line in lines:
             clean_line = line.strip()
             # 불필요한 시스템 텍스트가 포함된 줄 제거
-            if any(x in clean_line for x in ["User Request:", "Theme:", "Example:", "[Output]", "[Role]", "[Context]", "[Task]", "[Rules]"]):
+            if any(x in clean_line for x in ["User Request:", "Theme:", "Example:", "예시:", "[Output]", "[Role]", "[Context]", "[Task]", "[Rules]"]):
                 continue
             if not clean_line:
                 continue
@@ -122,8 +128,11 @@ async def generate_exhibition(request: GenerateRequest, db: Session = Depends(ge
         if filtered_lines:
             curator_comment = filtered_lines[0]
         else:
+            # 예시/Example 라벨 제거 시도
             if "Example:" in curator_comment:
-                curator_comment = curator_comment.split("Example:")[0].strip()
+                curator_comment = curator_comment.split("Example:")[1].strip()
+            elif "예시:" in curator_comment:
+                curator_comment = curator_comment.split("예시:")[1].strip()
         
         curator_comment = curator_comment.strip('"').strip("'")
         
