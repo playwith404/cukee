@@ -98,3 +98,20 @@
     transform: scale(0.9);
   }
 }
+
+/* 타이핑 커서 애니메이션 */
+.cursor {
+  display: inline-block;
+  animation: blink 0.8s infinite;
+  font-weight: 300;
+  margin-left: 2px;
+}
+
+@keyframes blink {
+  0%, 50% {
+    opacity: 1;
+  }
+  51%, 100% {
+    opacity: 0;
+  }
+}

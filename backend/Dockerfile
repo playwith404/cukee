@@ -3,9 +3,26 @@ FROM python:3.10-slim
 
 WORKDIR /app
 
+# ffmpeg 설치 (pydub에서 오디오 처리에 필요)
+RUN apt-get update && apt-get install -y \
+    ffmpeg \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
 # 의존성 파일 복사 및 설치
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
+
+# PyAnimalese 음성 파일 다운로드 및 설정
+RUN git clone --depth 1 https://github.com/hwi-middle/PyAnimalese.git /tmp/pyanimalese \
+    && mkdir -p /app/animalese_sources/high \
+    && cp /tmp/pyanimalese/sources/*.padata /app/animalese_sources/ \
+    && cp /tmp/pyanimalese/sources/high/*.padata /app/animalese_sources/high/ \
+    && cd /app/animalese_sources \
+    && for f in *.padata; do mv "$f" "${f%.padata}.mp3"; done \
+    && cd /app/animalese_sources/high \
+    && for f in *.padata; do mv "$f" "${f%.padata}.mp3"; done \
+    && rm -rf /tmp/pyanimalese
 
 # 소스 코드 복사
 COPY . .
