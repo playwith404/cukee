@@ -148,6 +148,11 @@ export const Exhibition = () => {
 
     // 목록에서 들어온 게 아니라면(새 생성 모드) 기본 나무 프레임 설정
     if (!exhibitionIdParam) {
+      const initialId = ticketIdParam ? parseInt(ticketIdParam, 10) : 1;
+
+      setCurrentTicketId(initialId);
+      setCukeeId(`c${initialId}`); // 새 생성 모드일 때 캐릭터를 즉시 할당
+      
       setFrameStyle('basic'); 
       setBackground('none');
       return;
