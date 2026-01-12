@@ -4,7 +4,7 @@ AI Model Loader - 11개 테마의 LoRA 어댑터를 로드
 import os
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
-from peft import PeftModel
+
 import logging
 from typing import Dict, Optional
 from app.core.config import settings
