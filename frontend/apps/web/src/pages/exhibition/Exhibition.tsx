@@ -137,9 +137,9 @@ export const Exhibition = () => {
   }, [background]);
 
   useEffect(() => {
-    // 초기값 설정(전시회 목록 딜레이 때 기본이 basic이라서 none으로 변경)
     // 💡 포인트: 목록에서 ID를 갖고 들어왔을 때만 로딩 중에 'none'으로 보여줌
-    setFrameStyle('none'); 
+    setCukeeId('');
+    setFrameStyle('none'); // 초기값 설정(전시회 목록 딜레이 때 기본이 basic이라서 none으로 변경)
     setBackground('none');
 
     // 이 코드가 있어야 이전에 남은 패턴이나 색상이 확실히 사라집니다.
