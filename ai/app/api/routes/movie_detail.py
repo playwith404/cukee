@@ -100,10 +100,20 @@ async def generate_movie_detail(
             # 시스템 헤더 제거
             if any(x in clean_line for x in ["User Request:", "Theme:", "Example:", "예시:", "[Output]", "[Role]", "[Context]", "[Task]", "[Rules]", "[결과]"]):
                 continue
+
+            # 영화 제목 제거 (정규식으로 정교하게 처리)
+            # 이유: 입력에서 제목을 빼도 AI가 줄거리 내용을 통해 제목을 유추하거나, DB의 줄거리 자체에 제목이 포함된 경우를 방어
+            escaped_title = re.escape(movie.title_ko)
+            pattern = f"^{escaped_title}(?:\\s|[:.,!?]|은|는|이|가|을|를|$)"
+            
+            match = re.search(pattern, clean_line) # startswith 대신 정규식 search 사용 (문장 앞부분 매칭)
+            if match:
+                 # 매칭된 부분(제목+조사) 제거
+                clean_line = clean_line[match.end():].strip()
             
             if not clean_line:
                 continue
-                
+            
             filtered_lines.append(clean_line)
             
         # 남은 줄들을 공백으로 이어붙임 (기존처럼 첫 줄만 가져오는 버그 수정)
