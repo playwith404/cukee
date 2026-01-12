@@ -35,8 +35,8 @@ const styles = {
     justifyContent: 'center',
   },
   iframeWrapper: {
-    width: '1440px',
-    height: '900px',
+    width: '1600px',
+    height: '1000px',
     border: 'none',
     borderRadius: '16px',
     backgroundColor: 'transparent',
