@@ -47,7 +47,11 @@ export const Exhibition = () => {
   const [exhibitionId, setExhibitionId] = useState<number | null>(
       exhibitionIdParam ? parseInt(exhibitionIdParam, 10) : null
     );
-  const currentTicketId = ticketIdParam ? parseInt(ticketIdParam, 10) : 1;
+  //const currentTicketId = ticketIdParam ? parseInt(ticketIdParam, 10) : 1;
+  // 기존 const 대신 useState 사용
+  const [currentTicketId, setCurrentTicketId] = useState<number>(
+    ticketIdParam ? parseInt(ticketIdParam, 10) : 1
+  );
   // 예: ticket=1 -> /cara/cara1.png
   // 예: ticket=2 -> /cara/cara2.png
   //const dynamicCharacterImage = `/cara/cara${currentTicketId}.png`;
@@ -152,13 +156,14 @@ export const Exhibition = () => {
     const loadExhibitionStyle = async () => {
       try {
         const data = await getExhibitionById(parseInt(exhibitionIdParam, 10));
-        console.log(`[ID: ${exhibitionIdParam}] 로드 데이터:`, data);
+        // console.log(`[ID: ${exhibitionIdParam}] 로드 데이터:`, data);
 
         if (data) {
           // ✅ ticket_group_id = 큐키 번호
           const savedCukeeNo = data.ticketGroupId || data.ticket_group_id;
           if (savedCukeeNo) {
-            setCukeeId(`c${savedCukeeNo}`);
+            setCurrentTicketId(Number(savedCukeeNo));
+            // setCukeeId(`c${savedCukeeNo}`);
           }
           // 저장할 때 'design' 객체에 넣었으므로 꺼낼 때도 확인
           const design = data.design || data;
