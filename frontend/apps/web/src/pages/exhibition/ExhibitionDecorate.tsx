@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+// import { useEffect } from 'react';
 import styles from './ExhibitionDecorate.module.css';
 import type { CukeeStyle} from '../../types/cukee';
 
@@ -35,28 +35,28 @@ export const ExhibitionDecorate = ({
 }: ExhibitionDecorateProps) => {
 
   // background이 바뀔 때마다 body 배경 적용
-  useEffect(() => {
-    // console.log('background:', background);
-    switch (background) {
-      case 'none':
-        document.body.style.backgroundColor = '#EDE6DD';
-        document.body.style.backgroundImage = ''; // 색 비우기 
-        break;
-      case 'pink':
-        document.body.style.backgroundColor = 'rgba(244, 224, 227, 1)';
-        document.body.style.backgroundImage = '';
-        break;
-      case 'blue':
-        document.body.style.backgroundColor = 'rgba(205, 221, 230, 1)';
-        document.body.style.backgroundImage = '';
-        break;
-      case 'pattern':
-        document.body.style.backgroundImage = '';
-        document.body.style.backgroundImage = "url('/pattern1.png')";
-        document.body.style.backgroundSize = 'cover';
-        break;
-    }
-  }, [background]);
+  // useEffect(() => {
+  //   // console.log('background:', background);
+  //   switch (background) {
+  //     case 'none':
+  //       document.body.style.backgroundColor = '#EDE6DD';
+  //       document.body.style.backgroundImage = ''; // 색 비우기 
+  //       break;
+  //     case 'pink':
+  //       document.body.style.backgroundColor = 'rgba(244, 224, 227, 1)';
+  //       document.body.style.backgroundImage = '';
+  //       break;
+  //     case 'blue':
+  //       document.body.style.backgroundColor = 'rgba(205, 221, 230, 1)';
+  //       document.body.style.backgroundImage = '';
+  //       break;
+  //     case 'pattern':
+  //       document.body.style.backgroundImage = '';
+  //       document.body.style.backgroundImage = "url('/pattern1.png')";
+  //       document.body.style.backgroundSize = 'cover';
+  //       break;
+  //   }
+  // }, [background]);
 
   // 2. 페이지를 아예 떠날 때(언마운트)만 복구하는 로직
   // useEffect(() => {

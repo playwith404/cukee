@@ -112,6 +112,29 @@ const [exhibitionId, setExhibitionId] = useState<number | null>(
     }
   }, [currentTicketId]);
 
+  // background이 바뀔 때마다 body 배경 적용
+  useEffect(() => {
+    switch (background) {
+      case 'none':
+        document.body.style.backgroundColor = '#EDE6DD';
+        document.body.style.backgroundImage = ''; // 색 비우기 
+        break;
+      case 'pink':
+        document.body.style.backgroundColor = 'rgba(244, 224, 227, 1)';
+        document.body.style.backgroundImage = '';
+        break;
+      case 'blue':
+        document.body.style.backgroundColor = 'rgba(205, 221, 230, 1)';
+        document.body.style.backgroundImage = '';
+        break;
+      case 'pattern':
+        document.body.style.backgroundImage = '';
+        document.body.style.backgroundImage = "url('/pattern1.png')";
+        document.body.style.backgroundSize = 'cover';
+        break;
+    }
+  }, [background]);
+
   useEffect(() => {
     // 초기값 설정(전시회 목록 딜레이 때 기본이 basic이라서 none으로 변경)
     // 💡 포인트: 목록에서 ID를 갖고 들어왔을 때만 로딩 중에 'none'으로 보여줌
@@ -377,8 +400,9 @@ const [exhibitionId, setExhibitionId] = useState<number | null>(
 
   // === 전시회 저장 핸들러 ===
   const handleSave = async () => {
-    try {
-      const exhibitionData = {
+    const targetId = exhibitionId || (exhibitionIdParam ? parseInt(exhibitionIdParam, 10) : null);
+    
+    const exhibitionData = {
         title: exhibitionTitle || `전시회 ${new Date().toLocaleDateString()}`,
         isPublic: true,
         ticketId: currentTicketId, // 티켓 ID 추가
@@ -394,21 +418,35 @@ const [exhibitionId, setExhibitionId] = useState<number | null>(
           isPinned: frame.isPinned || false
         }))
       };
-
-      const result = await createExhibition(exhibitionData);
-      console.log('전시회 저장 성공:', result);
-      alert('전시회가 저장되었습니다!');
+    try {
+      if (targetId) {
+        await api.put(`/exhibitions/${targetId}`, exhibitionData);
+      } else {
+        const result = await createExhibition(exhibitionData);
+        if (result?.id) setExhibitionId(result.id);
+      }
+      alert("전시회가 목록에 저장되었습니다!");
+      setBottomMode('action');
     } catch (error) {
-      console.error('전시회 저장 실패:', error);
-      alert('전시회 저장에 실패했습니다.');
+      alert("최종 저장에 실패했습니다.");
     }
   };
 
   // 디자인만 저장하는 핸들러 (부모 쪽으로 이동)
-const handleSaveDesign = async () => {
-  // exhibitionId가 없으면 Param에서라도 가져와야 함
-  const targetId = exhibitionId || (exhibitionIdParam ? parseInt(exhibitionIdParam, 10) : null);
-  const designData = {
+  const handleSaveDesign = async () => {
+    // exhibitionId가 없으면 Param에서라도 가져와야 함
+    const targetId = exhibitionId || (exhibitionIdParam ? parseInt(exhibitionIdParam, 10) : null);
+    // 1. 아직 전시회 ID가 없는 경우 (완전 신규 생성 중)
+    if (!targetId) {
+      console.log("아이디가 없으므로 화면에만 임시 적용합니다.");
+      // 서버 통신 없이 메뉴만 닫음. 
+      // 이미 background, frameStyle 상태는 바뀌어 있으므로 화면엔 적용된 상태임.
+      setBottomMode('action'); 
+      return;
+    }
+
+    // 2. 기존에 저장된 전시회가 있는 경우 (수정 모드)
+    const designData = {
       title: exhibitionTitle,
       ticketId: currentTicketId, // 👈 이 값이 정확해야 영화 정보가 안 깨짐
       design: {
@@ -418,35 +456,44 @@ const handleSaveDesign = async () => {
       },
       // 처음 생성 시에는 영화 목록도 필요할 수 있습니다. (여기 확인 필요)
       movies: frames.map((frame: Frame, index: number) => ({
-      movieId: frame.id,
-      displayOrder: index,
-      isPinned: frame.isPinned || false
-    }))
+        movieId: frame.id,
+        displayOrder: index,
+        isPinned: frame.isPinned || false
+      }))
     };
 
+      // try {
+      //   if (!targetId) {
+      //     // 신규 생성 (POST)
+      //     const result = await createExhibition(designData);
+      //     if (result?.id) setExhibitionId(result.id);
+      //     alert('전시회가 저장되었습니다!');
+      //   } else {
+      //     // 기존 수정 (PUT)
+      //     await api.put(`/exhibitions/${targetId}`, designData);
+      //     alert('디자인이 수정되었습니다!');
+      //   }
+      //   setBottomMode('action');
+      // } catch (error: any) {
+      //   console.error("저장 실패:", error.response?.data || error.message);
+      //   alert(`저장 실패: ${error.response?.status === 405 ? '허용되지 않는 방식입니다.' : '서버 오류'}`);
+      // }
     try {
-      if (!targetId) {
-        // 신규 생성 (POST)
-        const result = await createExhibition(designData);
-        if (result?.id) setExhibitionId(result.id);
-        alert('전시회가 저장되었습니다!');
-      } else {
-        // 기존 수정 (PUT)
-        await api.put(`/exhibitions/${targetId}`, designData);
-        alert('디자인이 수정되었습니다!');
-      }
+      await api.put(`/exhibitions/${targetId}`, designData);
       setBottomMode('action');
-    } catch (error: any) {
-      console.error("저장 실패:", error.response?.data || error.message);
-      alert(`저장 실패: ${error.response?.status === 405 ? '허용되지 않는 방식입니다.' : '서버 오류'}`);
+      console.log("기존 전시회에 디자인이 저장되었습니다.");
+    } catch (error) {
+      console.error("디자인 저장 실패:", error);
+      // 에러가 나더라도 사용자의 흐름을 위해 창은 닫아줄 수 있습니다.
+      setBottomMode('action');
     }
-};
+  };
 
-// 모달 '확인' 클릭 시 실행될 함수
-const handleConfirmDesign = async () => {
-  setIsConfirmModalOpen(false); // 모달 닫기
-  await handleSaveDesign();      // 실제 저장 실행
-};
+  // 모달 '확인' 클릭 시 실행될 함수
+  const handleConfirmDesign = async () => {
+    setIsConfirmModalOpen(false); // 모달 닫기
+    await handleSaveDesign();      // 실제 저장 실행
+  };
 
   // === 영화 고정 핸들러 ===
   const handlePin = (frameId: number) => {
@@ -567,10 +614,19 @@ const handleConfirmDesign = async () => {
 
       {/* 1. ReadOnly가 아니고, 동시에 bottomMode가 'action'일 때만 컨트롤바 표시 */}
       <div className={styles.topControlSection}>
-        {!isReadOnly && bottomMode === 'action' && (
+        {!isReadOnly && (
           <TopControls
-            onSave={handleSave}
-            onDecorate={() => setBottomMode('decorate')}
+            onSave={handleSave} 
+            onDecorate={() => {
+              // 💡 현재 모드가 이미 'decorate'라면 'action'으로 바꿔서 닫아버림
+              if (bottomMode === 'decorate') {
+                // 창만 닫는 기능
+                setBottomMode('action');
+              } else {
+                // 'action' 모드였다면 꾸미기 창을 켬
+                setBottomMode('decorate');
+              }
+            }}
           />
         )}
       </div>
@@ -639,9 +695,8 @@ const handleConfirmDesign = async () => {
       <ExhibitionDecorate
         exhibitionId={exhibitionId}     // ✅ 전달 확인
         exhibitionTitle={exhibitionTitle} // ✅ 전달 확인
-        onClose={() => setBottomMode('action')}
-        // ✅ 체크 버튼을 누르면 부모의 모달을 열도록 함수 전달
-        onSaveClick={() => setIsConfirmModalOpen(true)}
+        onClose={() => setBottomMode('action')} // 닫기(X) 버튼 클릭 시 그냥 복귀
+        onSaveClick={handleSaveDesign} // ✅ 체크 버튼 클릭 시 저장 함수 실행
         ticketId={currentTicketId}
         cukeeStyle={cukeeStyle}
         onChangeCukeeStyle={setCukeeStyle}
