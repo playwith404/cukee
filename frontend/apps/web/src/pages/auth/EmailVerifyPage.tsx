@@ -1,7 +1,7 @@
 // src/pages/EmailVerifyPage.tsx
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import VerificationCodeInput from "../../../../../packages/ui/src/components/VerificationCodeInput";
+import VerificationCodeInput from "./VerificationCodeInput";
 import { verifyEmailCode, signup, sendVerificationCode } from "../../apis/auth";
 import { useAuth } from "../../contexts/AuthContext";
 import "../../styles/emailVerify.css";
