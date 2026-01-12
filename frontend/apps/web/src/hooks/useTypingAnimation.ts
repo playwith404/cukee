@@ -51,7 +51,7 @@ export function useTypingAnimation(
 
   const fullTextRef = useRef('');
   const currentIndexRef = useRef(0);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const soundsRef = useRef<(string | null)[]>([]);
   const audioContextRef = useRef<AudioContext | null>(null);
   const isFetchingRef = useRef(false);
