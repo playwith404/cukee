@@ -162,6 +162,7 @@ export const Exhibition = () => {
           // ✅ ticket_group_id = 큐키 번호
           const savedCukeeNo = data.ticketGroupId || data.ticket_group_id;
           if (savedCukeeNo) {
+            // 💡 URL 파라미터가 없어도 DB에서 가져온 번호로 업데이트
             setCurrentTicketId(Number(savedCukeeNo));
             // setCukeeId(`c${savedCukeeNo}`);
           }
