@@ -159,11 +159,16 @@ export const Exhibition = () => {
         // console.log(`[ID: ${exhibitionIdParam}] 로드 데이터:`, data);
 
         if (data) {
-          // ✅ ticket_group_id = 큐키 번호
-          const savedCukeeNo = data.ticketGroupId || data.ticket_group_id;
-          if (savedCukeeNo) {
-            setCurrentTicketId(Number(savedCukeeNo));
-            // setCukeeId(`c${savedCukeeNo}`);
+          const savedTicketId = data.ticketId || data.ticket_group_id || data.ticketGroupId;
+          
+          if (savedTicketId) {
+            console.log("서버에서 받은 진짜 ID:", savedTicketId);
+            // ✅ 티켓 ID(숫자)와 큐키 ID('c11' 등)를 동시에 즉시 업데이트
+            setCurrentTicketId(Number(savedTicketId));
+            const newCukeeId = `c${savedTicketId}`;
+            setCukeeId(newCukeeId); 
+            
+            console.log("큐키 번호 로드 완료:", newCukeeId);
           }
           // 저장할 때 'design' 객체에 넣었으므로 꺼낼 때도 확인
           const design = data.design || data;
