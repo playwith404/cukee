@@ -5,18 +5,18 @@
 <div align="center">
 
 <!-- 프로젝트 로고 -->
-<img src="https://via.placeholder.com/200x200.png?text=LOGO" alt="Project Logo" width="200"/>
+<img src="docs/images/dog-head.svg" alt="Project Logo" width="180"/>
 
 <br/>
 <br/>
 
 <!-- 타이핑 애니메이션 효과 -->
-<a href="https://git.io/typing-svg"><img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=40&pause=1000&color=6A5ACD&center=true&vCenter=true&random=false&width=600&height=100&lines=%F0%9F%9A%80+Project+Name;Welcome+to+Our+Project!;Made+with+%E2%9D%A4%EF%B8%8F+by+Team" alt="Typing SVG" /></a>
+<a href="https://git.io/typing-svg"><img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=40&pause=1000&color=6A5ACD&center=true&vCenter=true&random=false&width=600&height=100&lines=%F0%9F%9A%80+CuKee+Project;Welcome+to+Our+Project!;Thank+You!" alt="Typing SVG" /></a>
 
 <br/>
 
 <!-- 프로젝트 설명 배지 -->
-<img src="https://img.shields.io/badge/프로젝트-한_줄_설명을_작성해주세요-blue?style=for-the-badge"/>
+<img src="https://img.shields.io/badge/we _are-Playwith404-blue?style=for-the-badge"/>
 
 <br/>
 <br/>
@@ -30,17 +30,19 @@
 <br/>
 
 <!-- GitHub 통계 배지들 -->
-[![GitHub Stars](https://img.shields.io/github/stars/username/repo?style=for-the-badge&logo=github&logoColor=white&labelColor=gray&color=E1AD0E)](https://github.com/username/repo/stargazers)
-[![GitHub Forks](https://img.shields.io/github/forks/username/repo?style=for-the-badge&logo=github&logoColor=white&labelColor=gray&color=447CAF)](https://github.com/username/repo/network/members)
-[![GitHub Issues](https://img.shields.io/github/issues/username/repo?style=for-the-badge&logo=github&logoColor=white&labelColor=gray&color=9B5DE5)](https://github.com/username/repo/issues)
-[![License](https://img.shields.io/github/license/username/repo?style=for-the-badge&logo=github&logoColor=white&labelColor=gray&color=39D353)](LICENSE)
+[![Contributors](https://img.shields.io/github/contributors/playwith404/cukee?style=for-the-badge&logo=github&logoColor=white&labelColor=gray&color=00C853)](https://github.com/playwith404/cukee/graphs/contributors)
+[![Commits](https://img.shields.io/github/commit-activity/t/playwith404/cukee?style=for-the-badge&logo=github&logoColor=white&labelColor=gray&color=E1AD0E)](https://github.com/playwith404/cukee/commits)
+[![Repo Size](https://img.shields.io/github/repo-size/playwith404/cukee?style=for-the-badge&logo=github&logoColor=white&labelColor=gray&color=FF9800)](https://github.com/playwith404/cukee)
+
+[![Languages](https://img.shields.io/github/languages/count/playwith404/cukee?style=for-the-badge&logo=github&logoColor=white&labelColor=gray&color=9B5DE5)](https://github.com/playwith404/cukee)
+[![Created At](https://img.shields.io/github/created-at/playwith404/cukee?style=for-the-badge&logo=github&logoColor=white&labelColor=gray&color=FF6B6B)](https://github.com/playwith404/cukee)
+[![License](https://img.shields.io/github/license/playwith404/cukee?style=for-the-badge&logo=github&logoColor=white&labelColor=gray&color=39D353)](LICENSE)
 
 <br/>
 
 <!-- 빌드 및 배포 상태 배지 (선택사항) -->
 ![Build Status](https://img.shields.io/badge/build-passing-brightgreen?style=flat-square&logo=github-actions)
-![Deploy Status](https://img.shields.io/badge/deploy-success-blue?style=flat-square&logo=vercel)
-![Coverage](https://img.shields.io/badge/coverage-85%25-green?style=flat-square&logo=codecov)
+![Deploy Status](https://img.shields.io/badge/deploy-success-blue?style=flat-square&logo=kakao)
 
 <br/>
 <br/>
@@ -54,8 +56,8 @@
 </p>
 
 <p>
-  <a href="https://github.com/username/repo/issues"><img src="https://img.shields.io/badge/🐛_버그_리포트-D32F2F?style=for-the-badge"/></a>
-  <a href="https://github.com/username/repo/issues"><img src="https://img.shields.io/badge/💡_기능_요청-7B1FA2?style=for-the-badge"/></a>
+  <a href="https://github.com/playwith404/cukee/issues"><img src="https://img.shields.io/badge/🐛_버그_리포트-D32F2F?style=for-the-badge"/></a>
+  <a href="https://github.com/playwith404/cukee/issues"><img src="https://img.shields.io/badge/💡_기능_요청-7B1FA2?style=for-the-badge"/></a>
   <a href="#-시작하기"><img src="https://img.shields.io/badge/🚀_시작하기-00BCD4?style=for-the-badge"/></a>
 </p>
 
@@ -72,20 +74,19 @@
 - [기술 스택](#️-기술-스택)
 - [시작하기](#-시작하기)
 - [팀원 소개](#-팀원-소개)
-- [라이선스](#-라이선스)
 
 ---
 
 ## 📖 프로젝트 소개
 
-> 프로젝트에 대한 상세한 설명을 작성해주세요.
+> **Cukee(큐키)** 는 AI 기반 영화 큐레이션 플랫폼입니다.
 
-이 프로젝트는 **문제/필요성**을 해결하기 위해 시작되었습니다. 
-**주요 목표**와 **기대 효과**를 간략히 설명해주세요.
+사용자의 취향과 감정에 맞춰 **11가지 테마 티켓** 중 하나를 선택하면, AI 큐레이터가 맞춤형 영화를 추천하고 나만의 **전시회**를 만들어줍니다. Llama-3.1 기반의 LoRA 어댑터를 활용해 각 테마별로 특화된 추천을 제공합니다.
 
 ### 🎯 프로젝트 배경
-- 왜 이 프로젝트를 시작했나요?
-- 어떤 문제를 해결하고자 하나요?
+- 넘쳐나는 콘텐츠 속에서 **나에게 딱 맞는 영화**를 찾기 어려운 문제를 해결하고자 했습니다
+- 단순한 추천을 넘어, AI 큐레이터의 **감성적인 코멘트**와 함께 영화를 소개받는 새로운 경험을 제공합니다
+- 추천받은 영화들을 **3D 갤러리 형태의 전시회**로 저장하고 공유할 수 있습니다
 
 ---
 
@@ -93,33 +94,44 @@
 
 | 기능 | 설명 |
 |:---:|:---|
-| 🔐 **기능 1** | 기능에 대한 설명을 작성해주세요 |
-| 📊 **기능 2** | 기능에 대한 설명을 작성해주세요 |
-| 🔔 **기능 3** | 기능에 대한 설명을 작성해주세요 |
-| 💬 **기능 4** | 기능에 대한 설명을 작성해주세요 |
+| 🎫 **11가지 테마 티켓** | 로맨스, 코미디, 호러, 액션, 애니메이션 등 다양한 감성의 테마 중 선택 |
+| 🤖 **AI 영화 큐레이션** | Llama-3.1 + LoRA 기반 AI가 테마에 맞는 영화를 추천하고 큐레이터 코멘트 생성 |
+| 🖼️ **3D 전시회 생성** | 추천받은 영화들을 갤러리 형태의 인터랙티브 전시회로 제작 |
+| 🔐 **소셜 로그인** | 이메일 인증, Google, Kakao OAuth를 통한 간편 로그인 지원 |
+| 💾 **전시회 저장/공유** | 나만의 전시회를 저장하고 다른 사용자와 공유 가능 |
+| ❤️ **티켓 좋아요** | 마음에 드는 테마 티켓에 좋아요를 누르고 인기 티켓 확인 |
 
 ---
 
 ## 🛠️ 기술 스택
 
 ### Frontend
+![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)
 ![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
 
 ### Backend
-![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white)
-![Express](https://img.shields.io/badge/Express-000000?style=for-the-badge&logo=express&logoColor=white)
-![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
+
+### AI
+![HuggingFace](https://img.shields.io/badge/HuggingFace-FFD21E?style=for-the-badge&logo=huggingface&logoColor=black)
+![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)
+![Unsloth](https://img.shields.io/badge/Unsloth-7C3AED?style=for-the-badge&logo=lightning&logoColor=white)
+![bitsandbytes](https://img.shields.io/badge/bitsandbytes-4B0082?style=for-the-badge&logo=python&logoColor=white)
 
 ### DevOps & Tools
 ![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white)
 ![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=github-actions&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 
+### Monitoring
+![Prometheus](https://img.shields.io/badge/Prometheus-E6522C?style=for-the-badge&logo=prometheus&logoColor=white)
+![Grafana](https://img.shields.io/badge/Grafana-F46800?style=for-the-badge&logo=grafana&logoColor=white)
+
 ### Communication
 ![Notion](https://img.shields.io/badge/Notion-000000?style=for-the-badge&logo=notion&logoColor=white)
-![Slack](https://img.shields.io/badge/Slack-4A154B?style=for-the-badge&logo=slack&logoColor=white)
 ![Figma](https://img.shields.io/badge/Figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white)
 
 ---
@@ -129,40 +141,54 @@
 ### 필수 요구사항
 
 - Node.js 18.0 이상
-- npm 또는 yarn
-- MySQL 8.0 이상
+- Python 3.10 이상
+- pnpm 9.0 이상
+- Docker & Docker Compose
+- PostgreSQL 15 이상
+- Redis
 
 ### 설치 방법
 
 1. **레포지토리 클론**
 ```bash
-git clone https://github.com/username/repo.git
-cd repo
+git clone https://github.com/playwith404/cukee.git
+cd cukee
 ```
 
-2. **의존성 설치**
+2. **Frontend 설정**
 ```bash
-npm install
-# 또는
-yarn install
-```
-
-3. **환경 변수 설정**
-```bash
+cd frontend
+pnpm install
 cp .env.example .env
-# .env 파일을 열어 필요한 값을 설정해주세요
+# .env 파일에 API URL 등 설정
+pnpm dev
 ```
 
-4. **개발 서버 실행**
+3. **Backend 설정**
 ```bash
-npm run dev
-# 또는
-yarn dev
+cd backend
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+cp .env.example .env
+# .env 파일에 DB, Redis, OAuth 설정
+uvicorn app.main:app --reload
+```
+
+4. **Docker로 전체 실행 (권장)**
+```bash
+# 메인 서버 (Frontend + Backend + Redis + Nginx)
+docker-compose up -d
+
+# AI 서버 (GPU 필요)
+docker-compose -f docker-compose.ai.yml up -d
 ```
 
 5. **브라우저에서 확인**
 ```
-http://localhost:3000
+http://localhost:5173    # Frontend (개발 모드)
+http://localhost:8000    # Backend API
+http://localhost         # Production (Docker)
 ```
 
 ---
@@ -171,19 +197,19 @@ http://localhost:3000
 
 <div align="center">
 
-|<img src="https://via.placeholder.com/150" width="150" height="150"/>|<img src="https://via.placeholder.com/150" width="150" height="150"/>|<img src="https://via.placeholder.com/150" width="150" height="150"/>|
+|<img src="https://avatars.githubusercontent.com/u/203737204?v=4" width="150" height="150"/>|<img src="https://avatars.githubusercontent.com/u/101376856?v=4" width="150" height="150"/>|<img src="https://avatars.githubusercontent.com/u/131033715?v=4" width="150" height="150"/>|
 |:---:|:---:|:---:|
-|**홍길동**|**김철수**|**이영희**|
-|팀장 / Backend|Frontend|Backend|
-|[![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/username1)|[![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/username2)|[![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/username3)|
-|![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=node.js&logoColor=white) ![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=flat-square&logo=mysql&logoColor=white)|![React](https://img.shields.io/badge/React-61DAFB?style=flat-square&logo=react&logoColor=black) ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)|![Express](https://img.shields.io/badge/Express-000000?style=flat-square&logo=express&logoColor=white) ![Redis](https://img.shields.io/badge/Redis-DC382D?style=flat-square&logo=redis&logoColor=white)|
+|**조연우**|**황주인**|**이지우**|
+|PM / Frontend|Infra|Backend|
+|[![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/18choyeonwoo)|[![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/juin925)|[![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/527NotFound)|
+|![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat-square&logo=vite&logoColor=white) ![React](https://img.shields.io/badge/React-61DAFB?style=flat-square&logo=react&logoColor=black) ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white) ![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white)|![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white) ![Prometheus](https://img.shields.io/badge/Prometheus-E6522C?style=flat-square&logo=prometheus&logoColor=white) ![Grafana](https://img.shields.io/badge/Grafana-F46800?style=flat-square&logo=grafana&logoColor=white)|![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white) ![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white)|
 
-|<img src="https://via.placeholder.com/150" width="150" height="150"/>|<img src="https://via.placeholder.com/150" width="150" height="150"/>|<img src="https://via.placeholder.com/150" width="150" height="150"/>|
+|<img src="https://avatars.githubusercontent.com/u/120772177?v=4" width="150" height="150"/>|<img src="https://avatars.githubusercontent.com/u/167386973?v=4" width="150" height="150"/>|<img src="https://github.com/wnqls2148.png" width="150" height="150"/>|
 |:---:|:---:|:---:|
-|**박민수**|**최지은**|**정우진**|
-|Frontend|Designer / Frontend|DevOps|
-|[![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/username4)|[![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/username5)|[![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/username6)|
-|![Vue.js](https://img.shields.io/badge/Vue.js-4FC08D?style=flat-square&logo=vue.js&logoColor=white) ![Sass](https://img.shields.io/badge/Sass-CC6699?style=flat-square&logo=sass&logoColor=white)|![Figma](https://img.shields.io/badge/Figma-F24E1E?style=flat-square&logo=figma&logoColor=white) ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat-square&logo=css3&logoColor=white)|![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white) ![AWS](https://img.shields.io/badge/AWS-232F3E?style=flat-square&logo=amazon-aws&logoColor=white)|
+|**강민성**|**장서현**|**임주빈**|
+|AI|DB / Frontend|Frontend|
+|[![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/Krminsung)|[![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/nannanyeee)|[![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/wnqls2148)|
+|![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white) ![HuggingFace](https://img.shields.io/badge/HuggingFace-FFD21E?style=flat-square&logo=huggingface&logoColor=black) ![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?style=flat-square&logo=pytorch&logoColor=white)|![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white) ![React](https://img.shields.io/badge/React-61DAFB?style=flat-square&logo=react&logoColor=black) ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white) ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white)|![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat-square&logo=vite&logoColor=white) ![React](https://img.shields.io/badge/React-61DAFB?style=flat-square&logo=react&logoColor=black) ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)|
 
 </div>
 
@@ -192,50 +218,32 @@ http://localhost:3000
 ## 📁 프로젝트 구조
 
 ```
-📦 project-root
-├── 📂 src
-│   ├── 📂 components    # 재사용 가능한 컴포넌트
-│   ├── 📂 pages         # 페이지 컴포넌트
-│   ├── 📂 hooks         # 커스텀 훅
-│   ├── 📂 utils         # 유틸리티 함수
-│   ├── 📂 styles        # 스타일 파일
-│   └── 📂 api           # API 관련 코드
-├── 📂 public            # 정적 파일
-├── 📂 tests             # 테스트 파일
-├── 📄 .env.example      # 환경 변수 예시
-├── 📄 package.json
+📦 cukee
+├── 📂 frontend                 # 프론트엔드 (Turborepo)
+│   ├── 📂 apps
+│   │   ├── 📂 web              # Next.js 웹 애플리케이션
+│   │   └── 📂 extension        # 브라우저 확장 프로그램
+│   └── 📂 packages
+│       ├── 📂 ui               # 공유 UI 컴포넌트
+│       ├── 📂 eslint-config    # ESLint 설정
+│       └── 📂 typescript-config # TypeScript 설정
+│
+├── 📂 backend                  # FastAPI 백엔드 서버
+│   ├── 📂 app                  # 애플리케이션 코드
+│   └── 📂 tests                # 테스트 파일
+│
+├── 📂 ai                       # AI 추천 서버
+│   └── 📂 app                  # Llama + LoRA 모델 서빙
+│
+├── 📂 database                 # 데이터베이스 설정
+├── 📂 monitor                  # Prometheus & Grafana 모니터링
+├── 📂 nginx                    # Nginx 리버스 프록시 설정
+├── 📂 redis                    # Redis 캐시 설정
+│
+├── 📄 docker-compose.yml       # 메인 서버 Docker 구성
+├── 📄 docker-compose.ai.yml    # AI 서버 Docker 구성
 └── 📄 README.md
 ```
-
----
-
-## 📊 프로젝트 진행 상황
-
-- [x] 프로젝트 기획
-- [x] UI/UX 디자인
-- [x] 데이터베이스 설계
-- [ ] 프론트엔드 개발
-- [ ] 백엔드 개발
-- [ ] 테스트 및 QA
-- [ ] 배포
-
----
-
-## 🤝 기여하기
-
-프로젝트에 기여하고 싶으시다면 아래 단계를 따라주세요!
-
-1. 이 레포지토리를 Fork 합니다
-2. 새로운 브랜치를 생성합니다 (`git checkout -b feature/AmazingFeature`)
-3. 변경사항을 커밋합니다 (`git commit -m 'Add some AmazingFeature'`)
-4. 브랜치에 Push 합니다 (`git push origin feature/AmazingFeature`)
-5. Pull Request를 생성합니다
-
----
-
-## 📝 라이선스
-
-이 프로젝트는 MIT 라이선스를 따릅니다. 자세한 내용은 [LICENSE](LICENSE) 파일을 참고해주세요.
 
 ---
 
@@ -246,20 +254,14 @@ http://localhost:3000
 
 <br/>
 
-<!-- GitHub 통계 카드 -->
-### 📊 GitHub Statistics
+<!-- 레포지토리 활동 통계 -->
+### 📊 Repository Activity
 
-<img src="https://github-readme-stats.vercel.app/api?username=username&show_icons=true&theme=tokyonight&hide_border=true&bg_color=0D1117&title_color=58A6FF&icon_color=58A6FF&text_color=C9D1D9" width="49%"/>
-<img src="https://github-readme-streak-stats.herokuapp.com/?user=username&theme=tokyonight&hide_border=true&background=0D1117&stroke=58A6FF&ring=58A6FF&fire=FF6B6B&currStreakLabel=58A6FF" width="49%"/>
-
-<br/>
-<br/>
-
-<!-- 활동 그래프 -->
-<img src="https://github-readme-activity-graph.vercel.app/graph?username=username&theme=tokyo-night&hide_border=true&bg_color=0D1117&color=58A6FF&line=58A6FF&point=FF6B6B" width="98%"/>
+<!-- Repobeats 활동 그래프 -->
+![Alt](https://repobeats.axiom.co/api/embed/7f801122eb90491076d45ca6ce3c25250ebd762a.svg "Repobeats analytics image")
 
 <br/>
-<br/>
+
 
 ---
 
@@ -267,17 +269,14 @@ http://localhost:3000
 
 프로젝트에 대한 문의사항이 있으시면 아래로 연락해주세요!
 
-<a href="mailto:team@example.com">
+<a href="mailto:playwith404@gmail.com">
   <img src="https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white"/>
 </a>
 <a href="https://discord.gg/your-server">
   <img src="https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white"/>
 </a>
-<a href="https://your-notion-page.notion.site">
+<a href="https://www.notion.so/sniperfactory1/v2-2b2d8844b3878057b8d8c597577ffb39">
   <img src="https://img.shields.io/badge/Notion-000000?style=for-the-badge&logo=notion&logoColor=white"/>
-</a>
-<a href="https://your-blog.tistory.com">
-  <img src="https://img.shields.io/badge/Blog-FF5722?style=for-the-badge&logo=blogger&logoColor=white"/>
 </a>
 
 <br/>
@@ -289,8 +288,8 @@ http://localhost:3000
 
 이 프로젝트에 기여해주신 모든 분들께 감사드립니다!
 
-<a href="https://github.com/username/repo/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=username/repo" />
+<a href="https://github.com/playwith404/cukee/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=playwith404/cukee" />
 </a>
 
 <br/>
@@ -312,17 +311,21 @@ http://localhost:3000
 <br/>
 
 <!-- 방문자 카운터 -->
-<img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fusername%2Frepo&count_bg=%236A5ACD&title_bg=%23555555&icon=github.svg&icon_color=%23E7E7E7&title=visitors&edge_flat=true" alt="Visitors"/>
+![Hits](https://komarev.com/ghpvc/?username=playwith404-cukee&label=visitors&color=6A5ACD&style=flat-square)
 
 <br/>
 <br/>
 
 <!-- 팀 로고/이름 -->
-<img src="https://readme-typing-svg.demolab.com?font=Pacifico&size=30&pause=1000&color=6A5ACD&center=true&vCenter=true&random=false&width=500&height=60&lines=Made+with+%E2%9D%A4%EF%B8%8F+by+Team+Name" alt="Team Name" />
+<img src="docs/images/ghost-head.svg" alt="PlayWith404 Logo" width="80"/>
 
 <br/>
 
-**Copyright © 2024 Team Name. All Rights Reserved.**
+<img src="https://readme-typing-svg.demolab.com?font=Pacifico&size=30&pause=1000&color=6A5ACD&center=true&vCenter=true&random=false&width=500&height=60&lines=Made+with+%E2%9D%A4%EF%B8%8F+by+PlayWith404" alt="PlayWith404" />
+
+<br/>
+
+**Copyright © 2026 PlayWith404. All Rights Reserved.**
 
 <br/>
 

@@ -23,7 +23,7 @@ services:
     # 기존: - /home/ubuntu/model/Llama-3.1-8B-Instruct:/app/model/Llama-3.1-8B-Instruct:ro
     # 기존: - ./logs:/app/logs
     volumes:
-      - /home/ubuntu/model/Llama-3.1-8B-Instruct:/app/model/Llama-3.1-8B-Instruct:ro
+      # - /home/ubuntu/model/huggingface_cache:/root/.cache/huggingface
       - /home/ubuntu/model/bge-m3:/app/model/bge-m3:ro
       - ./ai/logs:/app/logs
     

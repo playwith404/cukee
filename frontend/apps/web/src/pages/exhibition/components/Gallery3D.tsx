@@ -166,9 +166,16 @@ export const Gallery3D = ({
                 ${styles.frame} 
                 ${positionClass} 
                 ${styles[`style_${frameStyle}`]}
-            `} 
+            `}
               onClick={() => onSelect(index)}
             >
+              {frameStyle !== 'frame2' && (
+                <>
+                  <div className={styles.wireLeft} />
+                  <div className={styles.wireRight} />
+                </>
+              )}
+              
               {/* 1. 이미지 영역 (content) */}
               <div className={styles.content}>
                 {frame.imageUrl ? (
@@ -197,10 +204,9 @@ export const Gallery3D = ({
                   <div className={styles.emptyContent}>{frame.content}</div>
                 )}
               </div>
-              {isEditMode && (
-                <div className={styles.actions}>
-                  <div className={styles.actionTitle}>{movieTitle}</div>
-
+              <div className={styles.actions}>
+                <div className={styles.actionTitle}>{movieTitle}</div>
+                {isEditMode && (
                   <div className={styles.buttonGroup}>
                     <button
                       type="button"
@@ -226,8 +232,8 @@ export const Gallery3D = ({
                       삭제하기
                     </button>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
           );
         })}

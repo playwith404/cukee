@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+// import { useEffect } from 'react';
 import styles from './ExhibitionDecorate.module.css';
 import type { CukeeStyle} from '../../types/cukee';
 
@@ -33,68 +33,6 @@ export const ExhibitionDecorate = ({
   onChangeBackground,
   onSaveClick, // ✅ 추가
 }: ExhibitionDecorateProps) => {
-
-  // background이 바뀔 때마다 body 배경 적용
-  useEffect(() => {
-    // console.log('background:', background);
-    switch (background) {
-      case 'none':
-        document.body.style.backgroundColor = '#EDE6DD';
-        document.body.style.backgroundImage = ''; // 색 비우기 
-        break;
-      case 'pink':
-        document.body.style.backgroundColor = 'rgba(244, 224, 227, 1)';
-        document.body.style.backgroundImage = '';
-        break;
-      case 'blue':
-        document.body.style.backgroundColor = 'rgba(205, 221, 230, 1)';
-        document.body.style.backgroundImage = '';
-        break;
-      case 'pattern':
-        document.body.style.backgroundImage = '';
-        document.body.style.backgroundImage = "url('/pattern1.png')";
-        document.body.style.backgroundSize = 'cover';
-        break;
-    }
-
-    // 페이지를 벗어나면 원래대로 복원
-    return () => {
-      document.body.style.backgroundColor = '#EDE6DD';
-      document.body.style.backgroundImage = '';
-    };
-  }, [background]);
-
-  // [추가] DB 저장 함수
-  // const handleSaveDesign = async () => {
-  //   const designData = {
-  //     title: exhibitionTitle, // 기존 제목 유지
-  //     ticket_id: ticketId,
-  //     design: {
-  //       frame_style: frameStyle,
-  //       background: background,
-  //       cukee_style: cukeeStyle, // 'line', 'noline', 'unbalance'
-  //     }
-  //   };
-
-  //   try {
-  //     // PUT 요청으로 기존 전시회 ID의 디자인을 수정
-  //     const response = await fetch(`/api/exhibitions/${exhibitionId}`, {
-  //       method: 'PUT',
-  //       headers: { 'Content-Type': 'application/json' },
-  //       body: JSON.stringify(designData),
-  //     });
-
-  //     if (response.ok) {
-  //       alert('디자인이 저장되었습니다! 🎨');
-  //       onClose(); // 저장 성공 시 창 닫기
-  //     } else {
-  //       alert('디자인 저장에 실패했습니다.');
-  //     }
-  //   } catch (error) {
-  //     console.error('저장 중 오류 발생:', error);
-  //   }
-  // };
-
   return (
     <div className={`${styles.container} ${styles[background]}`}>
       <div className={styles.bubble}>
