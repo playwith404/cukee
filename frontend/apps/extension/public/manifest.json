@@ -6,6 +6,7 @@
   "description": "왓챠 오버레이 큐레이션: 영화 추천 서비스",
   "action": {
     "default_title": "Cukee 열기",
+    "default_popup": "index.html",
     "default_icon": {
       "16": "cookie.png",
       "48": "cookie.png",
@@ -24,11 +25,10 @@
     "cookies" 
   ],
   "host_permissions": [
-    "http://34.64.90.142:8000/*",
+    "https://middle.cloudkakao.store/*",
     "https://watcha.com/*",
     "https://pedia.watcha.com/*",
-    "http://localhost:3000/*" 
-
+    "http://localhost:3000/*"
   ],
   "content_scripts": [
     {

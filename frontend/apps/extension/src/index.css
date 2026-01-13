@@ -17,23 +17,14 @@
   padding: 0;
 }
 
-html, body {
+html, body, #root {
   margin: 0;
   padding: 0;
+  width: 100%;
   height: 100%;
 }
 
 body {
   font-family: 'Pretendard', sans-serif;
   background-color: #373737;
-  overflow: hidden; 
-  /* min-width: 1500px; */
-}
-
-
-.layout-center-wrapper {
-    width: 1500px;
-    margin: 0 auto;
-    padding-left: 180px;
-    position: relative;
 }

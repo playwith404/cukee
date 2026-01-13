@@ -8,11 +8,6 @@ const MOCK_USER = {
     nickname: '개발용',
 };
 
-const GUEST_CREDENTIALS = {
-    email: 'ywcho1118@naver.com',
-    password: 'Howareyou!1'
-};
-
 interface User {
     userId: number;
     email: string;
@@ -32,30 +27,26 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         const initAuth = async () => {
+            // [모드 1] 모킹 모드일 때
+            if (USE_MOCK) {
+                console.log("🛠️ [Mock Mode] 강제 로그인 처리됨");
+                setUser(MOCK_USER);
+                setIsLoading(false);
+                return;
+            }
+            // [모드 2] 실제 모드일 때
             try {
-                // 1. 먼저 현재 유효한 세션(쿠키)이 있는지 확인
                 const userData = await checkAuth();
-                console.log("✅ 기존 로그인 정보 확인됨:", userData.nickname);
                 setUser(userData);
             } catch (error) {
-                // 2. 로그인이 안 되어 있다면? -> '공용 게스트 계정'으로 자동 로그인 시도!
-                console.log("🚀 로그인 정보 없음. 게스트 자동 로그인 시도 중...");
-                
-                try {
-                    // 백엔드에 로그인 요청 -> 성공 시 쿠키가 브라우저에 심어짐
-                    const guestUser = await apiLogin(GUEST_CREDENTIALS.email, GUEST_CREDENTIALS.password);
-                    console.log("🎉 게스트 로그인 성공!");
-                    setUser(guestUser);
-                } catch (loginError) {
-                    console.error("❌ 게스트 로그인 실패 (백엔드 확인 필요):", loginError);
-                    setUser(null);
-                }
+                // 401 Unauthorized or other errors -> Not authenticated
+                setUser(null);
             } finally {
                 setIsLoading(false);
             }

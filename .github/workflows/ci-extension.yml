@@ -1,0 +1,75 @@
+name: Extension CI/CD
+
+on:
+  push:
+    branches: [ "main", "dev" ]
+    paths:
+      - 'frontend/apps/extension/**'
+      - '.github/workflows/ci-extension.yml'
+  pull_request:
+    branches: [ "main", "dev" ]
+    paths:
+      - 'frontend/apps/extension/**'
+      - '.github/workflows/ci-extension.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Create .env file for Extension
+        working-directory: frontend/apps/extension
+        run: |
+          echo "VITE_API_BASE_URL=${{ secrets.VITE_API_BASE_URL }}" >> .env
+          echo "VITE_USE_MOCK=false" >> .env
+
+      - name: Build Extension
+        working-directory: frontend/apps/extension
+        run: npm run build
+
+      - name: Upload Extension artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: extension-build-${{ github.sha }}
+          path: frontend/apps/extension/dist
+          retention-days: 30
+
+  release:
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: extension-build-${{ github.sha }}
+          path: extension-dist
+
+      - name: Create ZIP for Chrome Web Store
+        run: |
+          cd extension-dist
+          zip -r ../extension-${{ github.sha }}.zip .
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: extension-v${{ github.run_number }}
+          name: Extension Release ${{ github.run_number }}
+          files: extension-${{ github.sha }}.zip
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
