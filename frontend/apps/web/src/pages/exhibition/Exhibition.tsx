@@ -89,8 +89,6 @@ export const Exhibition = () => {
 
   // 꾸미기 모달 상태 추가
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
-  // [신규] 확인 모달의 모드 ('design': 디자인 저장, 'save': 수정 저장)
-  const [confirmMode, setConfirmMode] = useState<'design' | 'save'>('design');
 
   // 저장 모달 상태 추가
   const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
@@ -418,15 +416,19 @@ export const Exhibition = () => {
 
   // === 전시회 저장 핸들러 (1단계: 모달 오픈) ===
   const handleSave = async () => {
+    // exhibitionId가 있으면 수정 모드, 없으면 신규 모드
+    // exhibitionIdParam은 URL에서 온 것이라 현재 작업 중인 ID와 다를 수 있지만, 
+    // 여기서는 exhibitionId(state)가 가장 정확함.
     const targetId = exhibitionId || (exhibitionIdParam ? parseInt(exhibitionIdParam, 10) : null);
+
+    console.log("handleSave 호출됨. targetId:", targetId);
 
     if (!targetId) {
       // 1. 신규 생성: 이름 입력 모달 띄우기
       setTempTitle(exhibitionTitle);
       setIsSaveModalOpen(true);
     } else {
-      // 2. 기존 수정: 단순 확인 모달 띄우기 (이름 입력 X)
-      setConfirmMode('save');
+      // 2. 기존 수정: 단순 확인 모달 띄우기
       setIsConfirmModalOpen(true);
     }
   };
@@ -514,15 +516,10 @@ export const Exhibition = () => {
     }
   };
 
-  // 모달 '확인' 클릭 시 실행될 함수 (통합 핸들러)
+  // 모달 '확인' 클릭 시 실행될 함수 (저장 확인 전용)
   const handleConfirmAction = async () => {
     setIsConfirmModalOpen(false); // 모달 닫기
-
-    if (confirmMode === 'design') {
-      await handleSaveDesign(); // 디자인 저장 (꾸미기 모드 종료)
-    } else {
-      await handleFinalSave();  // 수정 내용 저장 (일반 저장)
-    }
+    await handleFinalSave();      // 수정 내용 저장 (일반 저장)
   };
 
   // === 영화 고정 핸들러 ===
@@ -740,18 +737,9 @@ export const Exhibition = () => {
       {isConfirmModalOpen && (
         <div className={styles.modalOverlay}>
           <div className={styles.glassModal}>
-            <h3 className={styles.modalTitle}>
-              {confirmMode === 'design' ? '디자인 적용' : '전시회 저장'}
-            </h3>
+            <h3 className={styles.modalTitle}>전시회 저장</h3>
             <p className={styles.modalDesc}>
-              {confirmMode === 'design' ? (
-                <>
-                  이대로 전시회 디자인을 적용하시겠습니까? <br />
-                  <span className={styles.promptDesc}>꾸미기 모드를 종료하고 저장합니다.</span>
-                </>
-              ) : (
-                '현재 내용을 저장하시겠습니까?'
-              )}
+              현재 내용을 저장하시겠습니까?
             </p>
 
             <div className={styles.modalActions}>
