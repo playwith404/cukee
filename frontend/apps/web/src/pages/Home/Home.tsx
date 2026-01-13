@@ -6,7 +6,7 @@ import { fetchTickets, toggleTicketLike, type Ticket } from '../../apis/exhibiti
 import { useAuth } from '../../contexts/AuthContext';
 import styles from './Home.module.css';
 import { FALLBACK_TICKETS } from './fallbackData';
-import { HiHeart, HiOutlineHeart } from "react-icons/hi"; // 하트 아이콘 추가
+import { HiHeart, HiOutlineHeart } from "react-icons/hi";
 
 // --- 고정 데이터 ---
 const curatorIntroText = "안녕하세요. MZ 큐레이터 김엠지예요. 밝고 도파민 터지는 영화만 추천해줄게요.";
@@ -22,10 +22,75 @@ export default function HomePage() {
 
   // 뷰 모드 상태 관리
   const [viewMode, setViewMode] = useState<'default' | 'viewAll'>('default');
+  
+  // 왓챠 영화 제목 상태
+  const [currentMovieTitle, setCurrentMovieTitle] = useState<string | null>(null);
 
   const nickname = user?.nickname;
   const totalTickets = tickets.length;
   const currentTicket = tickets[currentIndex];
+
+  // [로직 1] 왓챠 현재 탭 제목 가져오기
+  useEffect(() => {
+    if (typeof chrome !== 'undefined' && chrome.tabs && chrome.tabs.query) {
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        const activeTab = tabs[0];
+        if (activeTab?.url && activeTab.url.includes('watcha.com/contents')) {
+          const rawTitle = activeTab.title || "";
+          // " | 왓챠", " - 왓챠" 제거
+          const cleanTitle = rawTitle.replace(/\s*[|\-]\s*왓챠.*$/, '').trim();
+          if (cleanTitle) setCurrentMovieTitle(cleanTitle);
+        }
+      });
+    }
+  }, []);
+
+  // 상수 정의
+  const LINE_BREAK_LIMIT = 10; // 줄바꿈 기준 길이
+  const RESIZE_LIMIT = 20;     // 폰트 줄임 기준 길이
+
+  // 상태 변수 (JSX에서 사용)
+  const isVeryLong = currentMovieTitle && currentMovieTitle.length > RESIZE_LIMIT;
+  const isShortTitle = currentMovieTitle && currentMovieTitle.length <= LINE_BREAK_LIMIT;
+
+  // ✅ [로직 2] 제목 렌더링 헬퍼 (긴 제목 줄바꿈 용)
+  const renderSplitTitle = (title: string) => {
+    // 10자 이하면 줄바꿈 없이 반환 (어차피 아래 JSX에서 처리함)
+    if (title.length <= LINE_BREAK_LIMIT) {
+      return <span>'{title}'</span>;
+    }
+
+    // 자연스러운 줄바꿈 로직 (공백 기준)
+    const words = title.split(' ');
+    let firstLine = words[0];
+    let restStartIndex = 1;
+
+    // 적절한 길이(13자 내외)에서 끊기
+    for (let i = 1; i < words.length; i++) {
+      if ((firstLine + " " + words[i]).length <= 13) {
+        firstLine += " " + words[i];
+        restStartIndex = i + 1;
+      } else {
+        break; 
+      }
+    }
+
+    let secondLine = words.slice(restStartIndex).join(' ');
+
+    // 띄어쓰기 없는 긴 단어 강제 절삭
+    if (!secondLine && title.length > LINE_BREAK_LIMIT) {
+       firstLine = title.slice(0, LINE_BREAK_LIMIT);
+       secondLine = title.slice(LINE_BREAK_LIMIT);
+    }
+
+    // 긴 제목은 자체적으로 두 줄로 나눔
+    return (
+      <span>
+        '{firstLine}<br />
+        {secondLine}'
+      </span>
+    );
+  };
 
   useEffect(() => {
     const loadData = async () => {
@@ -66,21 +131,16 @@ export default function HomePage() {
     }, 500);
   };
 
-  // 좋아요 핸들러 추가
   const handleLike = async (e: React.MouseEvent) => {
     e.stopPropagation();
-
-    // null 체크 및 로그인 체크 - user 객체 확인
     if (!currentTicket) return;
-    if (!user) { // useAuth()에서 가져온 user 객체로 로그인 여부 확인
+    if (!user) {
       alert("로그인이 필요한 기능입니다.");
       return;
     }
 
     const ticketId = currentTicket.id;
-
     try {
-      // Optimistic Update
       setTickets(prevTickets =>
         prevTickets.map(ticket => {
           if (ticket.id === ticketId) {
@@ -95,7 +155,6 @@ export default function HomePage() {
       );
 
       const result = await toggleTicketLike(ticketId);
-
       if (result.success) {
         setTickets(prevTickets =>
           prevTickets.map(ticket => {
@@ -112,11 +171,9 @@ export default function HomePage() {
       }
     } catch (error) {
       console.error('좋아요 처리 실패:', error);
-      // 에러 시 롤백 로직은 생략하거나 다시 fetch
     }
   };
 
-  // 모드 토글 함수
   const toggleViewMode = () => {
     setViewMode(prev => prev === 'default' ? 'viewAll' : 'default');
   };
@@ -131,19 +188,17 @@ export default function HomePage() {
 
   return (
       <div className={`${styles.killcho} ${viewMode === 'viewAll' ? styles.scrollLocked : ''}`}>
-        {/* 헤더: viewAll 모드일 땐 숨김 */}
+        {/* 헤더 */}
         <div className={`${styles.headerWrapper} ${viewMode === 'viewAll' ? styles.hidden : ''}`}>
           <Header currentSection={currentTicket?.curatorName || '큐레이터'} />
         </div>
 
-        {/* 티켓만 보기 전용 헤더 (카운터) */}
+        {/* 뷰 모드 헤더 */}
         <div className={`${styles.viewAllHeader} ${viewMode === 'viewAll' ? styles.visible : ''}`}>
-          {/* 1. 카운터 */}
           <div className={styles.centerCounter}>
             <span className={styles.bigCount}>{(currentIndex + 1).toString().padStart(2, '0')}</span>
             <span className={styles.smallCount}>/{totalTickets.toString().padStart(2, '0')}</span>
           </div>
-          {/* 2. 큐레이터 이름 & 메시지 */}
           <div className={styles.separatorLine} />
           <div className={styles.viewAllTextWrapper}>
             <h2 className={styles.viewAllCuratorName}>
@@ -158,19 +213,48 @@ export default function HomePage() {
         <div className={styles.innerContainer}>
           <main className={styles.mainContent}>
             <div className={styles.upperSplit}>
-              {/* 데코박스 이원화 적용 */}
               <div className={`${styles.decoBox} ${viewMode ? styles.decoBoxHidden : ''}`} />
               <div className={`${styles.decoBoxFixed} ${viewMode ? styles.decoBoxFixedVisible : ''}`} />
 
-              {/* 텍스트 섹션: viewAll 모드면 페이드 아웃 */}
+              {/* 텍스트 섹션 */}
               <div className={`${styles.textSection} ${viewMode === 'viewAll' ? styles.fadeOut : ''}`}>
                 <div>
-                  <h1 className={styles.title}>
-                    {nickname ? `${nickname}님,` : '안녕하세요,'}<br />어떤 영화를<br />보고 싶나요?
-                  </h1>
-                  <p className={styles.subText}>
-                    당신을 위한 큐레이터가 대기 중이에요.
-                  </p>
+                  {currentMovieTitle ? (
+                    <>
+                      {/* ✅ [수정] 제목 조건별 3줄 레이아웃 + 폰트 사이즈 조절 */}
+                      <h1 
+                        className={styles.title}
+                        style={isVeryLong ? { fontSize: '80px', lineHeight: '1.2' } : undefined}
+                      >
+                        {isShortTitle ? (
+                          // Case 1: 짧은 제목 -> 강제 3줄 (제목 / 영화에 / 관심...)
+                          <>
+                            '{currentMovieTitle}'<br />
+                            영화에<br />
+                            관심 있으신가요?
+                          </>
+                        ) : (
+                          // Case 2: 긴 제목 -> 자동 3줄 (제목1 / 제목2'에 / 관심...)
+                          <>
+                            {renderSplitTitle(currentMovieTitle)}에<br />
+                            관심 있으신가요?
+                          </>
+                        )}
+                      </h1>
+                      <p className={styles.subText}>
+                        이 영화와 잘 어울리는 전시회를 소개합니다.
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <h1 className={styles.title}>
+                        {nickname ? `${nickname}님,` : '안녕하세요,'}<br />어떤 영화를<br />보고 싶나요?
+                      </h1>
+                      <p className={styles.subText}>
+                        당신을 위한 큐레이터가 대기 중이에요.
+                      </p>
+                    </>
+                  )}
                 </div>
 
                 <p className={styles.ticketCounter}>
@@ -199,7 +283,7 @@ export default function HomePage() {
                   onTicketClick={handleTicketClick}
                   animatingTicketId={animatingTicketId}
                   viewMode={viewMode}
-                  onToggleViewMode={toggleViewMode} // ✅ 함수 전달!
+                  onToggleViewMode={toggleViewMode}
                 />
               </div>
             </div>

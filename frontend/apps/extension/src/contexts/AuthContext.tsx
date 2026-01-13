@@ -8,6 +8,11 @@ const MOCK_USER = {
     nickname: '개발용',
 };
 
+const GUEST_CREDENTIALS = {
+    email: 'ywcho1118@naver.com',
+    password: 'Howareyou!1'
+};
+
 interface User {
     userId: number;
     email: string;
@@ -33,20 +38,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     useEffect(() => {
         const initAuth = async () => {
-            // [모드 1] 모킹 모드일 때
-            if (USE_MOCK) {
-                console.log("🛠️ [Mock Mode] 강제 로그인 처리됨");
-                setUser(MOCK_USER); // 무조건 로그인 상태로 시작
-                setIsLoading(false);
-                return;
-            }
-            //[모드2] 실제 웹 모드일때
             try {
+                // 1. 먼저 현재 유효한 세션(쿠키)이 있는지 확인
                 const userData = await checkAuth();
+                console.log("✅ 기존 로그인 정보 확인됨:", userData.nickname);
                 setUser(userData);
             } catch (error) {
-                // 401 Unauthorized or other errors -> Not authenticated
-                setUser(null);
+                // 2. 로그인이 안 되어 있다면? -> '공용 게스트 계정'으로 자동 로그인 시도!
+                console.log("🚀 로그인 정보 없음. 게스트 자동 로그인 시도 중...");
+                
+                try {
+                    // 백엔드에 로그인 요청 -> 성공 시 쿠키가 브라우저에 심어짐
+                    const guestUser = await apiLogin(GUEST_CREDENTIALS.email, GUEST_CREDENTIALS.password);
+                    console.log("🎉 게스트 로그인 성공!");
+                    setUser(guestUser);
+                } catch (loginError) {
+                    console.error("❌ 게스트 로그인 실패 (백엔드 확인 필요):", loginError);
+                    setUser(null);
+                }
             } finally {
                 setIsLoading(false);
             }
@@ -54,7 +63,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         initAuth();
     }, []);
-
+    
     const login = async (email: string, password: string) => {
         // [1] Mock 모드면 API 호출 아예 안 함 (바로 성공 처리)
         if (USE_MOCK) {
