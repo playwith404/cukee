@@ -89,6 +89,8 @@ export const Exhibition = () => {
 
   // 꾸미기 모달 상태 추가
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  // [신규] 확인 모달의 모드 ('design': 디자인 저장, 'save': 수정 저장)
+  const [confirmMode, setConfirmMode] = useState<'design' | 'save'>('design');
 
   // 저장 모달 상태 추가
   const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
@@ -416,9 +418,17 @@ export const Exhibition = () => {
 
   // === 전시회 저장 핸들러 (1단계: 모달 오픈) ===
   const handleSave = async () => {
-    // 현재 제목을 임시 제목으로 설정 (사용자가 수정하기 편하게)
-    setTempTitle(exhibitionTitle);
-    setIsSaveModalOpen(true);
+    const targetId = exhibitionId || (exhibitionIdParam ? parseInt(exhibitionIdParam, 10) : null);
+
+    if (!targetId) {
+      // 1. 신규 생성: 이름 입력 모달 띄우기
+      setTempTitle(exhibitionTitle);
+      setIsSaveModalOpen(true);
+    } else {
+      // 2. 기존 수정: 단순 확인 모달 띄우기 (이름 입력 X)
+      setConfirmMode('save');
+      setIsConfirmModalOpen(true);
+    }
   };
 
   // === 전시회 최종 저장 핸들러 (2단계: API 호출) ===
@@ -504,10 +514,15 @@ export const Exhibition = () => {
     }
   };
 
-  // 모달 '확인' 클릭 시 실행될 함수
-  const handleConfirmDesign = async () => {
+  // 모달 '확인' 클릭 시 실행될 함수 (통합 핸들러)
+  const handleConfirmAction = async () => {
     setIsConfirmModalOpen(false); // 모달 닫기
-    await handleSaveDesign();      // 실제 저장 실행
+
+    if (confirmMode === 'design') {
+      await handleSaveDesign(); // 디자인 저장 (꾸미기 모드 종료)
+    } else {
+      await handleFinalSave();  // 수정 내용 저장 (일반 저장)
+    }
   };
 
   // === 영화 고정 핸들러 ===
@@ -725,10 +740,18 @@ export const Exhibition = () => {
       {isConfirmModalOpen && (
         <div className={styles.modalOverlay}>
           <div className={styles.glassModal}>
-            <h3 className={styles.modalTitle}>디자인 적용</h3>
+            <h3 className={styles.modalTitle}>
+              {confirmMode === 'design' ? '디자인 적용' : '전시회 저장'}
+            </h3>
             <p className={styles.modalDesc}>
-              이대로 전시회 디자인을 적용하시겠습니까? <br />
-              <span className={styles.promptDesc}>꾸미기 모드를 종료하고 저장합니다.</span>
+              {confirmMode === 'design' ? (
+                <>
+                  이대로 전시회 디자인을 적용하시겠습니까? <br />
+                  <span className={styles.promptDesc}>꾸미기 모드를 종료하고 저장합니다.</span>
+                </>
+              ) : (
+                '현재 내용을 저장하시겠습니까?'
+              )}
             </p>
 
             <div className={styles.modalActions}>
@@ -740,7 +763,7 @@ export const Exhibition = () => {
               </button>
               <button
                 className={styles.btnConfirm}
-                onClick={handleConfirmDesign}
+                onClick={handleConfirmAction}
               >
                 확인
               </button>
