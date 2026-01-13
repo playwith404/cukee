@@ -1,11 +1,12 @@
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import Loading from './Loading/Loading';
 
 export const PublicRoute = () => {
     const { isAuthenticated, isLoading } = useAuth();
 
     if (isLoading) {
-        return <div>Loading...</div>;
+        return <Loading text="확인 중..." characterCount={3} />;
     }
 
     if (isAuthenticated) {

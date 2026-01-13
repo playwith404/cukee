@@ -18,7 +18,6 @@ export default function HomePage() {
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [tickets, setTickets] = useState<Ticket[]>([]);
-  const [loading, setLoading] = useState(true);
   const [animatingTicketId, setAnimatingTicketId] = useState<number | null>(null);
 
   // 뷰 모드 상태 관리
@@ -27,11 +26,9 @@ export default function HomePage() {
   const nickname = user?.nickname;
   const totalTickets = tickets.length;
   const currentTicket = tickets[currentIndex];
-
   useEffect(() => {
     const loadData = async () => {
       try {
-        setLoading(true);
         const ticketResponse = await fetchTickets();
         if (ticketResponse.data && ticketResponse.data.length > 0) {
           const fixedTickets = ticketResponse.data.map(t => ({
@@ -43,8 +40,6 @@ export default function HomePage() {
         }
       } catch (err) {
         setTickets(FALLBACK_TICKETS);
-      } finally {
-        setLoading(false);
       }
     };
     loadData();
@@ -122,15 +117,7 @@ export default function HomePage() {
     setViewMode(prev => prev === 'default' ? 'viewAll' : 'default');
   };
 
-  if (loading) {
-    return (
-      <MainLayout>
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-          <p>티켓을 불러오는 중...</p>
-        </div>
-      </MainLayout>
-    );
-  }
+
 
   return (
     <MainLayout>
