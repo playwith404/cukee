@@ -18,6 +18,14 @@ export default function HomePage() {
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [tickets, setTickets] = useState<Ticket[]>([]);
+  const [animatingTicketId, setAnimatingTicketId] = useState<number | null>(null);
+
+  // 뷰 모드 상태 관리
+  const [viewMode, setViewMode] = useState<'default' | 'viewAll'>('default');
+
+  const nickname = user?.nickname;
+  const totalTickets = tickets.length;
+  const currentTicket = tickets[currentIndex];
   useEffect(() => {
     const loadData = async () => {
       try {
