@@ -1,6 +1,7 @@
 import { HashRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext'; // 👈 추가
 import HomePage from './pages/Home/Home';
+import { Exhibition } from './pages/exhibition/Exhibition';
 
 function App() {
   return (
@@ -9,6 +10,7 @@ function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             {/* 필요한 다른 라우트들... */}
+            <Route path="/exhibition" element={<Exhibition />} />
           </Routes>
       </HashRouter>
     </AuthProvider>

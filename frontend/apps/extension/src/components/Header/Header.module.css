@@ -12,18 +12,20 @@
 }
 
 .header {
-  width: 1300px; /* 기존 규격 유지 (iframe이 커서 괜찮음) */
+  width: 1300px;
+  /* position relative가 있어야 내부 absolute 요소들의 기준점이 됨 */
+  position: relative; 
   display: flex;
-  justify-content: center;
+  justify-content: center; /* 가운데 정렬 핵심 */
   align-items: center;
   padding: 10px 20px;
   border-radius: 9999px;
   box-shadow: inset 0 4px 10px 0 rgba(0, 0, 0, 0.15);
   pointer-events: auto;
-  position: relative;
   background-color: #262626;
 }
 
+/* ✅ 중앙 컨테이너 (그대로 유지) */
 .container {
   width: 700px;
   height: 45px;
@@ -36,7 +38,7 @@
   padding: 0 20px;
   box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.25);
   color: white;
-  margin: 0;
+  margin: 0; /* margin auto 제거, flex justify-center로 제어 */
 }
 
 .title {
@@ -52,32 +54,54 @@
   margin-right: 25px;
 }
 
-/* 햄버거 버튼이 있던 자리 (공간만 차지하게 두거나 삭제 가능) */
-.menuWrapper {
-  position: relative;
-  width: 28px;
-  height: 50px;
+/* =========================================
+   ✅ [변경] 좌우측 요소 절대 위치 배치
+   가운데 타이틀에 영향을 주지 않기 위함
+   ========================================= */
+
+.leftPos {
+  position: absolute;
+  left: 30px; /* 헤더 좌측 여백 */
+  top: 50%;
+  transform: translateY(-50%);
   display: flex;
   align-items: center;
-  transform: translateX(-100px);
-  /* 버튼은 없지만 위치값 유지 */
 }
 
-.rightWrapper {
-  position: relative;
-  width: 50px;
-  height: 50px;
+.rightPos {
+  position: absolute;
+  right: 30px; /* 헤더 우측 여백 */
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+}
+
+/* ✅ 홈 버튼 스타일 */
+.iconBtn {
+  background: none;
+  border: none;
+  color: #8F8784;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transform: translateX(100px);
+  padding: 8px;
+  border-radius: 50%;
+  transition: all 0.2s;
 }
 
+.iconBtn:hover {
+  background-color: rgba(143, 135, 132, 0.1);
+  color: #ffffff;
+}
+
+/* ✅ 19금 버튼 스타일 */
 .toggleBtn {
   background: none;
   border: 1px solid #8F8784;
   border-radius: 20px;
-  padding: 5px 10px;
+  padding: 5px 12px; /* 가로 패딩 살짝 늘림 */
   font-size: 14px;
   color: #8F8784;
   cursor: pointer;
@@ -88,14 +112,19 @@
 
 .toggleBtn:hover {
   background-color: rgba(143, 135, 132, 0.1);
+  color: #ffffff;
 }
 
+/* ✅ 활성화(19금 켜짐) 상태: 빨간색 */
 .toggleBtnActive {
-  background-color: #ff4d4f;
+  background-color: transparent; /* 배경 채우기보다 테두리 강조가 깔끔할 수 있음. 원하면 #ff4d4f 채워도 됨 */
   border: 1px solid #ff4d4f;
-  color: white;
+  color: #ff4d4f;
+  font-weight: 700;
+  box-shadow: 0 0 8px rgba(255, 77, 79, 0.3); /* 빨간색 글로우 효과 추가 */
 }
 
 .toggleBtnActive:hover {
-  background-color: #d9363e;
+  background-color: rgba(255, 77, 79, 0.1);
+  color: #ff4d4f;
 }
