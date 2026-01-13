@@ -7,7 +7,7 @@ WORKDIR /app
 RUN npm install turbo --global
 COPY . .
 # 'web'은 apps/web의 package.json에 있는 name 속성값이어야 합니다.
-RUN turbo prune --scope=web --docker
+RUN turbo prune web --docker
 
 # 3. Installer stage: 의존성 설치 및 빌드
 FROM base AS installer
