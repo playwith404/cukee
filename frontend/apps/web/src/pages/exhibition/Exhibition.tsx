@@ -45,8 +45,8 @@ export const Exhibition = () => {
   const ticketIdParam = searchParams.get('ticket');
   const exhibitionIdParam = searchParams.get('exhibitionId'); // 전시회 ID 파라미터
   const [exhibitionId, setExhibitionId] = useState<number | null>(
-      exhibitionIdParam ? parseInt(exhibitionIdParam, 10) : null
-    );
+    exhibitionIdParam ? parseInt(exhibitionIdParam, 10) : null
+  );
   //const currentTicketId = ticketIdParam ? parseInt(ticketIdParam, 10) : 1;
   // 기존 const 대신 useState 사용
   const [currentTicketId, setCurrentTicketId] = useState<number>(
@@ -90,7 +90,11 @@ export const Exhibition = () => {
   // 꾸미기 모달 상태 추가
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
 
-  // [신규] 10초 지연 감지 타이머 로직
+  // 저장 모달 상태 추가
+  const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
+  const [tempTitle, setTempTitle] = useState("");
+
+  // 10초 지연 감지 타이머 로직
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>;
 
@@ -153,7 +157,7 @@ export const Exhibition = () => {
       setCurrentTicketId(initialId);
       setCukeeId(`c${initialId}`); // 새 생성 모드일 때 캐릭터를 즉시 할당
 
-      setFrameStyle('basic'); 
+      setFrameStyle('basic');
       setBackground('none');
       return;
     }
@@ -165,14 +169,14 @@ export const Exhibition = () => {
 
         if (data) {
           const savedTicketId = data.ticketId || data.ticket_group_id || data.ticketGroupId;
-          
+
           if (savedTicketId) {
             console.log("서버에서 받은 진짜 ID:", savedTicketId);
             // ✅ 티켓 ID(숫자)와 큐키 ID('c11' 등)를 동시에 즉시 업데이트
             setCurrentTicketId(Number(savedTicketId));
             const newCukeeId = `c${savedTicketId}`;
-            setCukeeId(newCukeeId); 
-            
+            setCukeeId(newCukeeId);
+
             console.log("큐키 번호 로드 완료:", newCukeeId);
           }
           // 저장할 때 'design' 객체에 넣었으므로 꺼낼 때도 확인
@@ -410,26 +414,48 @@ export const Exhibition = () => {
     }
   };
 
-  // === 전시회 저장 핸들러 ===
+  // === 전시회 저장 핸들러 (1단계: 모달 오픈) ===
   const handleSave = async () => {
+    // exhibitionId가 있으면 수정 모드, 없으면 신규 모드
+    // exhibitionIdParam은 URL에서 온 것이라 현재 작업 중인 ID와 다를 수 있지만, 
+    // 여기서는 exhibitionId(state)가 가장 정확함.
     const targetId = exhibitionId || (exhibitionIdParam ? parseInt(exhibitionIdParam, 10) : null);
-    
+
+    console.log("handleSave 호출됨. targetId:", targetId);
+
+    if (!targetId) {
+      // 1. 신규 생성: 이름 입력 모달 띄우기
+      setTempTitle(exhibitionTitle);
+      setIsSaveModalOpen(true);
+    } else {
+      // 이미 TopControls에서 확인을 받았으므로 바로 저장
+      await handleFinalSave();
+    }
+  };
+
+  // === 전시회 최종 저장 핸들러 (2단계: API 호출) ===
+  const handleFinalSave = async () => {
+    const targetId = exhibitionId || (exhibitionIdParam ? parseInt(exhibitionIdParam, 10) : null);
+
+    // 사용자가 입력한 제목이 없으면 기존 제목 유지 (혹은 유효성 검사)
+    const finalTitle = tempTitle.trim() || exhibitionTitle;
+
     const exhibitionData = {
-        title: exhibitionTitle || `전시회 ${new Date().toLocaleDateString()}`,
-        isPublic: true,
-        ticketId: currentTicketId, // 티켓 ID 추가
-        // --- 디자인 요소 추가 ---
-        design: {
-          frameStyle: frameStyle,     // 'none', 'basic', 'frame2'
-          background: background,   // 'pink', 'pattern' 등
-          cukeeStyle: cukeeStyle,     // 'line', 'noline', 'unbalance'
-        },
-        movies: frames.map((frame: Frame, index: number) => ({
-          movieId: frame.id,
-          displayOrder: index,
-          isPinned: frame.isPinned || false
-        }))
-      };
+      title: finalTitle, // ✅ 입력받은 제목 사용
+      isPublic: true,
+      ticketId: currentTicketId,
+      design: {
+        frameStyle: frameStyle,
+        background: background,
+        cukeeStyle: cukeeStyle,
+      },
+      movies: frames.map((frame: Frame, index: number) => ({
+        movieId: frame.id,
+        displayOrder: index,
+        isPinned: frame.isPinned || false
+      }))
+    };
+
     try {
       if (targetId) {
         await api.put(`/exhibitions/${targetId}`, exhibitionData);
@@ -437,9 +463,15 @@ export const Exhibition = () => {
         const result = await createExhibition(exhibitionData);
         if (result?.id) setExhibitionId(result.id);
       }
+
+      // ✅ 상태 업데이트 및 모달 닫기
+      setExhibitionTitle(finalTitle);
       alert("전시회가 목록에 저장되었습니다!");
+      setIsSaveModalOpen(false);
       setBottomMode('action');
+
     } catch (error) {
+      console.error("저장 실패:", error);
       alert("최종 저장에 실패했습니다.");
     }
   };
@@ -453,7 +485,7 @@ export const Exhibition = () => {
       console.log("아이디가 없으므로 화면에만 임시 적용합니다.");
       // 서버 통신 없이 메뉴만 닫음. 
       // 이미 background, frameStyle 상태는 바뀌어 있으므로 화면엔 적용된 상태임.
-      setBottomMode('action'); 
+      setBottomMode('action');
       return;
     }
 
@@ -484,10 +516,10 @@ export const Exhibition = () => {
     }
   };
 
-  // 모달 '확인' 클릭 시 실행될 함수
-  const handleConfirmDesign = async () => {
+  // 모달 '확인' 클릭 시 실행될 함수 (저장 확인 전용)
+  const handleConfirmAction = async () => {
     setIsConfirmModalOpen(false); // 모달 닫기
-    await handleSaveDesign();      // 실제 저장 실행
+    await handleFinalSave();      // 수정 내용 저장 (일반 저장)
   };
 
   // === 영화 고정 핸들러 ===
@@ -611,7 +643,7 @@ export const Exhibition = () => {
       <div className={styles.topControlSection}>
         {!isReadOnly && (
           <TopControls
-            onSave={handleSave} 
+            onSave={handleSave}
             onDecorate={() => {
               // 💡 현재 모드가 이미 'decorate'라면 'action'으로 바꿔서 닫아버림
               if (bottomMode === 'decorate') {
@@ -625,7 +657,7 @@ export const Exhibition = () => {
           />
         )}
       </div>
-      
+
       {/* 갤러리 영역 */}
       <div className={`${styles.galleryWrapper} ${isReadOnly ? styles.moveDown : ''} ${bottomMode === 'decorate' ? styles.extraPadding : ''}`} >
         <Gallery3D
@@ -685,49 +717,85 @@ export const Exhibition = () => {
         />
       )}
 
-    {/* 하단 컨트롤바/꾸미기 창 */}
-    {bottomMode === 'decorate' && (
-      <ExhibitionDecorate
-        exhibitionId={exhibitionId}     // ✅ 전달 확인
-        exhibitionTitle={exhibitionTitle} // ✅ 전달 확인
-        onClose={() => setBottomMode('action')} // 닫기(X) 버튼 클릭 시 그냥 복귀
-        onSaveClick={handleSaveDesign} // ✅ 체크 버튼 클릭 시 저장 함수 실행
-        ticketId={currentTicketId}
-        cukeeStyle={cukeeStyle}
-        onChangeCukeeStyle={setCukeeStyle}
-        frameStyle={frameStyle} 
-        onChangeFrameStyle={setFrameStyle}
-        background={background}
-        onChangeBackground={setBackground}
-      />
-    )}
+      {/* 하단 컨트롤바/꾸미기 창 */}
+      {bottomMode === 'decorate' && (
+        <ExhibitionDecorate
+          exhibitionId={exhibitionId}     // ✅ 전달 확인
+          exhibitionTitle={exhibitionTitle} // ✅ 전달 확인
+          onClose={() => setBottomMode('action')} // 닫기(X) 버튼 클릭 시 그냥 복귀
+          onSaveClick={handleSaveDesign} // ✅ 체크 버튼 클릭 시 저장 함수 실행
+          ticketId={currentTicketId}
+          cukeeStyle={cukeeStyle}
+          onChangeCukeeStyle={setCukeeStyle}
+          frameStyle={frameStyle}
+          onChangeFrameStyle={setFrameStyle}
+          background={background}
+          onChangeBackground={setBackground}
+        />
+      )}
 
-    {isConfirmModalOpen && (
-      <div className={styles.modalOverlay}>
-        <div className={styles.glassModal}>
-          <h3 className={styles.modalTitle}>디자인 적용</h3>
-          <p className={styles.modalDesc}>
-            이대로 전시회 디자인을 적용하시겠습니까? <br />
-            <span className={styles.promptDesc}>꾸미기 모드를 종료하고 저장합니다.</span>
-          </p>
-          
-          <div className={styles.modalActions}>
-            <button 
-              className={styles.btnCancel} 
-              onClick={() => setIsConfirmModalOpen(false)}
-            >
-              취소
-            </button>
-            <button 
-              className={styles.btnConfirm} 
-              onClick={handleConfirmDesign}
-            >
-              확인
-            </button>
+      {isConfirmModalOpen && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.glassModal}>
+            <h3 className={styles.modalTitle}>전시회 저장</h3>
+            <p className={styles.modalDesc}>
+              현재 내용을 저장하시겠습니까?
+            </p>
+
+            <div className={styles.modalActions}>
+              <button
+                className={styles.btnCancel}
+                onClick={() => setIsConfirmModalOpen(false)}
+              >
+                취소
+              </button>
+              <button
+                className={styles.btnConfirm}
+                onClick={handleConfirmAction}
+              >
+                확인
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-    )}
+      )}
+
+      {/* 저장 전 이름 설정 모달 */}
+      {isSaveModalOpen && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.glassModal}>
+            <h3 className={styles.modalTitle}>전시회 이름 설정</h3>
+            <p className={styles.modalDesc}>
+              저장할 전시회의 이름을 입력해주세요.
+            </p>
+
+            {/* 입력 필드 */}
+            <input
+              type="text"
+              className={styles.modalInput}
+              value={tempTitle}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTempTitle(e.target.value)}
+              placeholder="나만의 전시회 이름을 지어보세요"
+              autoFocus
+            />
+
+            <div className={styles.modalActions}>
+              <button
+                className={styles.btnCancel}
+                onClick={() => setIsSaveModalOpen(false)}
+              >
+                취소
+              </button>
+              <button
+                className={styles.btnConfirm}
+                onClick={handleFinalSave}
+              >
+                저장하기
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
