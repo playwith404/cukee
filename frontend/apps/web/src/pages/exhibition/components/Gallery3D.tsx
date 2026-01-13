@@ -166,7 +166,7 @@ export const Gallery3D = ({
                 ${styles.frame} 
                 ${positionClass} 
                 ${styles[`style_${frameStyle}`]}
-            `} 
+            `}
               onClick={() => onSelect(index)}
             >
               {/* 1. 이미지 영역 (content) */}
@@ -197,10 +197,9 @@ export const Gallery3D = ({
                   <div className={styles.emptyContent}>{frame.content}</div>
                 )}
               </div>
-              {isEditMode && (
-                <div className={styles.actions}>
-                  <div className={styles.actionTitle}>{movieTitle}</div>
-
+              <div className={styles.actions}>
+                <div className={styles.actionTitle}>{movieTitle}</div>
+                {isEditMode && (
                   <div className={styles.buttonGroup}>
                     <button
                       type="button"
@@ -226,8 +225,8 @@ export const Gallery3D = ({
                       삭제하기
                     </button>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
           );
         })}
