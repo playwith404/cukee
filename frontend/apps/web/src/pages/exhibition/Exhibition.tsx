@@ -428,8 +428,8 @@ export const Exhibition = () => {
       setTempTitle(exhibitionTitle);
       setIsSaveModalOpen(true);
     } else {
-      // 2. 기존 수정: 단순 확인 모달 띄우기
-      setIsConfirmModalOpen(true);
+      // 이미 TopControls에서 확인을 받았으므로 바로 저장
+      await handleFinalSave();
     }
   };
 
