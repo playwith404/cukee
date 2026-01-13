@@ -29,14 +29,16 @@ const CARA_IMAGES = [
 
 // 배경 색상 목록
 const BACKGROUND_COLORS = [
+  '#ff6b6b',
   '#feca57',
+  '#48dbfb',
+  '#1dd1a1',
+  '#a29bfe',
+  '#fd79a8',
   '#fdcb6e',
-  '#ffeaa7',
-  '#eccc68',
-  '#fffa65',
-  '#fff200',
-  '#EDE6DD',
-  '#F8EFBA',
+  '#74b9ff',
+  '#55efc4',
+  '#dfe6e9',
 ];
 
 // 배열에서 무작위로 n개를 선택하는 함수
