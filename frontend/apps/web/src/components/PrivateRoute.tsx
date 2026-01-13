@@ -1,5 +1,6 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import Loading from './Loading/Loading';
 
 export const PrivateRoute = () => {
     const { isAuthenticated, isLoading } = useAuth();
@@ -8,7 +9,7 @@ export const PrivateRoute = () => {
     if (isLoading) {
         // 로딩 중일 때 표시할 컴포넌트 (스피너 등)
         // 현재는 빈 화면 혹은 스켈레톤 UI를 보여줄 수 있음
-        return <div>Loading...</div>;
+        return <Loading text="인증 정보 확인 중..." characterCount={3} />;
     }
 
     if (!isAuthenticated) {

@@ -122,15 +122,7 @@ export default function HomePage() {
     setViewMode(prev => prev === 'default' ? 'viewAll' : 'default');
   };
 
-  if (loading) {
-    return (
-      <MainLayout>
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-          <p>티켓을 불러오는 중...</p>
-        </div>
-      </MainLayout>
-    );
-  }
+
 
   return (
     <MainLayout>
