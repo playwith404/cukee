@@ -14,19 +14,18 @@
 }
 
 .character {
-  width: 60px;
-  height: 60px;
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   animation: bounce 1.4s ease-in-out infinite;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
 .characterImage {
-  width: 40px;
-  height: 40px;
+  width: 100px;
+  height: 100px;
   object-fit: contain;
 }
 
@@ -38,7 +37,7 @@
   }
 
   50% {
-    transform: translateY(-40px);
+    transform: translateY(-60px);
   }
 }
 
