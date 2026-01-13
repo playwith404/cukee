@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react'; // [수정] 클릭 감지 useRef 추가
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { getMyExhibitions, updateExhibition, deleteExhibition, type Exhibition } from '../../apis/exhibition';
@@ -329,7 +329,7 @@ const DropdownMenu = () => {
   };
   return (
     <>
-      <div className={styles.dropdownOuter}>
+      <div className={styles.dropdownOuter} onClick={(e) => e.stopPropagation()}>
         <div className={styles.dropdownGlass}>
           <div className={styles.dropSplit}>
 
@@ -534,10 +534,30 @@ export const Header: React.FC<HeaderProps> = ({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAdultExclude, setIsAdultExclude] = useState(false);
 
+  // 1. 메뉴 영역을 가리킬 Ref 생성
+  const menuRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     const saved = localStorage.getItem('adultExclude');
     setIsAdultExclude(saved === 'true');
   }, []);
+
+  // 2. 바깥 클릭 감지 로직 추가
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      // 메뉴가 열려 있고, 클릭한 대상이 menuRef(메뉴 영역) 안이 아닐 때만 닫기
+      if (isMenuOpen && menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    // 이벤트 등록
+    document.addEventListener('click', handleClickOutside);
+    return () => {
+      // 언마운트 시 해제
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [isMenuOpen]); // isMenuOpen 상태가 바뀔 때마다 리스너 동기화
 
   const toggleMenu = () => {
     setIsMenuOpen((prev) => !prev);
@@ -553,8 +573,8 @@ export const Header: React.FC<HeaderProps> = ({
     <div className={styles.outerWrapper}>
       <header className={styles.header}>
 
-        {/* 1. 햄버거 버튼 */}
-        <div className={styles.menuWrapper}>
+        {/* 1. 햄버거 버튼 /3. 메뉴 버튼과 드롭다운을 감싸는 div에 ref 연결*/}
+        <div className={styles.menuWrapper} ref={menuRef}>
           <button className={styles.menuButton} onClick={toggleMenu}>
             ☰
           </button>
