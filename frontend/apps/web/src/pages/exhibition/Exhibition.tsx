@@ -290,7 +290,7 @@ export const Exhibition = () => {
           if (exhibition.movies && exhibition.movies.length > 0) {
             const exhibitionFrames = exhibition.movies.map((movie: any) => ({
               id: movie.movieId || movie.id,
-              content: `Movie ${movie.movieId || movie.id}`,
+              content: movie.title || `영화 ${movie.movieId || movie.id}`, // ✅ [수정] 제목이 있으면 제목을 표시
               isPinned: movie.isPinned || false,
               imageUrl: movie.posterUrl
                 ? `https://image.tmdb.org/t/p/w500${movie.posterUrl}`
