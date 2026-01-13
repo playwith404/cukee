@@ -7,7 +7,7 @@ WORKDIR /app
 RUN npm install turbo --global
 COPY . .
 # 'web'은 apps/web의 package.json에 있는 name 속성값이어야 합니다.
-RUN turbo prune --scope=web --docker
+RUN turbo prune web --docker
 
 # 3. Installer stage: 의존성 설치 및 빌드
 FROM base AS installer
@@ -19,6 +19,7 @@ COPY --from=builder /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
 
 # pnpm 설치 및 의존성 설치
 RUN corepack enable
+RUN npm install turbo --global
 RUN pnpm install --frozen-lockfile
 
 # 소스 코드 복사 및 빌드
@@ -31,7 +32,7 @@ ARG VITE_API_URL
 ENV VITE_API_URL=${VITE_API_URL}
 
 # ui 패키지는 Vite 빌드 시 자동으로 함께 컴파일, 그래서 ui 빌드 건너뛰고 web만 단독으로 빌드
-RUN npx turbo run build --filter=web
+RUN turbo run build --filter=web
 
 # 4. Runner stage: nginx로 정적 파일 서빙
 FROM nginx:alpine AS runner

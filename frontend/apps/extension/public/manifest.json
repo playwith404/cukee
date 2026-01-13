@@ -1,10 +1,51 @@
 {
   "manifest_version": 3,
+  "key":"MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1g6Xv0hAoh7s0fVxpLYcQEE34/5lFg1631alU/tln5wd2Gk4naHqcWyBYounuNQXMkdVkaS0A1bNElDbEfHYqCbWtbA6xRfSY0UyZh0plpw2FkdlVyMpKKBOJN/R1qZ5Sh49r+e9ZMf1SX8Tt4HQzwYbuJxHX6bODNEwrsjpV9pRgLlfxIAP4CnK0JECfs4uHIbZwB7RwfofjgMCCBKJmycXPzFfE+/kTswFpCrl3YOZluXtW+DEmSkyTlwgHNrvARZ2CCnFlan8S92yXIatz5PIOT5TUtHk+50mI5+VWlrVM79bIbHqUNPmu8osGr8y7JgcZrfFgQhSEbh0qtREUQIDAQAB",
   "name": "Cukee - 큐레이터 키우기",
   "version": "1.0.0",
   "description": "왓챠 오버레이 큐레이션: 영화 추천 서비스",
   "action": {
-    "default_popup": "index.html"
+    "default_title": "Cukee 열기",
+    "default_popup": "index.html",
+    "default_icon": {
+      "16": "cookie.png",
+      "48": "cookie.png",
+      "128": "cookie.png"
+    }
   },
-  "permissions": ["activeTab", "scripting"]
+  "icons": {
+    "16": "cookie.png",
+    "48": "cookie.png",
+    "128": "cookie.png"
+  },
+  "permissions": [
+    "storage", 
+    "activeTab", 
+    "scripting",
+    "cookies" 
+  ],
+  "host_permissions": [
+    "https://middle.cloudkakao.store/*",
+    "https://watcha.com/*",
+    "https://pedia.watcha.com/*",
+    "http://localhost:3000/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["src/content.js"]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "index.html",
+        "cara/*",
+        "ticket/*",
+        "cookie.png",
+        "assets/*"
+      ],
+      "matches": ["<all_urls>"]
+    }
+  ]
 }

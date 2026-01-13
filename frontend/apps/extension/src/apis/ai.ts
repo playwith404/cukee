@@ -1,0 +1,126 @@
+// ==========================================
+// 1. 타입 정의 (Types)
+// ==========================================
+
+import api from './index';
+
+// 요청 (Request)
+export interface AIExhibitionRequest {
+  prompt: string;
+  ticketId: number;
+  pinnedMovieIds?: number[];
+}
+
+// 내부 상세 데이터
+export interface ExhibitionDesign {
+  font: string;
+  colorScheme: string;
+  cukeeStyle: string;
+  frameStyle: string;
+  background: string;
+  backgroundImage: string;
+}
+
+export interface RecommendedMovie {
+  movieId: number;
+  title: string; // [추가] 영화 제목 (백엔드에서 Enrichment 됨)
+  curatorComment: string;
+  posterUrl?: string;
+}
+
+// 응답 (Response)
+export interface AIExhibitionResponse {
+  resultJson: {
+    title: string;
+    curatorComment: string;
+    design: ExhibitionDesign;
+    movies: RecommendedMovie[];
+    keywords: string[];
+  };
+}
+
+// 큐레이션 영화 응답 타입
+export interface CurateMoviesResponse {
+  ticketId: number;
+  movies: {
+    movieId: number;
+    title: string;
+    posterUrl: string;
+  }[];
+}
+
+// 영화 상세 요청/응답 타입
+export interface MovieDetailRequest {
+  movieId: number;
+  theme: string;
+}
+
+export interface MovieDetailResponse {
+  movieId: number;
+  title: string;
+  detail: string;
+}
+
+// ==========================================
+// 2. API 호출 함수 (Service Logic)
+// ==========================================
+
+/**
+ * 티켓 ID로 영화 목록 조회 (빠른 조회)
+ * 경로: /api/ai/curate-movies
+ */
+export const curateMovies = async (
+  ticketId: number,
+  limit: number = 5,
+  adultExclude: boolean = false
+): Promise<CurateMoviesResponse> => {
+  const response = await api.post<CurateMoviesResponse>('/ai/curate-movies', {
+    ticketId,
+    limit,
+    adultExclude,
+  });
+  return response.data;
+};
+
+/**
+ * AI 전시회 생성
+ * 경로: /api/ai/generate
+ */
+export const generateExhibition = async (
+  prompt: string,
+  ticketId: number,
+  pinnedMovieIds: number[] = [],
+  adultExclude: boolean = false
+): Promise<AIExhibitionResponse> => {
+  const response = await api.post<AIExhibitionResponse>('/ai/generate', {
+    prompt,
+    ticketId,
+    pinnedMovieIds,
+    adultExclude
+  });
+  return response.data;
+};
+
+/**
+ * 영화 상세 설명 생성 (포스터 클릭 시)
+ * 경로: /api/ai/movie-detail
+ */
+export const getMovieDetail = async (
+  movieId: number,
+  ticketId: number
+): Promise<MovieDetailResponse> => {
+  const response = await api.post<MovieDetailResponse>('/ai/movie-detail', {
+    movieId,
+    ticketId,
+  });
+  return response.data;
+};
+
+/**
+ * 세션의 영화 상세 캐시 삭제 (페이지 이탈 시)
+ * 경로: DELETE /api/ai/cache
+ */
+export const clearMovieDetailCache = async (): Promise<{ message: string; deleted: number }> => {
+  const response = await api.delete<{ message: string; deleted: number }>('/ai/cache');
+  return response.data;
+};

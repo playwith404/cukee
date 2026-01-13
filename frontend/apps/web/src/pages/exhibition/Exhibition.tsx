@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom'; // 👈 변경 포인트 1
-//import { Header, MainLayout } from '@repo/ui'; // 🚧 UI 패키지 경로 확인 필요 (일단 주석 or 로컬 경로)
 import styles from './Exhibition.module.css'; // ExhPageContainer.module.css 이름 변경 추천
 import { Header } from '../../components/Header/Header';
 

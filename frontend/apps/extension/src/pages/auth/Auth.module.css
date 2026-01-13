@@ -1,0 +1,192 @@
+/* Extension용 Auth 스타일 - 팝업 크기에 최적화 */
+* {
+  box-sizing: border-box;
+}
+
+.container {
+  /* 로그인 페이지 고정 크기 - 팝업 크기 결정 */
+  width: 400px;
+  min-height: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #EDE6DD;
+  padding: 24px 16px;
+}
+
+.card {
+  background-color: #ffffff;
+  border: 1px solid #d4c9b8;
+  border-radius: 12px;
+  padding: 24px 20px;
+  width: 100%;
+  max-width: 360px;
+  box-shadow: 0 4px 16px rgba(55, 52, 49, 0.1);
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #373431;
+  margin: 0 0 4px 0;
+  text-align: center;
+}
+
+.subtitle {
+  font-size: 0.85rem;
+  color: #6b5a4a;
+  margin: 0 0 20px 0;
+  text-align: center;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #373431;
+}
+
+.inputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.inputIcon {
+  position: absolute;
+  left: 12px;
+  color: #776d61;
+  width: 16px;
+  height: 16px;
+  pointer-events: none;
+}
+
+.input {
+  width: 100%;
+  padding: 10px 36px 10px 38px;
+  background-color: #f5f0e8;
+  border: 1px solid #d4c9b8;
+  border-radius: 8px;
+  color: #373431;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.input::placeholder {
+  color: #a89a8a;
+}
+
+.input:focus {
+  border-color: #776d61;
+  box-shadow: 0 0 0 2px rgba(119, 109, 97, 0.15);
+}
+
+.input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.validationIcon {
+  position: absolute;
+  right: 12px;
+  width: 16px;
+  height: 16px;
+  pointer-events: none;
+}
+
+.valid {
+  color: #22c55e;
+}
+
+.invalid {
+  color: #ef4444;
+}
+
+.forgotPassword {
+  text-align: right;
+  margin-top: -6px;
+}
+
+.linkButton {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 0.8rem;
+  color: #6b5a4a;
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.linkButton:hover {
+  text-decoration: underline;
+  color: #373431;
+}
+
+.error {
+  background-color: rgba(220, 38, 38, 0.08);
+  border: 1px solid rgba(220, 38, 38, 0.2);
+  color: #dc2626;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+}
+
+.submitButton {
+  width: 100%;
+  padding: 12px;
+  margin-top: 4px;
+  background-color: #877a6a;
+  border: none;
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.1s;
+}
+
+.submitButton:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.submitButton:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.submitButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.signupPrompt {
+  margin-top: 16px;
+  text-align: center;
+  font-size: 0.85rem;
+  color: #6b5a4a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.signupPrompt .linkButton {
+  font-weight: 500;
+  color: #373431;
+}

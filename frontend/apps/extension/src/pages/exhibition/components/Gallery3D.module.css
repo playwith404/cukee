@@ -1,0 +1,520 @@
+/* .exh-gallery-area -> .container */
+.container {
+  position: relative;
+  width: 100%;
+  min-height: 400px;
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  pointer-events: none;
+  
+}
+
+/* .nav-arrow -> .arrow */
+.arrow {
+  position: absolute;
+  background: none;
+  border: none;
+  font-size: 96px;
+  font-weight: 100;
+  color: #d4d4d4;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  pointer-events: auto;
+
+  padding-top: 100px;
+  z-index: 10;
+}
+.prev { left: 15%; }
+.next { right: 15%; }
+
+/* .poster-frame -> .frame */
+.frame {
+  position: absolute;
+  transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+  border: none;
+  outline: none;
+  background-color: transparent;
+  /* background-image: url('/frame1.png'); */
+  background-size: 100% 100%;
+  background-position: center;
+  /* padding: 23px; */
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+
+  transform-style: preserve-3d; /* 프레임 그림자 이동시 자연스럽게 따라감 */
+}
+
+/* ✅ 1. 기본 나무 액자 (frame1) */
+.style_basic {
+  background-image: url('/frame1.png');
+  background-size: 100% 100%;
+  background-position: center;
+  padding: 23px; /* 기존 여백 */
+}
+
+/* ✅ 2. 새로운 액자 (frame2) */
+.style_frame2 {
+  background-image: url('/frame2.png');
+  background-size: 100% 100%;
+  background-position: center;
+  padding: 23px; /* frame1과 똑같이 맞춤 */
+}
+
+/* ✅ 3. 액자 없음 */
+.style_none {
+  background-image: none !important;
+  padding: 0 !important;
+}
+
+.frameOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  pointer-events: none; /* 이미지 위로 클릭이 통과되게 함 */
+  object-fit: fill; /* 포스터 크기에 딱 맞게 조절 */
+}
+
+/* ✅ 액자 없음(none) 스타일 추가 */
+.noFrame {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important; /* 액자 여백이 있었다면 제거 */
+}
+
+/* 프레임 하단 그림자 */
+.frame::after {
+  content: "";
+  position: absolute;
+  bottom: -6px;
+  width: 95%;
+  height: 8px;
+
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 1),
+    rgba(0, 0, 0, 0)
+  );
+
+  filter: blur(6px);
+  z-index: -1;
+}
+/* 프레임 클릭 효과  */
+
+.frame:hover {
+  transform: scale(1.02);              /* 호버 시 확대 */
+  cursor: pointer;
+}
+.frame:active {
+  transform: scale(1.01);       /* 클릭 시 약간 축소 */ 
+}
+
+.content {
+  width: 100%;
+  height: 100%;
+  background-color: #e8e2dc;
+  overflow: hidden; /* 혹시라도 삐져나오는 부분 차단 */
+}
+
+/* 포스터 이미지 */
+.posterImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: filter 0.25s ease, transform 0.25s ease;
+  cursor: pointer;
+}
+
+/* hover 시 포스터 어두워짐 */
+.content:hover .posterImage {
+  filter: brightness(0.6);
+  transform: scale(1.02);
+}
+
+/* hover 시 안내 텍스트 */
+.posterOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+  line-height: 1.4;
+
+  background: rgba(0, 0, 0, 0.25);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+
+  pointer-events: none; /* 클릭은 img로 통과 */
+  z-index: 2;
+}
+
+/* hover 시 텍스트 표시 */
+.content:hover .posterOverlay {
+  opacity: 1;
+}
+
+.actions {
+  position: absolute;
+  /* 기존 bottom: -45px; 제거 -> 포스터를 가리지 않게 하기 위함 */
+  top: 100%; /* 포스터(frame)의 바닥 끝선에서 시작 */
+  left: 0;
+  width: 100%;
+  
+  /* 내용물 정렬 */
+  display: flex;
+  flex-direction: column; /* 세로 정렬 (타이틀 위, 버튼 아래) */
+  align-items: center;
+  justify-content: flex-start;
+  
+  padding-top: 15px; /* 포스터와 텍스트 사이 간격 */
+  
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+  z-index: 20; /* 포스터 그림자보다 위에 보이게 */
+}
+
+/* 상태 클래스들 */
+.center {
+  width: 275px;
+  height: 390px;
+  transform: translateX(0) scale(1);
+  filter: brightness(1);
+  pointer-events: auto; /* 중앙만 클릭 가능 */
+  z-index: 101; 
+
+}
+.center .actions {
+  opacity: 1;
+  pointer-events: auto;
+  cursor: default;
+}
+.actionTitle {
+  font-size: 20px;     /* 버튼보다 살짝 크거나 비슷하게 */
+  font-weight: 600;    /* 강조 */
+  color: #ffffff;
+  margin-bottom: 3px;  /* 버튼과의 간격 */
+  /* 긴 제목 말줄임 처리 (레이아웃 깨짐 방지) */
+  width: 100%;
+  padding: 0 10px;
+  box-sizing: border-box;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.buttonGroup {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+/* 버튼 스타일 초기화 및 클릭 영역 확보 */
+.actionBtn {
+  background: none;
+  border: none;
+  font-size: 18px;
+  font-weight: 400;
+  color: #ffffff;
+  cursor: pointer;
+  padding: 5px 8px; /* [핵심] 텍스트 주변에 클릭 가능한 투명 영역 추가 */
+  position: relative;
+}
+.deleteBtn {
+  font-weight: 400;
+  position: relative; 
+}
+
+
+/* 호버 효과 (선택 사항) */
+.actionBtn:hover {
+  font-weight: 600; /* 마우스 올리면 살짝 두꺼워지게 */
+  color: #ffffff;
+}
+
+/* 구분선 스타일 */
+.divider {
+  font-size: 14px;
+  color: #ffffff;
+  user-select: none; /* 드래그 방지 */
+}
+.left1 {
+  width: 250px;
+  height: 355px;
+  transform: translateX(-270px) scale(0.9) rotateY(20deg);
+  filter: brightness(0.9);
+  z-index: 5;
+}
+/* ... right1, left2, right2 등 나머지 상태들도 동일하게 작성 ... */
+.right1 {
+    width: 250px;
+    height: 355px;
+    transform: translateX(270px) scale(0.9) rotateY(-20deg);
+    filter: brightness(0.9);
+    z-index: 5;
+}
+
+
+/* [상태 클래스] 좌우 2단계 */
+.left2 {
+    width: 195px;
+    height: 277px;
+    transform: translateX(-460px) scale(0.8) rotateY(30deg);
+    opacity: 0.6;
+    z-index: 1;
+}
+.right2 {
+    width: 220px;
+    height: 312px;
+    transform: translateX(460px) scale(0.8) rotateY(-30deg);
+    opacity: 0.6;
+    z-index: 1;
+}
+
+
+/* ... 기존 코드 ... */
+
+/* [수정] 왼쪽 끝으로 사라질 때 */
+.hiddenLeft {
+  width: 220px;
+  height: 312px;
+  /* 1. translateX: -510px(left2)보다 더 멀리(-700px 정도) 보냄 
+     2. scale: 0이 아니라 0.6~0.7 정도로 유지 (갑자기 쪼그라들지 않게)
+     3. rotateY: 각도를 조금 더 줌 (자연스러운 회전)
+  */
+  transform: translateX(-510px) scale(0.7) rotateY(40deg); 
+  opacity: 0;      /* 모습만 투명하게 */
+  z-index: -5;     /* 확실하게 뒤로 */
+  pointer-events: none;
+}
+
+/* [수정] 오른쪽 끝으로 사라질 때 */
+.hiddenRight {
+  width: 220px;
+  height: 312px;
+  /* 1. translateX: 510px(right2)보다 더 멀리(700px 정도) 보냄
+     2. scale: 0.7 유지
+  */
+  transform: translateX(510px) scale(0.7) rotateY(-40deg);
+  opacity: 0;
+  z-index: -5;
+  pointer-events: none;
+}
+
+/* ... 기존 코드 ... */
+/* 나머지 숨김  */
+.hidden {
+    transform: scale(0);
+    opacity: 0;
+    z-index: -1;
+}
+
+/* ... 기존 코드 (hidden, hiddenRight 등) ... */
+
+/* =========================================
+   ✅ [추가] 모달 스타일 (TopControls/Header와 동일)
+   ========================================= */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(214, 214, 214, 0.4);
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.2s ease-out;
+  letter-spacing: -0.03em;
+  pointer-events: auto; /* 오버레이는 클릭 가능해야 함 */
+}
+
+.glassModal {
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 40px 30px;
+  backdrop-filter: blur(5px);
+  background-color: rgba(255, 255, 255, 0.35); 
+  border-radius: 26px; 
+  box-shadow: 35px 35px 68px 0px rgba(0, 0, 0, 0.15), inset -10px -10px 16px 0px rgba(0, 0, 0, 0.15), inset 0px 11px 28px 0px rgb(255, 255, 255);
+
+  width: 500px;
+  max-width: 90%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  animation: slideUp 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.modalTitle {
+  font-size: 30px;
+  font-weight: 500;
+  color: #373431;
+  margin: 0;
+}
+
+.modalDesc {
+  font-size: 18px;
+  font-weight: 300;
+  color: #555;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.promptDesc {
+  display: block;
+  font-weight: 500;
+  color: #373431;
+  margin-top: 10px;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.btnCancel, .btnConfirm {
+  padding: 8px 25px;
+  border-radius: 9999px;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+}
+
+.btnCancel {
+  background-color: transparent;
+  border: 1px solid #8F8784;
+  color: #8F8784;
+}
+.btnCancel:hover {
+  background-color: rgba(143, 135, 132, 0.1);
+}
+
+.btnConfirm {
+  background-color: #8F8784;
+  color: white;
+  font-weight: 500;
+}
+.btnConfirm:hover {
+  background-color: #7a7370;
+  transform: translateY(-1px);
+}
+
+/* 애니메이션 */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@media screen and (max-height: 900px) {
+  .container {
+    transform: scale(0.9); 
+    transform-origin: top center;
+    /* scale로 줄어들면 아래 여백이 남으므로, container 높이 값도 살짝 보정 */
+    min-height: 420px; 
+  }
+}
+
+
+/* =========================================
+   액자 걸이 (Wire) 스타일
+   ========================================= */
+/* 1. 공통 와이어 스타일 */
+.wireLeft,
+.wireRight {
+  position: absolute;
+  bottom: 100%; /* 액자 상단 */
+  width: 1px;   /* 기본 두께 1px */
+  height: 15vh; /* 천장까지 길게 */
+  background-color: #d1d1d1; /* 선 색상 */
+  z-index: -5;
+  pointer-events: none;
+  
+  /* 부드러운 움직임 */
+  transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transform-origin: bottom center; /* 액자 연결 부위 기준 회전 */
+  
+  /* [핵심] 3D 렌더링 선명도 개선 */
+  backface-visibility: hidden;
+  will-change: transform;
+}
+
+/* 2. 위치 잡기 */
+.wireLeft { left: 20%; }
+.wireRight { right: 20%; }
+
+
+
+/* [Center] 가운데 액자 */
+.center .wireLeft,
+.center .wireRight {
+  width: 2px; /* 가운데는 2px */
+  background-color: #8c8c8c; /* 좀 더 진하게 */
+  opacity: 1;
+  transform: rotateY(0deg); /* 회전 없음 */
+}
+
+/* [Left 1] 왼쪽 첫 번째 */
+/* 액자가 20deg 돌았으므로 와이어는 -20deg로 펴줍니다 */
+.left1 .wireLeft {
+  transform: rotateY(-20deg);
+  opacity: 0.6;
+}
+.left1 .wireRight {
+  /* 오른쪽 와이어가 앞으로 튀어나오므로 scaleX로 두께를 강제로 줄임 */
+  transform: rotateY(-20deg) scaleX(0.7); 
+  opacity: 0.6;
+}
+
+/* [Right 1] 오른쪽 첫 번째 */
+/* 액자가 -20deg 돌았으므로 와이어는 20deg로 펴줍니다 */
+.right1 .wireLeft {
+  /* 왼쪽 와이어가 앞으로 튀어나오므로 scaleX로 줄임 */
+  transform: rotateY(20deg) scaleX(0.7);
+  opacity: 0.6;
+}
+.right1 .wireRight {
+  transform: rotateY(20deg);
+  opacity: 0.6;
+}
+
+/* [Left 2 / Right 2] 더 멀리 있는 액자 */
+.left2 .wireLeft, .left2 .wireRight {
+  transform: rotateY(-30deg);
+  opacity: 0.4;
+  width: 1px; 
+}
+.right2 .wireLeft, .right2 .wireRight {
+  transform: rotateY(30deg);
+  opacity: 0.4;
+  width: 1px;
+}
+
+/* [Hidden] 숨김 처리 */
+.hidden .wireLeft, .hidden .wireRight,
+.hiddenLeft .wireLeft, .hiddenLeft .wireRight,
+.hiddenRight .wireLeft, .hiddenRight .wireRight {
+  opacity: 0;
+}
