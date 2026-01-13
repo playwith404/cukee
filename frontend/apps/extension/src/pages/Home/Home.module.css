@@ -70,15 +70,15 @@
     letter-spacing: -0.05em;
     margin: 20px 0 14px 0;
     border: 2px solid #EDE6DD;
-    width: 1200px;
-    padding: 20px 20px 20px 80px;
+    width: 1330px;
+    padding: 20px 20px 20px 100px;
 }
 
 .subText {
     font-size: 30px;
     color: #f3f0eb;
     border-bottom: 2px solid #EDE6DD;
-    padding: 5px 5px 5px 80px;
+    padding: 5px 5px 5px 100px;
     width: fit-content; 
     margin: 0;
     letter-spacing: -0.03em;
@@ -95,14 +95,14 @@
 }
 
 .counterCurrent {
-    font-size: 64px;
+    font-size: 84px;
     font-weight: 600;
     letter-spacing: -0.04em;
-    margin-left: 80px; 
+    margin-left: 100px; 
 }
 
 .counterTotal {
-    font-size: 36px;
+    font-size: 44px;
     margin-left: 8px;
     color: #ffffff;
 }
@@ -124,7 +124,7 @@
 .curatorContent {
     width: 100%;
     max-width: 1500px;
-    padding-left: 165px;
+    padding-left: 185px;
     box-sizing: border-box;
     color: #EDE6DD;
 }
@@ -139,7 +139,7 @@
 }
 
 .curatorLikes {
-    font-size: 16px;
+    font-size: 30px;
     line-height: 1.6;
     color: #ffffff;
 }
@@ -203,7 +203,7 @@
     position: fixed; /* ⭐️ 화면에 고정 */
     top: 0;
     bottom: 0;
-    left: calc(50% - 750px);
+    left: calc(50% - 670px);
     
     width: 0px;
     border-right: 2px solid #EDE6DD;

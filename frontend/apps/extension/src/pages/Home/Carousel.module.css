@@ -22,7 +22,7 @@
    ============================================================================= */
 .characterArea {
   position: absolute;
-  left: -350px;
+  left: -380px;
   width: 150px;
   pointer-events: none;
   z-index: 10;
@@ -84,7 +84,7 @@
   width: 100%;  
   /* 높이는 부모(Carousel container)에 맞추거나 고정 높이 유지 */
   height: 800px; /* 크기 조정 */
-  left: -130px;
+  left: -160px;
   margin: 0 auto;
   overflow: visible; /* 티켓이 흔들릴 때 잘리지 않도록 */
 }
@@ -251,12 +251,12 @@
 }
 
 .prevBtn {
-  left: -150px;
+  left: -180px;
   z-index: 40;
 }
 
 .nextBtn {
-  right: 0px;
+  right: 10px;
   z-index: 30;
 }
 
@@ -313,11 +313,11 @@
 /* 5. 돌아가기 버튼 (< 돌아가기) */
 .backButtonFixed {
   position: absolute;
-  top: 93%;           
-  right: 12%;        
+  top: 94%;           
+  right: 10%;        
   transform: translateY(-50%);
   font-size: 30px;
-  color: #ffffff;
+  color: #EDE6DD;
   cursor: pointer;
   opacity: 0;
   animation: fadeInButton 0.5s ease 0.5s forwards;
