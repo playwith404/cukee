@@ -39,12 +39,12 @@ class Settings(BaseSettings):
     # Google OAuth
     GOOGLE_CLIENT_ID: Optional[str] = None
     GOOGLE_CLIENT_SECRET: Optional[str] = None
-    GOOGLE_REDIRECT_URI: str = "https://middle.cloudkakao.store/api/auth/google/callback"
+    GOOGLE_REDIRECT_URI: str = "https://cukee.world/api/auth/google/callback"
 
     # Kakao OAuth
     KAKAO_CLIENT_ID: Optional[str] = None
     KAKAO_CLIENT_SECRET: Optional[str] = None
-    KAKAO_REDIRECT_URI: str = "https://middle.cloudkakao.store/api/auth/kakao/callback"
+    KAKAO_REDIRECT_URI: str = "https://cukee.world/api/auth/kakao/callback"
 
     @property
     def allowed_origins_list(self) -> List[str]:
