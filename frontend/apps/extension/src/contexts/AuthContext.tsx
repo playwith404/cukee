@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { checkAuth, login as apiLogin, logout as apiLogout } from '../apis/auth';
+import { checkAuth, login as apiLogin, logout as apiLogout, updateProfile, withdrawUser } from '../apis/auth';
 const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true'; // 환경변수 확인
 
 const MOCK_USER = {
@@ -81,8 +81,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             return;
         }
 
-        // 실제 API 호출 (apis/auth.ts에 updateProfile 추가 필요)
-        const { updateProfile } = await import('../apis/auth');
         await updateProfile({ nickname: newNickname });
 
         // 상태 업데이트 (화면 즉시 반영 - 응답값 의존 X, 요청값 사용)
@@ -114,7 +112,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
 
         // 1. API 호출 (비밀번호 전달)
-        const { withdrawUser } = await import('../apis/auth');
         await withdrawUser(password);
 
         // 2. 로그아웃 처리 (로컬 상태 초기화)

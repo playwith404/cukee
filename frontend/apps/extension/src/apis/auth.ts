@@ -1,7 +1,8 @@
 // extension/src/apis/auth.ts
-import api, { setSessionCookie, removeSessionCookie } from './index';
+import api from './index';
 
 // 1. 세션 확인 (로그인 유지 확인용)
+// withCredentials: true로 HTTP-only 쿠키가 자동 전송되므로 별도 처리 불필요
 export async function checkAuth() {
   const response = await api.get('/auth/me');
   return response.data as {
@@ -22,20 +23,15 @@ export async function getMe() {
   };
 }
 
-// 3. 로그인 (익스텐션에서 로그인 시 웹과 세션 공유를 위해 쿠키 저장)
+// 3. 로그인
+// 백엔드에서 Set-Cookie 헤더로 HTTP-only 쿠키 설정 → Web과 Extension 모두 자동 공유
 export async function login(email: string, password: string) {
   const response = await api.post('/auth/login', { email, password });
   const data = response.data as {
     userId: number;
     email: string;
     nickname: string;
-    sessionId?: string;
   };
-
-  // 세션 ID가 응답에 있으면 웹 도메인 쿠키에 저장 (웹과 동기화)
-  if (data.sessionId) {
-    await setSessionCookie(data.sessionId);
-  }
 
   return {
     userId: data.userId,
@@ -44,22 +40,33 @@ export async function login(email: string, password: string) {
   };
 }
 
-// 4. 로그아웃 (웹과 동기화를 위해 쿠키도 삭제)
+// 4. 로그아웃
+// 백엔드에서 쿠키 삭제 처리 → Web과 Extension 모두 자동 로그아웃
 export async function logout() {
   const response = await api.post('/auth/logout');
-
-  // 웹 도메인 쿠키 삭제
-  await removeSessionCookie();
-
   return response.data as { message: string };
 }
 
-// --- Extension에서는 사용하지 않지만 타입 호환을 위해 stub 유지 ---
+// 5. 프로필 업데이트
+export async function updateProfile(data: { nickname?: string }) {
+  const response = await api.patch('/users/me', data);
+  return response.data as {
+    userId: number;
+    email: string;
+    nickname: string;
+    createdAt: string;
+  };
+}
 
+// 6. 회원 탈퇴
+export async function withdrawUser(password: string) {
+  const response = await api.delete('/users/me', {
+    data: { password }
+  });
+  return response.data;
+}
+
+// --- Extension에서는 사용하지 않지만 타입 호환을 위해 stub 유지 ---
 export async function signup() { return {} as { userId: number; email: string; nickname: string }; }
 export async function sendVerificationCode() { return { success: true, message: '' }; }
 export async function verifyEmailCode() { return { success: true, message: '' }; }
-export async function updateProfile(_data?: { nickname?: string }) {
-  return {} as { userId: number; email: string; nickname: string; createdAt: string };
-}
-export async function withdrawUser(_password?: string) { return { success: true }; }
