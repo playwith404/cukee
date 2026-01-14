@@ -112,7 +112,7 @@ services:
     ports:
       - "3100:3000"
     environment:
-      - GF_SERVER_ROOT_URL=https://middle.cloudkakao.store/monitor/
+      - GF_SERVER_ROOT_URL=https://cukee.world/monitor/
       - GF_SERVER_SERVE_FROM_SUB_PATH=true
     volumes:
       - grafana_data:/var/lib/grafana

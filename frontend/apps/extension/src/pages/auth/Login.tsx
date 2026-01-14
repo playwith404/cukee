@@ -32,7 +32,7 @@ const XIcon = () => (
 );
 
 // 웹 URL (환경변수 또는 고정값)
-const WEB_URL = 'https://cukee.site';
+const WEB_URL = 'https://cukee.world';
 
 export default function Login() {
   const navigate = useNavigate();
