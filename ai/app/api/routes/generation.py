@@ -16,6 +16,9 @@ router = APIRouter()
 async def generate_exhibition(request: GenerateRequest, db: Session = Depends(get_db_session)):
     """AI 전시회 생성 (PGVECTOR-first + 큐레이션 코멘트)"""
     try:
+        # 테마명 공백 제거 (프론트엔드 호환성)
+        clean_theme = request.theme.strip()
+
         # 0. Guardrails 검사 (주제 차단)
         allowed, refusal_message = await guardrails_manager.check_input(request.prompt)
         if not allowed:
@@ -35,16 +38,16 @@ async def generate_exhibition(request: GenerateRequest, db: Session = Depends(ge
                     },
                     "keywords": ["안내"]
                 },
-                theme=request.theme
+                theme=clean_theme
             )
 
         if not model_manager.is_ready():
             raise HTTPException(status_code=503, detail="Model not ready")
         
-        if request.theme not in model_manager.get_loaded_themes():
-            raise HTTPException(status_code=400, detail=f"Theme not found: {request.theme}")
+        if clean_theme not in model_manager.get_loaded_themes():
+            raise HTTPException(status_code=400, detail=f"Theme not found: {clean_theme}")
         
-        logger.info(f"Generating for theme: {request.theme}")
+        logger.info(f"Generating for theme: {clean_theme}")
         
         # 1. 고정된 영화 처리
         pinned_movies = []
@@ -78,20 +81,20 @@ async def generate_exhibition(request: GenerateRequest, db: Session = Depends(ge
         
         # 테마별 시스템 프롬프트 설정 (학습 데이터와 일치화)
         # 테마별 시스템 프롬프트 설정 (학습 데이터와 일치화)
-        if request.theme == "3D 보단 2D":
+        if clean_theme == "3D 보단 2D":
             system_content = """당신은 영화 큐레이터 아냐 포저입니다.
 [말투] 3인칭 화법 ('아냐는~', '아냐가~'). 어린아이 말투. 반말 기본. 짧고 단순한 문장. 과격한 표현과 욕설 섞임. '두근두근', '쪼끔' 같은 유치한 표현.
 [패턴] 시작: 아냐, 아냐는, 아냐가 / 끝: ...!, 거야, 어
 [금지] ~입니다, ~드립니다, ~하시죠"""
         else:
-            system_content = f"""당신은 영화 큐레이터이자 영화광인 '{request.theme}'입니다. 
+            system_content = f"""당신은 영화 큐레이터이자 영화광인 '{clean_theme}'입니다. 
 친한 친구에게 당신이 고른 영화 컬렉션의 '전체적인 분위기'와 '추천 이유'를 반말(Banmal)로 말해주세요.
-'{request.theme}' 테마의 성격이 말투에 자연스럽고 깊게 녹아있어야 합니다.
+'{clean_theme}' 테마의 성격이 말투에 자연스럽고 깊게 녹아있어야 합니다.
 
 [작성 지침]
 1. 절대 개별 영화 제목이나 줄거리를 하나씩 나열하지 마세요. (예: "A는 ~하고 B는 ~해" 금지)
 2. 오직 전시회 전체의 느낌, 감성, 무드에 대해서만 이야기하세요.
-3. "너가 {request.prompt}라고 말해서 그 무드에 딱 맞는 영화들을 모아봤어! 전체적으로 {request.theme}한 감성이라 지금 너에게 딱일 거야."와 같은 구조로 말하세요.
+3. "너가 {request.prompt}라고 말해서 그 무드에 딱 맞는 영화들을 모아봤어! 전체적으로 {clean_theme}한 감성이라 지금 너에게 딱일 거야."와 같은 구조로 말하세요.
 4. 50~80자 내외의 1~2문장으로 짧고 강렬하게 작성하세요.
 5. 금지: ~합니다, ~추천합니다, ~입니다."""
 
@@ -99,13 +102,13 @@ async def generate_exhibition(request: GenerateRequest, db: Session = Depends(ge
 
 {system_content}<|eot_id|><|start_header_id|>user<|end_header_id|>
 
-내 기분({request.prompt})과 '{request.theme}' 테마에 맞춰서 구성한 이 영화 컬렉션, 어떤 느낌인지 친구처럼 짧게 소개해줘!<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+내 기분({request.prompt})과 '{clean_theme}' 테마에 맞춰서 구성한 이 영화 컬렉션, 어떤 느낌인지 친구처럼 짧게 소개해줘!<|eot_id|><|start_header_id|>assistant<|end_header_id|>
 
 
 """
         curator_comment = model_manager.generate(
             prompt=curation_prompt,
-            theme=request.theme,
+            theme=clean_theme,
             max_new_tokens=100,
             temperature=0.7,
             top_p=0.9,
