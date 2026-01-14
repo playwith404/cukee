@@ -90,7 +90,7 @@ jobs:
             
             # 1. 필수 디렉토리 생성 (docker-compose.ai.yml 경로 의존성 해결)
             mkdir -p ai/logs
-            touch ai/.env
+            touch ai/.env 
             
             # 2. AI_TAG 업데이트 (ai/.env 파일에 기록)
             if grep -q "^AI_TAG=" ai/.env; then
