@@ -21,7 +21,7 @@
   box-shadow: inset 0 4px 10px 0 rgba(0, 0, 0, 0.15);
   pointer-events: auto;
   position: relative;
-  background-color: transparent; /* 투명 배경 유지 */
+  background-color: rgba(255, 255, 255, 0.2); /* 불투명도 */
 }
 
 .container {
@@ -85,15 +85,18 @@
 
 .toggleBtn {
   background: none;
-  border: 1px solid #8F8784;
   border-radius: 20px;
   padding: 5px 10px;
   font-size: 14px;
-  color: #8F8784;
   cursor: pointer;
   transition: all 0.2s;
   white-space: nowrap;
   font-weight: 500;
+
+  /* [OFF 상태: 19+ OFF (기본/비활성)] */
+  background-color: transparent;
+  border: 1.5px solid #8F8784; 
+  color: #8F8784;
 }
 
 .toggleBtn:hover {
@@ -101,13 +104,15 @@
 }
 
 .toggleBtnActive {
-  background-color: #ff4d4f;
-  border: 1px solid #ff4d4f;
+  background-color: #ff4d4f; 
+  border: 1.5px solid #ff4d4f;
   color: white;
 }
 
 .toggleBtnActive:hover {
-  background-color: #d9363e;
+  background-color: #ff7875; 
+  border-color: #ff7875;
+  color: white;
 }
 
 /* -----------------------------------------
@@ -125,12 +130,12 @@
 }
 
 .dropdownGlass {
-  backdrop-filter: blur(20px);
+  backdrop-filter: blur(35px);
   background-color: transparent; /* 배경색을 투명하게 */
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 16px;
   padding: 30px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
   position: relative;
   height: 360px;
   box-sizing: border-box;
@@ -584,6 +589,57 @@
   /* 입력창과 위치를 맞추기 위한 패딩 */
   text-align: left;
   /* 밑줄이 필요 없다면 border-bottom 없음, 필요하면 추가 */
+}
+
+/* 토스트 배경 (중앙 정렬용) */
+.toastOverlay {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999; /* 헤더보다 높게 설정 */
+  pointer-events: none; /* 클릭 방해 금지 */
+}
+
+/* 토스트 본체 */
+.toastMessage {
+  background-color: #373431; /* 영화 서비스다운 어두운 배경 */
+  color: white;
+  padding: 14px 28px;
+  border-radius: 10px; /* 알약 모양 */
+  font-size: 1rem;
+  font-weight: 500;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  
+  /* 애니메이션 설정 */
+  animation: smoothFadeInOut 1.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* 나타났다 사라지는 애니메이션 */
+@keyframes smoothFadeInOut {
+  0% { 
+    opacity: 0; 
+    transform: translateY(20px) scale(0.95); 
+    filter: blur(4px); /* 처음에 살짝 흐릿하게 시작 */
+  }
+  15% { 
+    opacity: 1; 
+    transform: translateY(0) scale(1); 
+    filter: blur(0); 
+  }
+  80% { 
+    opacity: 1; 
+    transform: translateY(0) scale(1); 
+    filter: blur(0); 
+  }
+  100% { 
+    opacity: 0; 
+    transform: translateY(-20px) scale(1.05); /* 살짝 커지면서 위로 스르륵 */
+    filter: blur(8px); /* 사라질 때 안개처럼 흐려짐 */
+  }
 }
 
 /* 애니메이션 */
