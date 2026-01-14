@@ -2,9 +2,9 @@
 import axios from 'axios';
 
 // 환경변수 적용 (없으면 기본값 사용)
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://middle.cloudkakao.store/api';
-const COOKIE_DOMAIN = 'middle.cloudkakao.store';
-const COOKIE_URL = 'https://middle.cloudkakao.store';
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://cukee.world/api';
+const COOKIE_DOMAIN = 'cukee.world';
+const COOKIE_URL = 'https://cukee.world';
 
 const api = axios.create({
   baseURL: BASE_URL,

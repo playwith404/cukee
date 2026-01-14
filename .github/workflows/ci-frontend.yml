@@ -50,7 +50,7 @@ jobs:
           cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/cukee-frontend:buildcache
           cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/cukee-frontend:buildcache,mode=max
           build-args: |
-            VITE_API_URL=https://middle.cloudkakao.store/api
+            VITE_API_URL=https://cukee.world/api
             INTERNAL_API_URL=http://backend:8000/api
 
   deploy:
