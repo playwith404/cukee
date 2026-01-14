@@ -447,7 +447,11 @@ const DropdownMenu = () => {
                               }}
                               title="수정"
                             >
-                              ✏️
+                              <img
+                                src="/pencil.png"
+                                alt="전시회 수정"
+                                className={styles.pencilIcon}
+                              />
                             </button>
                             <button
                               className={styles.deleteBtn}
@@ -534,6 +538,19 @@ export const Header: React.FC<HeaderProps> = ({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAdultExclude, setIsAdultExclude] = useState(false);
 
+  // ✅ 1. 토스트 표시 상태 추가
+  const [showToast, setShowToast] = useState(false);
+
+  // ✅ 2. 토스트 자동 숨김 로직
+  useEffect(() => {
+    if (showToast) {
+      const timer = setTimeout(() => {
+        setShowToast(false);
+      }, 1600);
+      return () => clearTimeout(timer);
+    }
+  }, [showToast]);
+
   // 1. 메뉴 영역을 가리킬 Ref 생성
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -567,6 +584,7 @@ export const Header: React.FC<HeaderProps> = ({
     const nextState = !isAdultExclude;
     setIsAdultExclude(nextState);
     localStorage.setItem('adultExclude', String(nextState));
+    setShowToast(true); // ✅ 클릭 시 토스트 활성화
   };
 
   return (
@@ -603,9 +621,19 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={toggleAdultFilter}
             title="19금 컨텐츠 필터링"
           >
-            {isAdultExclude ? '19+ OFF' : '19+ ON'}
+            {isAdultExclude ? '19+ ON' : '19+ OFF'}
           </button>
         </div>
+
+        {/* ✅ 토스트 알림 UI 추가 (포털 없이 조건부 렌더링) */}
+        {showToast && (
+          <div className={styles.toastOverlay}>
+            <div className={styles.toastMessage}>
+              {/* 필터가 On(제외) 상태이면 "필터링 중", Off(포함) 상태이면 "포함" */}
+              {isAdultExclude ? "성인 컨텐츠 포함" : "성인 컨텐츠 필터링 중"}
+            </div>
+          </div>
+        )}
 
         {/* 3. 드롭다운 메뉴 (조건부 렌더링) */}
         {isMenuOpen && <DropdownMenu />}

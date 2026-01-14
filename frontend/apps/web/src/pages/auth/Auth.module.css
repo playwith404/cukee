@@ -425,6 +425,43 @@
   font-size: 0.875rem;
 }
 
+.inputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input {
+  width: 100%;
+  padding-right: 80px; /* 아이콘 두 개(눈+체크)가 들어갈 공간 확보 */
+}
+
+/* 비밀번호 보기/숨기기 버튼 스타일 */
+.passwordToggleButton {
+  position: absolute;
+  right: 40px; /* 체크 아이콘(X아이콘) 왼쪽 공간에 배치 */
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 0;
+  font-size: 1.2rem;
+  transition: color 0.2s;
+}
+
+.passwordToggleButton:hover {
+  color: #333;
+}
+
+/* 기존 유효성 아이콘 위치 고정 (가장 오른쪽) */
+.validationIcon {
+  position: absolute;
+  right: 12px;
+}
+
+
 /* 반응형 */
 @media (max-width: 480px) {
   .card {

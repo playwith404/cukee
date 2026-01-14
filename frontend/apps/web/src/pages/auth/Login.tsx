@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import styles from './Auth.module.css';
 import { useAuth } from '../../contexts/AuthContext';
 import { startGoogleLogin, startKakaoLogin } from '../../apis/auth';
+import { HiOutlineEye, HiOutlineEyeOff } from "react-icons/hi";
 
 // --- 아이콘 컴포넌트들 (생략 - 기존과 동일) ---
 const MailIcon = () => (
@@ -38,6 +39,9 @@ export const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   
+  // ✅ [추가] 비밀번호 가시성 상태 관리
+  const [showPassword, setShowPassword] = useState(false);
+
   const [isEmailValid, setIsEmailValid] = useState<boolean | null>(null);
   const [isPasswordValid, setIsPasswordValid] = useState<boolean | null>(null);
 
@@ -150,7 +154,8 @@ export const Login = () => {
                   <LockIcon />
                   <input
                     id="password"
-                    type="password"
+                    // ✅ [수정] showPassword 상태에 따라 type 변경
+                    type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={handlePasswordChange}
                     placeholder="비밀번호를 입력하세요"
@@ -158,6 +163,17 @@ export const Login = () => {
                     disabled={isLoading}
                     autoComplete="current-password"
                   />
+                  {/* ✅ [추가] 비밀번호 토글 버튼 */}
+                  {password.length > 0 && (
+                    <button
+                      type="button"
+                      className={styles.passwordToggleButton}
+                      onClick={() => setShowPassword(!showPassword)}
+                      tabIndex={-1} // 탭 키 이동에서 제외 (선택 사항)
+                    >
+                      {showPassword ? <HiOutlineEyeOff /> : <HiOutlineEye />}
+                    </button>
+                  )}
                   {password.length > 0 && (
                     isPasswordValid ? <CheckIcon /> : <XIcon />
                   )}
