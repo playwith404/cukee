@@ -100,7 +100,10 @@ jobs:
             fi
             
             # 3. DOCKER_USERNAME 추가
-            if ! grep -q "^DOCKER_USERNAME=" ai/.env; then
+            # 3. DOCKER_USERNAME 추가 (기존 값 있으면 업데이트)
+            if grep -q "^DOCKER_USERNAME=" ai/.env; then
+              sed -i "s/^DOCKER_USERNAME=.*/DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}/" ai/.env
+            else
               echo "DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}" >> ai/.env
             fi
 
