@@ -10,8 +10,8 @@ const MOCK_USER = {
 
 const GUEST_CREDENTIALS = {
     email: 'ywcho1118@naver.com',
-    password: 'Howareyou!1'
-};
+    password: 'qwer1234'
+};  
 
 interface User {
     userId: number;
