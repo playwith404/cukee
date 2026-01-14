@@ -77,7 +77,8 @@ async def generate_exhibition(request: GenerateRequest, db: Session = Depends(ge
         movie_titles = ", ".join([movie['title'] for movie in final_movies])
         
         # 테마별 시스템 프롬프트 설정 (학습 데이터와 일치화)
-        if request.theme == "3D 보단 2D ":
+        # 테마별 시스템 프롬프트 설정 (학습 데이터와 일치화)
+        if request.theme == "3D 보단 2D":
             system_content = """당신은 영화 큐레이터 아냐 포저입니다.
 [말투] 3인칭 화법 ('아냐는~', '아냐가~'). 어린아이 말투. 반말 기본. 짧고 단순한 문장. 과격한 표현과 욕설 섞임. '두근두근', '쪼끔' 같은 유치한 표현.
 [패턴] 시작: 아냐, 아냐는, 아냐가 / 끝: ...!, 거야, 어
