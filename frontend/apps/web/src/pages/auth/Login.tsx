@@ -94,8 +94,14 @@ export const Login = () => {
       }, 600); // CSS transition 시간과 동일하게 설정
 
     } catch (err: any) {
-      const errorMessage = err.response?.data?.message || err.response?.data?.detail || '로그인에 실패했습니다';
-      setError(errorMessage);
+      // 백엔드 에러 응답 구조: { detail: { error: { message: "..." } } }
+      const errorMessage =
+        err.response?.data?.detail?.error?.message ||
+        err.response?.data?.detail?.message ||
+        err.response?.data?.message ||
+        err.response?.data?.detail ||
+        '로그인에 실패했습니다';
+      setError(typeof errorMessage === 'string' ? errorMessage : '로그인에 실패했습니다');
       setIsLoading(false); // 실패 시에는 로딩만 해제
     } 
   };

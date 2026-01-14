@@ -29,7 +29,7 @@ COPY turbo.json turbo.json
 # 환경 변수 주입 (빌드 타임에 필요한 VITE_ 변수들)
 # 실제 값은 docker-compose에서 주입하거나 CI/CD 파이프라인에서 처리 권장
 ARG VITE_API_URL
-ENV VITE_API_URL=${VITE_API_URL}
+ENV VITE_API_BASE_URL=${VITE_API_URL}
 
 # ui 패키지는 Vite 빌드 시 자동으로 함께 컴파일, 그래서 ui 빌드 건너뛰고 web만 단독으로 빌드
 RUN turbo run build --filter=web
