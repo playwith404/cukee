@@ -38,21 +38,9 @@ services:
       - "443:443"    
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
-      - ./certbot/conf:/etc/letsencrypt
-      - ./certbot/www:/var/www/certbot
     depends_on:
       - frontend
       - backend
-
-  # 5. Certbot (SSL 인증서 발급/갱신)
-  certbot:
-    image: certbot/certbot
-    container_name: certbot
-    volumes:
-      - ./certbot/conf:/etc/letsencrypt
-      - ./certbot/www:/var/www/certbot
-    # 인증서 자동 갱신을 위한 커맨드 (12시간마다 체크)
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
 
   # 8. Node Exporter (System Agent)
   node-exporter:
