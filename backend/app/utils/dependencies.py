@@ -2,7 +2,7 @@
 FastAPI 의존성 (Dependency Injection)
 """
 from typing import Optional
-from fastapi import Cookie, Depends, Header, Request
+from fastapi import Cookie, Depends, Request
 from sqlalchemy.orm import Session as DBSession
 from app.core.database import get_db
 from app.core.exceptions import UnauthorizedException
@@ -14,30 +14,19 @@ from app.models import User
 def get_current_user(
     request: Request,
     session: Optional[str] = Cookie(None),
-    authorization: Optional[str] = Header(None),
     db: DBSession = Depends(get_db)
 ) -> User:
     """
-    현재 인증된 사용자 조회 (HttpOnly Cookie 또는 Authorization 헤더)
-    - 쿠키: 웹 브라우저에서 자동 전송
-    - Authorization: 익스텐션에서 세션 ID를 헤더로 전송 (Bearer <session_id>)
+    현재 인증된 사용자 조회 (HttpOnly Cookie)
     """
-    # 1. 쿠키에서 세션 확인
-    session_id = session
-
-    # 2. 쿠키가 없으면 Authorization 헤더에서 확인
-    if not session_id and authorization:
-        if authorization.startswith("Bearer "):
-            session_id = authorization[7:]  # "Bearer " 제거
-
-    if not session_id:
+    if not session:
         raise UnauthorizedException(
             message="인증이 필요합니다.",
-            details="쿠키 또는 Authorization 헤더에 세션 정보가 없습니다."
+            details="쿠키에 세션 정보가 없습니다."
         )
 
     # 세션 검증
-    db_session = SessionService.get_session(db, session_id)
+    db_session = SessionService.get_session(db, session)
     if not db_session:
         raise UnauthorizedException(
             message="유효하지 않은 세션입니다.",
@@ -52,26 +41,16 @@ def get_current_user(
 def get_current_user_optional(
     request: Request,
     session: Optional[str] = Cookie(None),
-    authorization: Optional[str] = Header(None),
     db: DBSession = Depends(get_db)
 ) -> Optional[User]:
     """
     현재 사용자 조회 (선택적) - 인증되지 않아도 None 반환
-    쿠키 또는 Authorization 헤더 지원
     """
-    # 1. 쿠키에서 세션 확인
-    session_id = session
-
-    # 2. 쿠키가 없으면 Authorization 헤더에서 확인
-    if not session_id and authorization:
-        if authorization.startswith("Bearer "):
-            session_id = authorization[7:]
-
-    if not session_id:
+    if not session:
         return None
 
     try:
-        db_session = SessionService.get_session(db, session_id)
+        db_session = SessionService.get_session(db, session)
         if not db_session:
             return None
 

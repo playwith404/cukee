@@ -127,7 +127,6 @@ class LoginResponse(BaseModel):
     userId: int = Field(..., alias="user_id")
     email: str
     nickname: str
-    sessionId: Optional[str] = Field(None, alias="session_id")  # 익스텐션용 세션 ID
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -137,8 +136,7 @@ class LoginResponse(BaseModel):
             "example": {
                 "userId": 1,
                 "email": "user@example.com",
-                "nickname": "큐키유저",
-                "sessionId": "uuid-session-id"
+                "nickname": "큐키유저"
             }
         }
     )

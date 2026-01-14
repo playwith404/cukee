@@ -107,7 +107,6 @@ def login(
     로그인
     - 이메일/비밀번호 검증
     - HttpOnly Cookie로 세션 발급
-    - 익스텐션을 위해 응답에 세션 ID 포함
     """
     # 사용자 인증
     user = AuthService.authenticate_user(db, login_data)
@@ -126,8 +125,7 @@ def login(
     return LoginResponse(
         user_id=user.id,
         email=user.email,
-        nickname=user.nickname,
-        session_id=session.id  # 익스텐션에서 쿠키 저장용
+        nickname=user.nickname
     )
 
 
