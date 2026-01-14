@@ -24,13 +24,17 @@ router = APIRouter(prefix="/api/auth", tags=["Authentication"])
 
 def set_session_cookie(response: Response, session_id: str, environment: str = "development"):
     """
-    HttpOnly Cookie 설정
+    세션 쿠키 설정
+    - session: HttpOnly 쿠키 (웹용, XSS 방지)
+    - session_ext: Non-HttpOnly 쿠키 (Extension용, chrome.cookies API로 접근 가능)
+
     개발 환경: SameSite=Lax
     배포 환경: Secure; SameSite=None
     """
     max_age = settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60  # 7일 (초 단위)
 
     if environment == "development":
+        # 웹용 HttpOnly 쿠키
         response.set_cookie(
             key="session",
             value=session_id,
@@ -39,11 +43,31 @@ def set_session_cookie(response: Response, session_id: str, environment: str = "
             path="/",
             max_age=max_age,
         )
+        # Extension용 Non-HttpOnly 쿠키
+        response.set_cookie(
+            key="session_ext",
+            value=session_id,
+            httponly=False,
+            samesite="lax",
+            path="/",
+            max_age=max_age,
+        )
     else:
+        # 웹용 HttpOnly 쿠키
         response.set_cookie(
             key="session",
             value=session_id,
             httponly=True,
+            secure=True,
+            samesite="none",
+            path="/",
+            max_age=max_age,
+        )
+        # Extension용 Non-HttpOnly 쿠키
+        response.set_cookie(
+            key="session_ext",
+            value=session_id,
+            httponly=False,
             secure=True,
             samesite="none",
             path="/",
@@ -145,8 +169,9 @@ def logout(
     if session:
         SessionService.revoke_session(db, session)
 
-    # Cookie 삭제
+    # Cookie 삭제 (웹용 + Extension용)
     response.delete_cookie(key="session", path="/")
+    response.delete_cookie(key="session_ext", path="/")
 
     return MessageResponse(message="Logged out successfully")
 
