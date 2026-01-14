@@ -13,7 +13,7 @@ on:
       - 'frontend/**'
       - 'docker-compose.yml'
       - '.github/workflows/ci-frontend.yml'
-
+ 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
