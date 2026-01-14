@@ -1,9 +1,7 @@
 services:
   ai-server:
     container_name: cukee-ai-server
-    build:
-      context: ./ai
-      dockerfile: Dockerfile
+
     image: ${DOCKER_USERNAME}/cukee-ai:${AI_TAG}
     
     # GPU 사용 설정
