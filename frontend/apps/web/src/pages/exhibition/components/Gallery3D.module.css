@@ -85,7 +85,7 @@
 
 /* ✅ 2. 새로운 액자 (frame2) */
 .style_frame2 {
-  background-image: url('/frame2.png');
+  background-image: url('/frame2_cloud.png');
   background-size: 100% 100%;
   background-position: center;
   padding: 35px;
