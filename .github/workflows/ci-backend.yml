@@ -124,7 +124,7 @@ jobs:
             else
               echo "BACKEND_TAG=sha-${{ github.sha }}" >> .env
             fi
-
+ 
             # 3. Update backend/.env with SMTP configuration (이미 위에서 생성하므로 중복 제거 또는 유지 - 여기서는 위와 합치기를 권장하나, 기존 구조 유지를 위해 유지하되 로직상 문제는 없음)
             
             echo "Current .env content:"

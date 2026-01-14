@@ -7,7 +7,7 @@ on:
       - 'nginx/**'
       - 'docker-compose.yml'
       - '.github/workflows/ci-nginx.yml'
-  pull_request:
+  pull_request: 
     branches: [ "main", "dev" ]
     paths:
       - 'nginx/**'

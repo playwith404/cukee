@@ -92,7 +92,7 @@ jobs:
             if ! grep -q "^DOCKER_USERNAME=" .env; then
               echo "DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}" >> .env
             fi
-            
+             
             # Redis만 독립 배포 (다른 서비스 영향 X)
             sudo docker compose pull redis
             sudo docker compose up -d redis
