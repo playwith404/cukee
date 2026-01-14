@@ -54,8 +54,15 @@
 
   display: flex;
   justify-content: center;
-  transition: padding-top 0.3s ease; /* 부드럽게 움직이게 */
+  animation: slideDownDrop 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) 0.2s forwards;
+  transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), margin-top 0.5s ease;
 }
+
+.moveUp {
+  /* Y축으로 -80px 만큼 이동 (필요에 따라 수치 조절) */
+  transform: translateY(-80px); 
+}
+
 
 .moveDown {
   margin-top: 10vh;

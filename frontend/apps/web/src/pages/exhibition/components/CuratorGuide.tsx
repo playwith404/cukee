@@ -19,6 +19,7 @@ interface CuratorGuideProps {
   enableSound?: boolean;
   /** 타이핑 완료 콜백 */
   onTypingComplete?: () => void;
+  isDecorateMode?: boolean;
 }
 
 // 1. 폰트 사이즈 계산 함수 추가
@@ -39,6 +40,7 @@ export const CuratorGuide: React.FC<CuratorGuideProps> = ({
   typingSpeed = 50,
   enableSound = true,
   onTypingComplete,
+  isDecorateMode = false,
 }) => {
   const prevMessageRef = useRef<string | undefined>(undefined);
   const [hasInteracted, setHasInteracted] = useState(false);
@@ -132,7 +134,7 @@ export const CuratorGuide: React.FC<CuratorGuideProps> = ({
   const fontSize = getBubbleFontSize(textLength);
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} ${isDecorateMode ? styles.moveUp : ''}`}>
       {/* 캐릭터 영역 */}
       <div className={styles.charWrapper}>
         <img
