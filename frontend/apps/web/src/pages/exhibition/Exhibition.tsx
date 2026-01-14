@@ -658,7 +658,7 @@ export const Exhibition = () => {
       </div>
 
       {/* 갤러리 영역 */}
-      <div className={`${styles.galleryWrapper} ${isReadOnly ? styles.moveDown : ''} ${bottomMode === 'decorate' ? styles.extraPadding : ''}`} >
+      <div className={`${styles.galleryWrapper} ${isReadOnly ? styles.moveDown : ''} ${bottomMode === 'decorate' ? styles.moveUp : ''}`} >
         <Gallery3D
           frames={frames}
           activeIndex={activeIndex}
@@ -687,6 +687,7 @@ export const Exhibition = () => {
         likeCount={ticketInfo?.likeCount || 0}
         isLiked={ticketInfo?.isLiked || false}
         onToggleLike={handleLikeToggle}
+        isDecorateMode={bottomMode === 'decorate'}
       />
 
       {/* 오른쪽 하단 티켓 이미지 영역 */}

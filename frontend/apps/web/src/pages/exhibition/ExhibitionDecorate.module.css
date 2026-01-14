@@ -1,6 +1,7 @@
 .container {
-  position: relative;
+  position: absolute;
   left: 0;
+  bottom: 0;
   width: 100%;
   height: 270px;
   background-color: #373431;
@@ -8,6 +9,16 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  animation: slideUp 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+/* ✅ [신규 추가] 아래에서 위로 올라오는 애니메이션 정의 */
+@keyframes slideUp {
+  from {
+    transform: translateY(100%); /* 화면 아래(100%)에서 시작 */
+  }
+  to {
+    transform: translateY(0);    /* 제자리(0)로 이동 */
+  }
 }
 
 .bubble {

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styles from './Gallery3D.module.css';
+import { createPortal } from 'react-dom';
 
 export interface Frame {
   id: number;
@@ -38,7 +39,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
   description,
   confirmText
 }) => {
-  return (
+  const modalContent = (
     <div className={styles.modalOverlay} onClick={onClose}>
       <div
         className={styles.glassModal}
@@ -53,6 +54,8 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 };
 
 type ModalType = 'DELETE' | 'PIN';
@@ -166,16 +169,16 @@ export const Gallery3D = ({
                 ${styles.frame} 
                 ${positionClass} 
                 ${styles[`style_${frameStyle}`]}
-            `}
+            `} 
               onClick={() => onSelect(index)}
             >
-              {frameStyle !== 'frame2' && (
-                <>
-                  <div className={styles.wireLeft} />
-                  <div className={styles.wireRight} />
-                </>
-              )}
-              
+              {/* [추가] 와이어 (frameStyle이 none이 아닐 때만 표시) */}
+            {frameStyle !== 'none' && (
+              <>
+                <div className={styles.wireLeft} />
+                <div className={styles.wireRight} />
+              </>
+            )}
               {/* 1. 이미지 영역 (content) */}
               <div className={styles.content}>
                 {frame.imageUrl ? (
@@ -204,9 +207,10 @@ export const Gallery3D = ({
                   <div className={styles.emptyContent}>{frame.content}</div>
                 )}
               </div>
-              <div className={styles.actions}>
-                <div className={styles.actionTitle}>{movieTitle}</div>
-                {isEditMode && (
+              {isEditMode && (
+                <div className={styles.actions}>
+                  <div className={styles.actionTitle}>{movieTitle}</div>
+
                   <div className={styles.buttonGroup}>
                     <button
                       type="button"
@@ -232,8 +236,8 @@ export const Gallery3D = ({
                       삭제하기
                     </button>
                   </div>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           );
         })}
