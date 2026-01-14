@@ -127,7 +127,7 @@ def login(
         user_id=user.id,
         email=user.email,
         nickname=user.nickname,
-        session_id=session.id  # 익스텐션에서 쿠키 저장용
+        session_id=str(session.id) if session.id else None  # 익스텐션에서 쿠키 저장용
     )
 
 
