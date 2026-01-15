@@ -25,7 +25,7 @@
     "cookies" 
   ],
   "host_permissions": [
-    "https://middle.cloudkakao.store/*",
+    "https://cukee.world/*",
     "https://watcha.com/*",
     "https://pedia.watcha.com/*",
     "http://localhost:3000/*"

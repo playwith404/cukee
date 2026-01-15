@@ -73,7 +73,7 @@ def get_tickets(
         ).label("is_liked") if user_id else func.cast(0, Integer).label("is_liked") # type hinting issue workaround for False
     ).outerjoin(likes_sub, TicketGroup.id == likes_sub.c.ticket_group_id)
 
-    results = q.all()
+    results = q.order_by(TicketGroup.id).all()
 
     # 응답 형식으로 변환
     ticket_responses = [TicketResponse(**ticket_to_response_dict(row)) for row in results]
