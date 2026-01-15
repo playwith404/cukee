@@ -27,20 +27,6 @@ const CARA_IMAGES = [
   '/cara_head/star-head.svg',
 ];
 
-// 배경 색상 목록
-const BACKGROUND_COLORS = [
-  '#ff6b6b',
-  '#feca57',
-  '#48dbfb',
-  '#1dd1a1',
-  '#a29bfe',
-  '#fd79a8',
-  '#fdcb6e',
-  '#74b9ff',
-  '#55efc4',
-  '#dfe6e9',
-];
-
 // 배열에서 무작위로 n개를 선택하는 함수
 const getRandomItems = <T,>(array: T[], count: number): T[] => {
   const shuffled = [...array].sort(() => Math.random() - 0.5);
@@ -54,16 +40,11 @@ interface LoadingProps {
 
 export const Loading: React.FC<LoadingProps> = ({
   text = '로딩 중',
-  characterCount = 5
+  characterCount = 3  // 익스텐션은 공간이 좁으므로 기본값 3
 }) => {
-  // 컴포넌트 마운트 시 무작위 이미지와 색상 선택
+  // 컴포넌트 마운트 시 무작위 이미지 선택
   const randomImages = useMemo(
     () => getRandomItems(CARA_IMAGES, characterCount),
-    [characterCount]
-  );
-
-  const randomColors = useMemo(
-    () => getRandomItems(BACKGROUND_COLORS, characterCount),
     [characterCount]
   );
 
@@ -75,7 +56,6 @@ export const Loading: React.FC<LoadingProps> = ({
             key={index}
             className={styles.character}
             style={{
-              backgroundColor: randomColors[index],
               animationDelay: `${index * 0.2}s`,
             }}
           >

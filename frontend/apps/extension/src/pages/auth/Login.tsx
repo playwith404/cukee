@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { Loading } from '../../components/Loading';
 import styles from './Auth.module.css';
 
 // 아이콘 컴포넌트
@@ -36,7 +37,14 @@ const WEB_URL = 'https://cukee.world';
 
 export default function Login() {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, isAuthenticated, isLoading: authLoading } = useAuth();
+
+  // 이미 로그인된 상태면 홈으로 리다이렉트
+  useEffect(() => {
+    if (!authLoading && isAuthenticated) {
+      navigate('/home');
+    }
+  }, [authLoading, isAuthenticated, navigate]);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -94,6 +102,11 @@ export default function Login() {
       window.open(url, '_blank');
     }
   };
+
+  // 인증 상태 확인 중이면 로딩 표시
+  if (authLoading) {
+    return <Loading text="로그인 확인 중" />;
+  }
 
   return (
     <div className={styles.container}>
