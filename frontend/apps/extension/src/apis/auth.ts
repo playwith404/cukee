@@ -6,16 +6,25 @@ import api, { setSessionCookie, removeSessionCookie, getSessionFromCookie } from
 export async function checkAuth() {
   // 먼저 쿠키에 세션이 있는지 확인
   const sessionId = await getSessionFromCookie();
+  console.log('[Extension] checkAuth - sessionId from cookie:', sessionId ? `found (${sessionId.substring(0, 8)}...)` : 'not found');
+
   if (!sessionId) {
-    throw new Error('No session found');
+    // 쿠키가 없으면 바로 에러 (API 호출해도 401이 나올 것)
+    throw new Error('No session found in chrome.cookies');
   }
 
-  const response = await api.get('/auth/me');
-  return response.data as {
-    userId: number;
-    email: string;
-    nickname: string;
-  };
+  try {
+    const response = await api.get('/auth/me');
+    console.log('[Extension] checkAuth - API success');
+    return response.data as {
+      userId: number;
+      email: string;
+      nickname: string;
+    };
+  } catch (error) {
+    console.error('[Extension] checkAuth - API error:', error);
+    throw error;
+  }
 }
 
 // 2. 내 정보 조회 (상세 정보)
