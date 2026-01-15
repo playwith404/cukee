@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { getMyExhibitions, updateExhibition, deleteExhibition, type Exhibition } from '../../apis/exhibition';
 import styles from './Header.module.css';
+import modalStyles from '../../styles/Modal.module.css';
 
 
 interface UserInfoModalProps {
@@ -45,25 +46,25 @@ const UserInfoModal: React.FC<UserInfoModalProps> = ({ onClose, currentNickname,
 
   return (
     // 1. 공통 배경 (modalOverlay)
-    <div className={styles.modalOverlay} onClick={onClose}>
+    <div className={modalStyles.modalOverlay} onClick={onClose}>
 
       {/* 2. 공통 모달 박스 (glassModal) */}
       <div
-        className={styles.glassModal}
+        className={modalStyles.glassModal}
         onClick={(e) => e.stopPropagation()}
       >
         {/* 3. 공통 타이틀 (modalTitle) */}
-        <h2 className={styles.modalTitle}>내 정보 설정</h2>
+        <h2 className={modalStyles.modalTitle}>내 정보 설정</h2>
 
         {/* 4. [차이점] 텍스트 대신 입력 폼 들어감 */}
-        <div className={styles.formContainer}>
+        <div className={modalStyles.formContainer}>
 
           {/* 닉네임 */}
-          <div className={styles.formGroup}>
-            <label className={styles.formLabel}>닉네임</label>
+          <div className={modalStyles.formGroup}>
+            <label className={modalStyles.formLabel}>닉네임</label>
             <input
               type="text"
-              className={styles.inputUnderline} // 새로 만든 밑줄 스타일
+              className={modalStyles.inputUnderline} // 새로 만든 밑줄 스타일
               value={nickname}
               onChange={(e) => setNickname(e.target.value)}
               placeholder="닉네임을 입력하세요"
@@ -71,19 +72,19 @@ const UserInfoModal: React.FC<UserInfoModalProps> = ({ onClose, currentNickname,
             />
           </div>
           {/* 이메일 */}
-          <div className={styles.formGroup}>
-            <label className={styles.formLabel}>이메일</label>
-            <p className={styles.emailText}>{email}</p>
+          <div className={modalStyles.formGroup}>
+            <label className={modalStyles.formLabel}>이메일</label>
+            <p className={modalStyles.emailText}>{email}</p>
           </div>
         </div>
 
         {/* 5. 공통 버튼 영역 (modalActions) */}
-        <div className={styles.modalActions} style={{ marginTop: '10px' }}>
-          <button className={styles.btnCancel} onClick={onClose}>
+        <div className={modalStyles.modalActions} style={{ marginTop: '10px' }}>
+          <button className={modalStyles.btnCancel} onClick={onClose}>
             취소
           </button>
           {/* 저장 버튼은 '확인' 버튼 스타일(btnConfirm)을 그대로 씀 */}
-          <button className={styles.btnConfirm} onClick={handleSave}>
+          <button className={modalStyles.btnConfirm} onClick={handleSave}>
             저장
           </button>
         </div>
@@ -99,24 +100,16 @@ interface ConfirmModalProps {
 
 const ConfirmModal: React.FC<ConfirmModalProps> = ({ onClose, onConfirm }) => {
   return (
-    <div className={styles.modalOverlay} onClick={onClose}>
-      <div
-        className={styles.glassModal}
-        onClick={(e) => e.stopPropagation()} // 모달 내부 클릭 시 닫힘 방지
-      >
-        <h2 className={styles.modalTitle}>전시회 생성</h2>
-        <p className={styles.modalDesc}>
+    <div className={modalStyles.modalOverlay} onClick={onClose}>
+      <div className={modalStyles.glassModal} onClick={(e) => e.stopPropagation()}>
+        <h2 className={modalStyles.modalTitle}>전시회 생성</h2>
+        <p className={modalStyles.modalDesc}>
           저장하지 않은 전시회 내용은 지워집니다.<br />
-          <span className={styles.promptDesc}>새 전시회를 생성하러 갈까요?</span>
+          <span className={modalStyles.promptDesc}>새 전시회를 생성하러 갈까요?</span>
         </p>
-
-        <div className={styles.modalActions}>
-          <button className={styles.btnCancel} onClick={onClose}>
-            취소
-          </button>
-          <button className={styles.btnConfirm} onClick={onConfirm}>
-            확인
-          </button>
+        <div className={modalStyles.modalActions}>
+          <button className={modalStyles.btnCancel} onClick={onClose}>취소</button>
+          <button className={modalStyles.btnConfirm} onClick={onConfirm}>확인</button>
         </div>
       </div>
     </div>
@@ -159,20 +152,20 @@ const DeleteAccountModal: React.FC<DeleteAccountModalProps> = ({ onClose, nickna
   };
 
   return (
-    <div className={styles.modalOverlay} onClick={onClose}>
-      <div className={styles.glassModal} onClick={(e) => e.stopPropagation()}>
-        <h2 className={styles.modalTitle}>탈퇴하기</h2>
-        <p className={styles.modalDesc}>
-          <span className={styles.promptDesc}>{nickname} 님, 정말 떠나시는 건가요?</span>
+    <div className={modalStyles.modalOverlay} onClick={onClose}>
+      <div className={modalStyles.glassModal} onClick={(e) => e.stopPropagation()}>
+        <h2 className={modalStyles.modalTitle}>탈퇴하기</h2>
+        <p className={modalStyles.modalDesc}>
+          <span className={modalStyles.promptDesc}>{nickname} 님, 정말 떠나시는 건가요?</span>
         </p>
 
-        <div className={styles.formContainer}>
+        <div className={modalStyles.formContainer}>
           {/* 비밀번호 입력 */}
-          <div className={styles.formGroup}>
-            <label className={styles.formLabel}>비밀번호 입력</label>
+          <div className={modalStyles.formGroup}>
+            <label className={modalStyles.formLabel}>비밀번호 입력</label>
             <input
               type="password"
-              className={styles.inputUnderline}
+              className={modalStyles.inputUnderline}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="비밀번호를 입력하세요"
@@ -180,11 +173,11 @@ const DeleteAccountModal: React.FC<DeleteAccountModalProps> = ({ onClose, nickna
           </div>
 
           {/* 비밀번호 재입력 */}
-          <div className={styles.formGroup}>
-            <label className={styles.formLabel}>비밀번호 재입력</label>
+          <div className={modalStyles.formGroup}>
+            <label className={modalStyles.formLabel}>비밀번호 재입력</label>
             <input
               type="password"
-              className={styles.inputUnderline}
+              className={modalStyles.inputUnderline}
               value={passwordConfirm}
               onChange={(e) => setPasswordConfirm(e.target.value)}
               placeholder="비밀번호를 한 번 더 입력하세요"
@@ -192,11 +185,11 @@ const DeleteAccountModal: React.FC<DeleteAccountModalProps> = ({ onClose, nickna
           </div>
         </div>
 
-        <div className={styles.modalActions} style={{ marginTop: '10px' }}>
-          <button className={styles.btnCancel} onClick={onClose}>
+        <div className={modalStyles.modalActions} style={{ marginTop: '10px' }}>
+          <button className={modalStyles.btnCancel} onClick={onClose}>
             취소
           </button>
-          <button className={styles.btnConfirm} onClick={handleDelete}>
+          <button className={modalStyles.btnConfirm} onClick={handleDelete}>
             탈퇴하기
           </button>
         </div>
@@ -503,17 +496,17 @@ const DropdownMenu = () => {
       )}
       {/* ✅ [신규] 전시회 삭제 확인 모달 */}
       {deleteTarget && (
-        <div className={styles.modalOverlay} onClick={() => setDeleteTarget(null)}>
-          <div className={styles.glassModal} onClick={(e) => e.stopPropagation()}>
-            <h2 className={styles.modalTitle}>전시회 삭제하기</h2>
-            <p className={styles.modalDesc}>
-              저장된 <span className={styles.promptDesc}>'{deleteTarget.title}'</span>을(를) 삭제하시겠습니까?
+        <div className={modalStyles.modalOverlay} onClick={() => setDeleteTarget(null)}>
+          <div className={modalStyles.glassModal} onClick={(e) => e.stopPropagation()}>
+            <h2 className={modalStyles.modalTitle}>전시회 삭제하기</h2>
+            <p className={modalStyles.modalDesc}>
+              저장된 <span className={modalStyles.promptDesc}>'{deleteTarget.title}'</span>을(를) 삭제하시겠습니까?
             </p>
-            <div className={styles.modalActions}>
-              <button className={styles.btnCancel} onClick={() => setDeleteTarget(null)}>
+            <div className={modalStyles.modalActions}>
+              <button className={modalStyles.btnCancel} onClick={() => setDeleteTarget(null)}>
                 취소
               </button>
-              <button className={styles.btnConfirm} onClick={handleDeleteExhibition}>
+              <button className={modalStyles.btnConfirm} onClick={handleDeleteExhibition}>
                 확인
               </button>
             </div>

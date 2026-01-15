@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom'; // 👈 변경 포인트 1
 import styles from './Exhibition.module.css'; // ExhPageContainer.module.css 이름 변경 추천
 import { Header } from '../../components/Header/Header';
+import modalStyles from '../../styles/Modal.module.css';
 
 // 하위 컴포넌트 import
 import { TopControls } from './components/TopControls';
@@ -734,23 +735,25 @@ export const Exhibition = () => {
         />
       )}
 
+      {/* 1. 저장 확인 모달 */}
       {isConfirmModalOpen && (
-        <div className={styles.modalOverlay}>
-          <div className={styles.glassModal}>
-            <h3 className={styles.modalTitle}>전시회 저장</h3>
-            <p className={styles.modalDesc}>
+        <div className={modalStyles.modalOverlay} onClick={() => setIsConfirmModalOpen(false)}>
+          {/* onClick={(e) => e.stopPropagation()} 추가하여 박스 클릭 시 닫힘 방지 */}
+          <div className={modalStyles.glassModal} onClick={(e) => e.stopPropagation()}>
+            <h3 className={modalStyles.modalTitle}>전시회 저장</h3>
+            <p className={modalStyles.modalDesc}>
               현재 내용을 저장하시겠습니까?
             </p>
 
-            <div className={styles.modalActions}>
+            <div className={modalStyles.modalActions}>
               <button
-                className={styles.btnCancel}
+                className={modalStyles.btnCancel}
                 onClick={() => setIsConfirmModalOpen(false)}
               >
                 취소
               </button>
               <button
-                className={styles.btnConfirm}
+                className={modalStyles.btnConfirm}
                 onClick={handleConfirmAction}
               >
                 확인
@@ -760,34 +763,38 @@ export const Exhibition = () => {
         </div>
       )}
 
-      {/* 저장 전 이름 설정 모달 */}
+      {/* 2. 이름 설정 모달 */}
       {isSaveModalOpen && (
-        <div className={styles.modalOverlay}>
-          <div className={styles.glassModal}>
-            <h3 className={styles.modalTitle}>전시회 이름 설정</h3>
-            <p className={styles.modalDesc}>
+        <div className={modalStyles.modalOverlay} onClick={() => setIsSaveModalOpen(false)}>
+          <div className={modalStyles.glassModal} onClick={(e) => e.stopPropagation()}>
+            <h3 className={modalStyles.modalTitle}>전시회 이름 설정</h3>
+            <p className={modalStyles.modalDesc}>
               저장할 전시회의 이름을 입력해주세요.
             </p>
 
-            {/* 입력 필드 */}
+            {/* 입력창 스타일 적용: 
+               공통 스타일(inputUnderline)을 쓰되, 
+               이 모달에서만 필요한 '가운데 정렬'과 '여백'을 위해 style 속성을 살짝 추가했습니다.
+            */}
             <input
               type="text"
-              className={styles.modalInput}
+              className={modalStyles.inputUnderline}
+              style={{ textAlign: 'center', width: '80%', margin: '10px auto' }}
               value={tempTitle}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTempTitle(e.target.value)}
               placeholder="나만의 전시회 이름을 지어보세요"
               autoFocus
             />
 
-            <div className={styles.modalActions}>
+            <div className={modalStyles.modalActions} style={{ marginTop: '10px' }}>
               <button
-                className={styles.btnCancel}
+                className={modalStyles.btnCancel}
                 onClick={() => setIsSaveModalOpen(false)}
               >
                 취소
               </button>
               <button
-                className={styles.btnConfirm}
+                className={modalStyles.btnConfirm}
                 onClick={handleFinalSave}
               >
                 저장하기
