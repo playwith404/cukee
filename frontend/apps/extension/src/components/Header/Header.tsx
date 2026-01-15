@@ -16,7 +16,7 @@ export const Header = ({
   onHome
 }: HeaderProps) => {
   const navigate = useNavigate();
-  const { user, isAuthenticated, logout, isLoading } = useAuth();
+  const { isAuthenticated, logout, isLoading } = useAuth();
 
   // isAdultExclude: true면 제외(차단), false면 포함(19금 노출)
   const [isAdultExclude, setIsAdultExclude] = useState(true);
@@ -54,8 +54,7 @@ export const Header = ({
   const handleAuthClick = async () => {
     if (isAuthenticated) {
       await logout();
-    } else {
-      navigate('/auth/login');
+      navigate('/');
     }
   };
 
@@ -103,15 +102,16 @@ export const Header = ({
             {is19PlusOn ? '19+ ON' : '19+ OFF'}
           </button>
 
-          {/* 로그인/로그아웃 버튼 */}
-          <button
-            className={`${styles.authBtn} ${isAuthenticated ? styles.authBtnLoggedIn : ''}`}
-            onClick={handleAuthClick}
-            disabled={isLoading}
-            title={isAuthenticated ? `${user?.nickname}님 (로그아웃)` : '로그인'}
-          >
-            {isLoading ? '...' : isAuthenticated ? user?.nickname || '로그아웃' : '로그인'}
-          </button>
+          {/* 로그아웃 버튼 */}
+          {isAuthenticated && (
+            <button
+              className={styles.dropFooter}
+              onClick={handleAuthClick}
+              disabled={isLoading}
+            >
+              {isLoading ? '...' : '로그아웃'}
+            </button>
+          )}
         </div>
 
       </header>
