@@ -1,7 +1,7 @@
 """
 인증 관련 API 엔드포인트
 """
-from fastapi import APIRouter, Depends, status, Response, Request, Cookie, HTTPException
+from fastapi import APIRouter, Depends, status, Response, Request, Cookie, Header, HTTPException
 from sqlalchemy.orm import Session as DBSession
 from typing import Optional
 
@@ -29,7 +29,9 @@ def set_session_cookie(response: Response, session_id: str, environment: str = "
     - session_ext: Non-HttpOnly 쿠키 (Extension용, chrome.cookies API로 접근 가능)
 
     개발 환경: SameSite=Lax
-    배포 환경: Secure; SameSite=None
+    배포 환경: Secure; SameSite=None; Domain=.cukee.world
+
+    도메인을 .cukee.world로 설정하여 익스텐션에서도 쿠키에 접근 가능하도록 함
     """
     max_age = settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60  # 7일 (초 단위)
 
@@ -54,6 +56,7 @@ def set_session_cookie(response: Response, session_id: str, environment: str = "
         )
     else:
         # 웹용 HttpOnly 쿠키
+        # 도메인을 명시적으로 설정하여 서브도메인에서도 접근 가능
         response.set_cookie(
             key="session",
             value=session_id,
@@ -62,8 +65,10 @@ def set_session_cookie(response: Response, session_id: str, environment: str = "
             samesite="none",
             path="/",
             max_age=max_age,
+            domain=".cukee.world",  # 서브도메인 포함
         )
         # Extension용 Non-HttpOnly 쿠키
+        # 익스텐션에서 chrome.cookies API로 접근 가능
         response.set_cookie(
             key="session_ext",
             value=session_id,
@@ -72,6 +77,7 @@ def set_session_cookie(response: Response, session_id: str, environment: str = "
             samesite="none",
             path="/",
             max_age=max_age,
+            domain=".cukee.world",  # 서브도메인 포함
         )
 
 
@@ -170,32 +176,47 @@ def logout(
         SessionService.revoke_session(db, session)
 
     # Cookie 삭제 (웹용 + Extension용)
-    response.delete_cookie(key="session", path="/")
-    response.delete_cookie(key="session_ext", path="/")
+    # 배포 환경에서는 도메인도 명시해야 제대로 삭제됨
+    if settings.ENVIRONMENT == "development":
+        response.delete_cookie(key="session", path="/")
+        response.delete_cookie(key="session_ext", path="/")
+    else:
+        response.delete_cookie(key="session", path="/", domain=".cukee.world")
+        response.delete_cookie(key="session_ext", path="/", domain=".cukee.world")
 
     return MessageResponse(message="Logged out successfully")
 
 
-@router.post("/refresh", response_model=MessageResponse, status_code=status.HTTP_200_OK)
+@router.post("/refresh", status_code=status.HTTP_200_OK)
 def refresh(
     response: Response,
     request: Request,
     session: Optional[str] = Cookie(None),
+    authorization: Optional[str] = Header(None),
     db: DBSession = Depends(get_db)
 ):
     """
     토큰 갱신 (Silent Refresh)
-    - 기존 세션 검증
+    - 기존 세션 검증 (쿠키 또는 Authorization 헤더)
     - 새로운 세션 발급
+    - 익스텐션을 위해 응답에 새 세션 ID 포함
     """
-    if not session:
+    # 1. 쿠키에서 세션 확인
+    session_id = session
+
+    # 2. 쿠키가 없으면 Authorization 헤더에서 확인 (익스텐션용)
+    if not session_id and authorization:
+        if authorization.startswith("Bearer "):
+            session_id = authorization[7:]  # "Bearer " 제거
+
+    if not session_id:
         raise UnauthorizedException(
             message="세션이 존재하지 않습니다.",
-            details="쿠키에 세션 정보가 없습니다."
+            details="쿠키 또는 Authorization 헤더에 세션 정보가 없습니다."
         )
 
     # 기존 세션 검증
-    db_session = SessionService.get_session(db, session)
+    db_session = SessionService.get_session(db, session_id)
     if not db_session:
         raise UnauthorizedException(
             message="유효하지 않은 세션입니다.",
@@ -203,7 +224,7 @@ def refresh(
         )
 
     # 기존 세션 무효화
-    SessionService.revoke_session(db, session)
+    SessionService.revoke_session(db, session_id)
 
     # 새 세션 생성
     new_session = SessionService.create_session(
@@ -216,7 +237,11 @@ def refresh(
     # HttpOnly Cookie 갱신
     set_session_cookie(response, new_session.id, settings.ENVIRONMENT)
 
-    return MessageResponse(message="Token refreshed")
+    # 익스텐션에서 사용할 수 있도록 새 세션 ID를 응답에 포함
+    return {
+        "message": "Token refreshed",
+        "session_id": str(new_session.id)
+    }
 
 
 @router.post("/email/send", response_model=SendVerificationResponse, status_code=status.HTTP_200_OK)

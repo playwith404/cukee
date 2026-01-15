@@ -16,10 +16,15 @@ router = APIRouter(prefix="/api/auth/google", tags=["Google OAuth"])
 
 
 def set_session_cookie(response: Response, session_id: str, environment: str = "development"):
-    """HttpOnly Cookie 설정"""
+    """
+    세션 쿠키 설정
+    - session: HttpOnly 쿠키 (웹용, XSS 방지)
+    - session_ext: Non-HttpOnly 쿠키 (Extension용, chrome.cookies API로 접근 가능)
+    """
     max_age = settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60
 
     if environment == "development":
+        # 웹용 HttpOnly 쿠키
         response.set_cookie(
             key="session",
             value=session_id,
@@ -28,7 +33,17 @@ def set_session_cookie(response: Response, session_id: str, environment: str = "
             path="/",
             max_age=max_age,
         )
+        # Extension용 Non-HttpOnly 쿠키
+        response.set_cookie(
+            key="session_ext",
+            value=session_id,
+            httponly=False,
+            samesite="lax",
+            path="/",
+            max_age=max_age,
+        )
     else:
+        # 웹용 HttpOnly 쿠키
         response.set_cookie(
             key="session",
             value=session_id,
@@ -37,6 +52,18 @@ def set_session_cookie(response: Response, session_id: str, environment: str = "
             samesite="none",
             path="/",
             max_age=max_age,
+            domain=".cukee.world",
+        )
+        # Extension용 Non-HttpOnly 쿠키
+        response.set_cookie(
+            key="session_ext",
+            value=session_id,
+            httponly=False,
+            secure=True,
+            samesite="none",
+            path="/",
+            max_age=max_age,
+            domain=".cukee.world",
         )
 
 
