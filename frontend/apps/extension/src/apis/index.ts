@@ -3,7 +3,7 @@ import axios from 'axios';
 
 // 환경변수 적용 (없으면 기본값 사용)
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const COOKIE_DOMAIN = 'cukee.world';
+const COOKIE_DOMAIN = '.cukee.world'; // 앞에 점을 붙여 서브도메인도 포함
 const COOKIE_URL = 'https://cukee.world';
 
 const api = axios.create({
@@ -16,7 +16,12 @@ const api = axios.create({
 
 /**
  * chrome.cookies API로 세션 쿠키 읽기
- * session_ext 쿠키를 우선 읽고, 없으면 session 쿠키 시도
+ * session_ext 쿠키를 우선 읽고 (웹에서 설정된 쿠키), 없으면 session 쿠키 시도
+ *
+ * 웹 로그인 시: 서버가 session (httpOnly) + session_ext (non-httpOnly) 둘 다 설정
+ * 익스텐션 로그인 시: 익스텐션이 session_ext만 설정
+ *
+ * 익스텐션은 httpOnly 쿠키를 읽을 수 없으므로 session_ext를 읽어야 함
  */
 export async function getSessionFromCookie(): Promise<string | null> {
   return new Promise((resolve) => {
@@ -32,19 +37,23 @@ export async function getSessionFromCookie(): Promise<string | null> {
       (cookie) => {
         if (chrome.runtime.lastError) {
           console.error('[Extension] Cookie read error:', chrome.runtime.lastError);
-          resolve(null);
-          return;
         }
 
         if (cookie?.value) {
+          console.log('[Extension] Found session_ext cookie');
           resolve(cookie.value);
           return;
         }
 
-        // session_ext가 없으면 session 쿠키 시도 (fallback)
+        // session_ext가 없으면 session 쿠키 시도 (fallback - 일부 브라우저에서 작동할 수 있음)
         chrome.cookies.get(
           { url: COOKIE_URL, name: 'session' },
           (sessionCookie) => {
+            if (sessionCookie?.value) {
+              console.log('[Extension] Found session cookie (fallback)');
+            } else {
+              console.log('[Extension] No session cookie found');
+            }
             resolve(sessionCookie?.value || null);
           }
         );
@@ -56,6 +65,9 @@ export async function getSessionFromCookie(): Promise<string | null> {
 /**
  * chrome.cookies API로 세션 쿠키 저장
  * session_ext 쿠키를 저장 (백엔드에서 웹 로그인 시에도 같이 설정됨)
+ *
+ * 익스텐션에서 로그인할 때 이 함수가 호출됨
+ * 웹에서 로그인할 때는 서버가 직접 쿠키를 설정하므로 이 함수는 호출되지 않음
  */
 export async function setSessionCookie(sessionId: string): Promise<boolean> {
   return new Promise((resolve) => {
@@ -68,6 +80,7 @@ export async function setSessionCookie(sessionId: string): Promise<boolean> {
     // 7일 후 만료
     const expirationDate = Date.now() / 1000 + 60 * 60 * 24 * 7;
 
+    // session_ext 쿠키 설정 (익스텐션용)
     chrome.cookies.set(
       {
         url: COOKIE_URL,
@@ -86,6 +99,7 @@ export async function setSessionCookie(sessionId: string): Promise<boolean> {
           resolve(false);
           return;
         }
+        console.log('[Extension] Session cookie saved successfully');
         resolve(!!cookie);
       }
     );
