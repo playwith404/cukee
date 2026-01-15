@@ -31,6 +31,12 @@ export async function getSessionFromCookie(): Promise<string | null> {
       return;
     }
 
+    // 디버깅: URL 기반으로 모든 쿠키 조회 (가장 정확함)
+    chrome.cookies.getAll({ url: COOKIE_URL }, (allCookies) => {
+      console.log('[Extension] All cookies for URL', COOKIE_URL + ':',
+        allCookies?.map(c => ({ name: c.name, domain: c.domain, httpOnly: c.httpOnly })));
+    });
+
     // 먼저 Extension용 쿠키(session_ext) 시도
     chrome.cookies.get(
       { url: COOKIE_URL, name: 'session_ext' },
@@ -40,21 +46,22 @@ export async function getSessionFromCookie(): Promise<string | null> {
         }
 
         if (cookie?.value) {
-          console.log('[Extension] Found session_ext cookie');
+          console.log('[Extension] Found session_ext cookie, domain:', cookie.domain);
           resolve(cookie.value);
           return;
         }
 
-        // session_ext가 없으면 session 쿠키 시도 (fallback - 일부 브라우저에서 작동할 수 있음)
+        // session_ext가 없으면 session 쿠키 시도 (fallback - httpOnly=false인 경우만 작동)
         chrome.cookies.get(
           { url: COOKIE_URL, name: 'session' },
           (sessionCookie) => {
             if (sessionCookie?.value) {
-              console.log('[Extension] Found session cookie (fallback)');
+              console.log('[Extension] Found session cookie (fallback), domain:', sessionCookie.domain);
+              resolve(sessionCookie.value);
             } else {
-              console.log('[Extension] No session cookie found');
+              console.log('[Extension] No session cookie found for', COOKIE_URL);
+              resolve(null);
             }
-            resolve(sessionCookie?.value || null);
           }
         );
       }
