@@ -463,7 +463,7 @@
 
 
 /* 반응형 */
-@media (max-width: 480px) {
+/* @media (max-width: 480px) {
   .card {
     padding: 2rem 1.5rem;
     margin: 0 1rem;
@@ -476,4 +476,4 @@
   .navLinks {
     gap: 1rem;
   }
-}
+} */

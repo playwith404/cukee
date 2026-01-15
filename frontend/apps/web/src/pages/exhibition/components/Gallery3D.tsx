@@ -173,13 +173,7 @@ export const Gallery3D = ({
             `} 
               onClick={() => onSelect(index)}
             >
-              {/* [추가] 와이어 (frameStyle이 none이 아닐 때만 표시) */}
-            {frameStyle !== 'none' && (
-              <>
-                <div className={styles.wireLeft} />
-                <div className={styles.wireRight} />
-              </>
-            )}
+              
               {/* 1. 이미지 영역 (content) */}
               <div className={styles.content}>
                 {frame.imageUrl ? (

@@ -630,7 +630,7 @@ export const Exhibition = () => {
     }
   };
 
-  // 🚧 MainLayout이나 Header가 없으면 임시 div로 감싸세요.
+
   return (
     <div className={styles.container}>
       {/* 헤더 영역 */}
@@ -672,7 +672,7 @@ export const Exhibition = () => {
           onPin={isReadOnly ? undefined : handlePin}
         />
       </div>
-
+      <div className={styles.curatorWrapper}>
       <CuratorGuide
         // API에 이미지가 있으면 그걸 쓰고, 없으면 위에서 만든 규칙(cara + 번호)을 사용
         //characterImageUrl={ticketInfo?.characterImageUrl || dynamicCharacterImage}
@@ -690,6 +690,7 @@ export const Exhibition = () => {
         onToggleLike={handleLikeToggle}
         isDecorateMode={bottomMode === 'decorate'}
       />
+      </div>
 
       {/* 오른쪽 하단 티켓 이미지 영역 */}
       <div className={styles.ticketWrapper}>
@@ -700,7 +701,7 @@ export const Exhibition = () => {
           className={styles.ticketImage}
         />
       </div>
-
+      <div className={styles.bottomSection}>
       {/* ✅ [수정] 조건문(!isReadOnly) 제거 -> 항상 렌더링하되 isReadOnly prop 전달 */}
       {bottomMode === 'action' && (
         <ExhibitionGenerator
@@ -734,6 +735,7 @@ export const Exhibition = () => {
           onChangeBackground={setBackground}
         />
       )}
+      </div>
 
       {/* 1. 저장 확인 모달 */}
       {isConfirmModalOpen && (

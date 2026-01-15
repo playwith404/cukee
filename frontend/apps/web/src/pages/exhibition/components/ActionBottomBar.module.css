@@ -24,7 +24,7 @@
 
 .promptWrapper {
   position: relative;
-  width: calc(100% - 20px); /* 전체 화면에서 양옆 10px씩(총 20px) 뺌 */
+  width: calc(100% - 50px); /* 전체 화면에서 양옆 10px씩(총 20px) 뺌 */
   max-width: 1000px;        /* 하지만 1000px보다는 커지지 않게 제한 */
   height: 64px;
   background-color: #FEF8F2;
@@ -90,17 +90,24 @@
     font-weight: 400;
     cursor: pointer;
     transition: all 0.2s;
+    /* white-space: nowrap;
+    flex-shrink: 0; */
+
 }
 .chip:hover {
     background-color: #EDE6DD;
     border-color: #fff;
     color: #373431;
 }
-
-
-@media (max-height: 800px) {
-  .container { height: 130px; }
-  .promptWrapper { transform: scale(0.9); }
-  .chip { transform: scale(0.9); }
-} 
-
+@media (max-width: 1000px) {
+  .chip {
+    display: none; /* 칩 숨김 */
+  }
+  
+  .actions {
+    display: none; /* 칩을 감싸는 컨테이너도 함께 숨김 (여백 제거 위해) */
+  }
+  .promptWrapper, .promptWrapper::after{
+    border-radius: 25px;
+  }
+}
