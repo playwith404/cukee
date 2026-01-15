@@ -3,7 +3,7 @@ name: Frontend CI/CD
 on:
   workflow_dispatch:
   push:
-    branches: [ "main", "dev", "feature/cloud/CUK-146-cloudflare" ] 
+    branches: [ "main", "dev" ] 
     paths: 
       - 'frontend/**'
       - 'docker-compose.yml'
@@ -114,6 +114,9 @@ jobs:
             # 3. Pull & Deploy (Frontend Only)
             sudo docker compose pull frontend
             sudo docker compose up -d frontend --remove-orphans
+
+            # 4. Restart Nginx (to update DNS cache)
+            sudo docker compose restart nginx
             
             # 5. Cleanup
             sudo docker image prune -af --filter "until=10m" || true

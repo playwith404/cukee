@@ -3,7 +3,7 @@ name: Backend CI/CD
 on:
   workflow_dispatch: 
   push:
-    branches: [ "main", "dev", "feature/cloud/CUK-146-cloudflare" ]   
+    branches: [ "main", "dev" ]   
     paths:
       - 'backend/**'
       - 'docker-compose.yml'
@@ -133,6 +133,9 @@ jobs:
             # 3. Pull & Deploy (Backend Only)
             sudo docker compose pull backend
             sudo docker compose up -d backend --remove-orphans
+
+            # 4. Restart Nginx (to update DNS cache)
+            sudo docker compose restart nginx
             
             # 5. Cleanup
             sudo docker image prune -af --filter "until=10m" || true
