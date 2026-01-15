@@ -4,29 +4,27 @@
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-color: #EDE6DD;
 }
 
 .characters {
   display: flex;
-  gap: 15px;
-  margin-bottom: 20px;
+  gap: 10px;
+  margin-bottom: 16px;
 }
 
 .character {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
+  width: 50px;
+  height: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
   animation: bounce 1.4s ease-in-out infinite;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
 .characterImage {
-  width: 40px;
-  height: 40px;
+  width: 45px;
+  height: 45px;
   object-fit: contain;
 }
 
@@ -35,15 +33,15 @@
     transform: translateY(0);
   }
   50% {
-    transform: translateY(-40px);
+    transform: translateY(-25px);
   }
 }
 
 .loadingText {
-  color: white;
-  font-size: 18px;
+  color: #373431;
+  font-size: 14px;
   font-weight: bold;
-  letter-spacing: 2px;
+  letter-spacing: 1px;
 }
 
 .loadingText::after {
