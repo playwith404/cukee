@@ -43,8 +43,8 @@ export const ExhibitionGenerator = ({
 
     try {
       // 2. API 호출 (pinnedMovieIds 추가)
-      const adultExclude = localStorage.getItem('adultExclude') === 'true';
-      const data = await generateExhibition(prompt, currentTicketId, pinnedMovieIds, adultExclude);
+      const isAdultAllowed = localStorage.getItem('isAdultAllowed') === 'true';
+      const data = await generateExhibition(prompt, currentTicketId, pinnedMovieIds, isAdultAllowed);
 
       // 3. 성공 시 부모에게 데이터 전달
       onSuccess(data);

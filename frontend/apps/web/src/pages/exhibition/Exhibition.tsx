@@ -341,8 +341,8 @@ export const Exhibition = () => {
       if (exhibitionIdParam) return;
 
       try {
-        const adultExclude = localStorage.getItem('adultExclude') === 'true';
-        const response = await curateMovies(currentTicketId, 5, adultExclude);
+        const isAdultAllowed = localStorage.getItem('isAdultAllowed') === 'true';
+        const response = await curateMovies(currentTicketId, 5, isAdultAllowed);
 
         if (response.movies && response.movies.length > 0) {
           const newFrames: Frame[] = response.movies.map((movie) => ({
@@ -673,23 +673,23 @@ export const Exhibition = () => {
         />
       </div>
       <div className={styles.curatorWrapper}>
-      <CuratorGuide
-        // API에 이미지가 있으면 그걸 쓰고, 없으면 위에서 만든 규칙(cara + 번호)을 사용
-        //characterImageUrl={ticketInfo?.characterImageUrl || dynamicCharacterImage}
+        <CuratorGuide
+          // API에 이미지가 있으면 그걸 쓰고, 없으면 위에서 만든 규칙(cara + 번호)을 사용
+          //characterImageUrl={ticketInfo?.characterImageUrl || dynamicCharacterImage}
 
-        // [중요] 여기서 사용자가 선택한 스타일이 적용된 이미지를 보여줍니다.
-        characterImageUrl={`/cara_style/${cukeeId}/${cukeeStyle}.png`}
+          // [중요] 여기서 사용자가 선택한 스타일이 적용된 이미지를 보여줍니다.
+          characterImageUrl={`/cara_style/${cukeeId}/${cukeeStyle}.png`}
 
-        curatorName={loadingTicket ? "로딩 중..." : (ticketInfo?.curatorName || 'MZ 큐레이터')}
-        // 여기서 상태에 따른 메시지를 주입합니다.
-        curatorMessage={getCuratorMessage()}
+          curatorName={loadingTicket ? "로딩 중..." : (ticketInfo?.curatorName || 'MZ 큐레이터')}
+          // 여기서 상태에 따른 메시지를 주입합니다.
+          curatorMessage={getCuratorMessage()}
 
-        // [신규] 좋아요 정보 전달
-        likeCount={ticketInfo?.likeCount || 0}
-        isLiked={ticketInfo?.isLiked || false}
-        onToggleLike={handleLikeToggle}
-        isDecorateMode={bottomMode === 'decorate'}
-      />
+          // [신규] 좋아요 정보 전달
+          likeCount={ticketInfo?.likeCount || 0}
+          isLiked={ticketInfo?.isLiked || false}
+          onToggleLike={handleLikeToggle}
+          isDecorateMode={bottomMode === 'decorate'}
+        />
       </div>
 
       {/* 오른쪽 하단 티켓 이미지 영역 */}
@@ -702,39 +702,39 @@ export const Exhibition = () => {
         />
       </div>
       <div className={styles.bottomSection}>
-      {/* ✅ [수정] 조건문(!isReadOnly) 제거 -> 항상 렌더링하되 isReadOnly prop 전달 */}
-      {bottomMode === 'action' && (
-        <ExhibitionGenerator
-          currentTicketId={currentTicketId}
-          onSuccess={handleExhibitionCreated}
-          onLoadingStart={() => {
-            setAiStatus('loading');
-            setSelectedMovieDetail(null);
-            setAiCuratorComment("");
-          }}
-          onError={handleAIError}
-          isLoading={aiStatus === 'loading' || aiStatus === 'delayed'}
-          pinnedMovieIds={pinnedMovieIds}
-          isReadOnly={isReadOnly}
-        />
-      )}
+        {/* ✅ [수정] 조건문(!isReadOnly) 제거 -> 항상 렌더링하되 isReadOnly prop 전달 */}
+        {bottomMode === 'action' && (
+          <ExhibitionGenerator
+            currentTicketId={currentTicketId}
+            onSuccess={handleExhibitionCreated}
+            onLoadingStart={() => {
+              setAiStatus('loading');
+              setSelectedMovieDetail(null);
+              setAiCuratorComment("");
+            }}
+            onError={handleAIError}
+            isLoading={aiStatus === 'loading' || aiStatus === 'delayed'}
+            pinnedMovieIds={pinnedMovieIds}
+            isReadOnly={isReadOnly}
+          />
+        )}
 
-      {/* 하단 컨트롤바/꾸미기 창 */}
-      {bottomMode === 'decorate' && (
-        <ExhibitionDecorate
-          exhibitionId={exhibitionId}     // ✅ 전달 확인
-          exhibitionTitle={exhibitionTitle} // ✅ 전달 확인
-          onClose={() => setBottomMode('action')} // 닫기(X) 버튼 클릭 시 그냥 복귀
-          onSaveClick={handleSaveDesign} // ✅ 체크 버튼 클릭 시 저장 함수 실행
-          ticketId={currentTicketId}
-          cukeeStyle={cukeeStyle}
-          onChangeCukeeStyle={setCukeeStyle}
-          frameStyle={frameStyle}
-          onChangeFrameStyle={setFrameStyle}
-          background={background}
-          onChangeBackground={setBackground}
-        />
-      )}
+        {/* 하단 컨트롤바/꾸미기 창 */}
+        {bottomMode === 'decorate' && (
+          <ExhibitionDecorate
+            exhibitionId={exhibitionId}     // ✅ 전달 확인
+            exhibitionTitle={exhibitionTitle} // ✅ 전달 확인
+            onClose={() => setBottomMode('action')} // 닫기(X) 버튼 클릭 시 그냥 복귀
+            onSaveClick={handleSaveDesign} // ✅ 체크 버튼 클릭 시 저장 함수 실행
+            ticketId={currentTicketId}
+            cukeeStyle={cukeeStyle}
+            onChangeCukeeStyle={setCukeeStyle}
+            frameStyle={frameStyle}
+            onChangeFrameStyle={setFrameStyle}
+            background={background}
+            onChangeBackground={setBackground}
+          />
+        )}
       </div>
 
       {/* 1. 저장 확인 모달 */}
