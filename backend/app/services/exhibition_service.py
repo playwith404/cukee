@@ -167,6 +167,24 @@ def update_exhibition(
             )
             db.add(design)
 
+    # 영화 목록 수정
+    if exhibition_data.movies is not None:
+        # 기존 영화 목록 삭제
+        db.query(ExhibitionMovie).filter(
+            ExhibitionMovie.exhibition_id == exhibition.id
+        ).delete()
+
+        # 새 영화 목록 추가
+        for movie_data in exhibition_data.movies:
+            movie = ExhibitionMovie(
+                exhibition_id=exhibition.id,
+                movie_id=movie_data.movieId,
+                display_order=movie_data.displayOrder,
+                curator_comment=movie_data.curatorComment,
+                is_pinned=movie_data.isPinned
+            )
+            db.add(movie)
+
     db.commit()
     db.refresh(exhibition)
 
