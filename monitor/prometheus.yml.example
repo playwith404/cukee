@@ -13,3 +13,20 @@ scrape_configs:
   - job_name: 'general-vm'
     static_configs:
       - targets: ['GENERAL_VM_IP_PLACEHOLDER:9100'] 
+
+  # 3. Backend API (FastAPI)
+  # Nginx를 통해 노출된 메트릭 수집 (/api/metrics -> backend:8000/api/metrics)
+  - job_name: 'backend-api'
+    scrape_interval: 10s
+    metrics_path: '/api/metrics'
+    scheme: https
+    static_configs:
+      - targets: ['cukee.world'] # 실제 도메인 또는 IP
+
+  # 4. AI Server API (FastAPI)
+  # 같은 Docker Network 내에 있으므로 컨테이너명으로 접근 가능
+  - job_name: 'ai-api'
+    scrape_interval: 10s
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['ai-server:5000'] 
