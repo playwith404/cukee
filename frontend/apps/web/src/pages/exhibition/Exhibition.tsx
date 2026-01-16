@@ -340,8 +340,8 @@ export const Exhibition = () => {
       if (exhibitionIdParam) return;
 
       try {
-        const adultExclude = localStorage.getItem('adultExclude') === 'true';
-        const response = await curateMovies(currentTicketId, 5, adultExclude);
+        const isAdultAllowed = localStorage.getItem('isAdultAllowed') === 'true';
+        const response = await curateMovies(currentTicketId, 5, isAdultAllowed);
 
         if (response.movies && response.movies.length > 0) {
           const newFrames: Frame[] = response.movies.map((movie) => ({

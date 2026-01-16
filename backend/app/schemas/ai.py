@@ -50,9 +50,8 @@ class AIGenerateRequest(BaseModel):
     """AI 전시회 생성 요청"""
     prompt: str
     ticketId: int
-    ticketId: int
     pinnedMovieIds: List[int] = []
-    adultExclude: bool = False  # [추가] 19금 필터
+    isAdultAllowed: bool = False  # [수정] 19금 필터 (허용 여부)
 
     model_config = ConfigDict(
         json_schema_extra={

@@ -86,7 +86,7 @@ export const Exhibition = () => {
         if (data) {
           const savedCukeeNo = data.ticketGroupId || data.ticket_group_id;
           if (savedCukeeNo) setCukeeId(`c${savedCukeeNo}`);
-          
+
           const design = data.design || data;
           setCukeeStyle(design.cukeeStyle || '1');
           setFrameStyle(design.frameStyle || 'none');
@@ -140,7 +140,7 @@ export const Exhibition = () => {
           // 저장된 전시회 불러오기
           const exhibition = await getExhibitionById(parseInt(exhibitionIdParam, 10));
           if (exhibition.title) setExhibitionTitle(exhibition.title);
-          
+
           if (exhibition.ticketId) {
             const ticketsResponse = await fetchTickets();
             const ticket = ticketsResponse.data.find((t: Ticket) => t.id === exhibition.ticketId);
@@ -179,8 +179,8 @@ export const Exhibition = () => {
     const loadMovies = async () => {
       if (exhibitionIdParam) return;
       try {
-        const adultExclude = localStorage.getItem('adultExclude') === 'true';
-        const response = await curateMovies(currentTicketId, 5, adultExclude);
+        const isAdultAllowed = localStorage.getItem('isAdultAllowed') === 'true';
+        const response = await curateMovies(currentTicketId, 5, isAdultAllowed);
         if (response.movies?.length > 0) {
           const newFrames: Frame[] = response.movies.map((movie) => ({
             id: movie.movieId,

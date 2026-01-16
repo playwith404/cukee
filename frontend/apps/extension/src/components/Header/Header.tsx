@@ -18,18 +18,18 @@ export const Header = ({
   const navigate = useNavigate();
   const { isAuthenticated, logout, isLoading } = useAuth();
 
-  // isAdultExclude: true면 제외(차단), false면 포함(19금 노출)
-  const [isAdultExclude, setIsAdultExclude] = useState(true);
+  // isAdultAllowed: true면 포함(19금 노출), false면 제외(차단)
+  const [isAdultAllowed, setIsAdultAllowed] = useState(false);
 
   useEffect(() => {
-    const saved = localStorage.getItem('adultExclude');
-    setIsAdultExclude(saved !== 'false');
+    const saved = localStorage.getItem('isAdultAllowed');
+    setIsAdultAllowed(saved === 'true');
   }, []);
 
   const toggleAdultFilter = () => {
-    const nextState = !isAdultExclude;
-    setIsAdultExclude(nextState);
-    localStorage.setItem('adultExclude', String(nextState));
+    const nextState = !isAdultAllowed;
+    setIsAdultAllowed(nextState);
+    localStorage.setItem('isAdultAllowed', String(nextState));
   };
 
   const getImageUrl = (path: string) => {
@@ -37,11 +37,11 @@ export const Header = ({
       if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.getURL) {
         return chrome.runtime.getURL(path);
       }
-    } catch (e) {}
+    } catch (e) { }
     return `/${path}`;
   };
 
-  const is19PlusOn = !isAdultExclude;
+  const is19PlusOn = isAdultAllowed;
 
   const handleHomeClick = () => {
     if (onHome) {

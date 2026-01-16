@@ -48,7 +48,7 @@ class RetrievalService:
             return []
 
     @staticmethod
-    async def retrieve_similar_movies(db_session, prompt: str, ticket_id: int, limit: int = 5, exclude_ids: list[int] = None, adult_exclude: bool = False):
+    async def retrieve_similar_movies(db_session, prompt: str, ticket_id: int, limit: int = 5, exclude_ids: list[int] = None, is_adult_allowed: bool = False):
         """
         사용자 프롬프트와 유사한 영화 검색 (티켓별 필터링 + 19금 필터링)
         """
@@ -63,8 +63,7 @@ class RetrievalService:
                 exclude_condition = f"AND m.id NOT IN ({exclude_ids_str})"
 
             # 19금 필터링 조건 추가
-            # adult_exclude가 True이면 18세 이상(18, 19, Restricted, R, NC-17) 제외
-            # (:adult_exclude = false OR m.certification NOT IN (...))
+            # is_adult_allowed가 True이면 19금 허용, False이면 엄격히 제외 (등급 정보 없는 것도 제외)
             
             query = text(f"""
                 SELECT m.id, m.title_ko, m.overview_ko, m.poster_path, 
@@ -75,7 +74,10 @@ class RetrievalService:
                 WHERE me.embedding IS NOT NULL
                   AND tgm.ticket_group_id = :ticket_id
                 {exclude_condition}
-                  AND (:adult_exclude = false OR m.certification IN ('ALL', '12', '15', 'G', 'PG', 'PG-13'))
+                  AND (:is_adult_allowed = true 
+                       OR (m.certification IS NOT NULL 
+                           AND m.certification != '' 
+                           AND m.certification IN ('ALL', '12', '15', 'G', 'PG', 'PG-13')))
                 ORDER BY me.embedding <=> :embedding ASC
                 LIMIT :limit
             """)
@@ -87,7 +89,7 @@ class RetrievalService:
                 "embedding": embedding_str, 
                 "ticket_id": ticket_id,
                 "limit": limit,
-                "adult_exclude": adult_exclude
+                "is_adult_allowed": is_adult_allowed
             })
             rows = result.fetchall()
             
