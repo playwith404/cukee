@@ -5,7 +5,7 @@ on:
   push:
     branches: [ "main", "dev", "feature/monitoring/CUK-150" ]   
     paths:
-      - 'ai/**'
+      - 'ai/**' 
       - 'docker-compose.ai.yml'
       - '.github/workflows/ci-ai.yml'
   pull_request:

@@ -5,7 +5,7 @@ on:
   push:
     branches: [ "main", "dev", "feature/monitoring/CUK-150" ] 
     paths: 
-      - 'frontend/**'
+      - 'frontend/**' 
       - 'docker-compose.yml'
       - '.github/workflows/ci-frontend.yml'
   pull_request:
