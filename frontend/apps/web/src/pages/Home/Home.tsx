@@ -6,7 +6,8 @@ import { fetchTickets, toggleTicketLike, type Ticket } from '../../apis/exhibiti
 import { useAuth } from '../../contexts/AuthContext';
 import styles from './Home.module.css';
 import { FALLBACK_TICKETS } from './fallbackData';
-import { HiHeart, HiOutlineHeart } from "react-icons/hi"; // 하트 아이콘 추가
+import { HiHeart, HiOutlineHeart } from "react-icons/hi";
+import { getGreeting } from './greetings';
 
 // --- 고정 데이터 ---
 const curatorIntroText = "안녕하세요. MZ 큐레이터 김엠지예요. 밝고 도파민 터지는 영화만 추천해줄게요.";
@@ -25,6 +26,9 @@ export default function HomePage() {
   const nickname = user?.nickname;
   const totalTickets = tickets.length;
   const currentTicket = tickets[currentIndex];
+
+  // 시간대별 인사말 (컴포넌트 마운트 시 한 번만 생성)
+  const [greeting] = useState(() => getGreeting(nickname));
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -155,7 +159,7 @@ export default function HomePage() {
               <div className={`${styles.textSection} ${viewMode === 'viewAll' ? styles.fadeOut : ''}`}>
                 <div>
                   <h1 className={styles.title}>
-                    {nickname ? `${nickname}님,` : '안녕하세요,'}<br />어떤 영화를<br />보고 싶나요?
+                    {greeting}
                   </h1>
                   <p className={styles.subText}>
                     당신을 위한 큐레이터가 대기 중이에요.
