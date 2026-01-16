@@ -19,7 +19,7 @@ const CARA_IMAGES = [
   '/cara_head/dog-head.svg',
   '/cara_head/ghost-head.svg',
   '/cara_head/glasses-head.svg',
-  '/cara_head/heart-head-v3.svg',
+  '/cara_head/heart-head-v4.svg',
   '/cara_head/jelly-head.svg',
   '/cara_head/lemon-head.svg',
   '/cara_head/olive-head.svg',
