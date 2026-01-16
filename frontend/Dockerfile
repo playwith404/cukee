@@ -54,8 +54,8 @@ RUN echo $'server {\n\
     \n\
     # 정적 파일 캐싱\n\
     location ~* \\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {\n\
-        expires 1y;\n\
-        add_header Cache-Control "public, immutable";\n\
+        expires 1d;\n\
+        add_header Cache-Control "public, must-revalidate";\n\
     }\n\
 }' > /etc/nginx/conf.d/default.conf
 
