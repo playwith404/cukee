@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import styles from './ActionBottomBar.module.css';
+import modalStyles from '../../../styles/Modal.module.css';
 // import { ExhibitionDecorate } from '../ExhibitionDecorate';
 // import type { CukeeStyle } from '../../../types/cukee';
 
@@ -91,18 +92,18 @@ export const ActionBottomBar = ({ promptValue, setPromptValue, onSubmit, isLoadi
 
       {/* 모달: showConfirmModal이 true일 때만 뜸 */}
       {showConfirmModal && (
-        <div className={styles.modalOverlay}>
-          <div className={styles.glassModal}>
-            <h3 className={styles.modalTitle}>알림</h3>
-            <p className={styles.modalDesc}>
+        <div className={modalStyles.modalOverlay} onClick={handleCancel}>
+          <div className={modalStyles.glassModal} onClick={(e) => e.stopPropagation()}>
+            <h3 className={modalStyles.modalTitle}>알림</h3>
+            <p className={modalStyles.modalDesc}>
               입력하신 프롬프트를 전송할까요?<br />
-              <p className={styles.promptDesc}>"{promptValue}"</p>
+              <span className={modalStyles.promptDesc}>"{promptValue}"</span>
             </p>
-            <div className={styles.modalActions}>
-              <button className={styles.btnCancel} onClick={handleCancel}>
+            <div className={modalStyles.modalActions}>
+              <button className={modalStyles.btnCancel} onClick={handleCancel}>
                 취소
               </button>
-              <button className={styles.btnConfirm} onClick={handleConfirm}>
+              <button className={modalStyles.btnConfirm} onClick={handleConfirm}>
                 확인
               </button>
             </div>

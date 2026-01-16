@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styles from './Gallery3D.module.css';
+import modalStyles from '../../../styles/Modal.module.css';
 import { createPortal } from 'react-dom';
 
 export interface Frame {
@@ -40,16 +41,16 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
   confirmText
 }) => {
   const modalContent = (
-    <div className={styles.modalOverlay} onClick={onClose}>
+    <div className={modalStyles.modalOverlay} onClick={onClose}>
       <div
-        className={styles.glassModal}
+        className={modalStyles.glassModal}
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className={styles.modalTitle}>{title}</h2>
-        <p className={styles.modalDesc}>{description}</p>
-        <div className={styles.modalActions}>
-          <button className={styles.btnCancel} onClick={onClose}>취소</button>
-          <button className={styles.btnConfirm} onClick={onConfirm}>{confirmText}</button>
+        <h2 className={modalStyles.modalTitle}>{title}</h2>
+        <p className={modalStyles.modalDesc}>{description}</p>
+        <div className={modalStyles.modalActions}>
+          <button className={modalStyles.btnCancel} onClick={onClose}>취소</button>
+          <button className={modalStyles.btnConfirm} onClick={onConfirm}>{confirmText}</button>
         </div>
       </div>
     </div>
@@ -81,7 +82,7 @@ export const Gallery3D = ({
   const [activeModal, setActiveModal] = useState<ModalState | null>(null);
 
   const maxIndex = frames.length - 1;
-  const isEditMode = onPin && onDelete;
+  const isEditMode = !!(onPin && onDelete);
 
   const getFrameStyle = (index: number) => {
     const diff = index - activeIndex;
@@ -130,7 +131,7 @@ export const Gallery3D = ({
           <>
             영화를 삭제하면 되돌릴 수 없으며,<br />
             해당 영화는 재추천되지 않습니다.<br />
-            <span className={styles.promptDesc}>계속 진행하시겠습니까?</span>
+            <span className={modalStyles.promptDesc}>계속 진행하시겠습니까?</span>
           </>
         ),
         confirmText: '삭제'
@@ -143,7 +144,7 @@ export const Gallery3D = ({
           <>
             이 영화를 고정하면 전시회가 재생성되어도<br />
             목록에서 사라지지 않고 유지됩니다.<br />
-            <span className={styles.promptDesc}>이 영화를 고정하시겠습니까?</span>
+            <span className={modalStyles.promptDesc}>이 영화를 고정하시겠습니까?</span>
           </>
         ),
         confirmText: '고정'
@@ -156,7 +157,11 @@ export const Gallery3D = ({
 
   return (
     <>
-      <div className={styles.container}>
+      <div className={`${styles.container} ${isEditMode ? styles.editMode : ''}`}
+      style={{ 
+          height: isEditMode ? '280px' : '400px' 
+        }}
+      >
         {frames.map((frame, index) => {
           const positionClass = getFrameStyle(index);
           const movieTitle = frame.content || '영화';
@@ -172,13 +177,7 @@ export const Gallery3D = ({
             `} 
               onClick={() => onSelect(index)}
             >
-              {/* [추가] 와이어 (frameStyle이 none이 아닐 때만 표시) */}
-            {frameStyle !== 'none' && (
-              <>
-                <div className={styles.wireLeft} />
-                <div className={styles.wireRight} />
-              </>
-            )}
+              
               {/* 1. 이미지 영역 (content) */}
               <div className={styles.content}>
                 {frame.imageUrl ? (

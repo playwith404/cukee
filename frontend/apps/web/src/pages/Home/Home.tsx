@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MainLayout } from '@repo/ui';
 import { MainCarousel } from './MainCarousel';
 import { Header } from '../../components/Header/Header';
 import { fetchTickets, toggleTicketLike, type Ticket } from '../../apis/exhibition';
@@ -120,7 +119,6 @@ export default function HomePage() {
 
 
   return (
-    <MainLayout>
       <div className={`${styles.killcho} ${viewMode === 'viewAll' ? styles.scrollLocked : ''}`}>
         {/* 헤더: viewAll 모드일 땐 숨김 */}
         <div className={`${styles.headerWrapper} ${viewMode === 'viewAll' ? styles.hidden : ''}`}>
@@ -230,6 +228,5 @@ export default function HomePage() {
           </div>
         </div>
       </div>
-    </MainLayout>
   );
 }

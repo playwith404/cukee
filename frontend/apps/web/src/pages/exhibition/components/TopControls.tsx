@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styles from './TopControls.module.css';
+import modalStyles from '../../../styles/Modal.module.css';
 
 interface TopControlsProps {
   onSave?: () => void;
@@ -14,22 +15,22 @@ interface SaveModalProps {
 
 const SaveModal: React.FC<SaveModalProps> = ({ onClose, onConfirm }) => {
   return (
-    <div className={styles.modalOverlay} onClick={onClose}>
+    <div className={modalStyles.modalOverlay} onClick={onClose}>
       <div 
-        className={styles.glassModal} 
+        className={modalStyles.glassModal} 
         onClick={(e) => e.stopPropagation()} 
       >
-        <h2 className={styles.modalTitle}>전시회 저장</h2>
-        <p className={styles.modalDesc}>
+        <h2 className={modalStyles.modalTitle}>전시회 저장</h2>
+        <p className={modalStyles.modalDesc}>
           현재까지 작업한 내용을 저장합니다.<br />
-          <span className={styles.promptDesc}>전시회를 저장하시겠습니까?</span>
+          <span className={modalStyles.promptDesc}>전시회를 저장하시겠습니까?</span>
         </p>
         
-        <div className={styles.modalActions}>
-          <button className={styles.btnCancel} onClick={onClose}>
+        <div className={modalStyles.modalActions}>
+          <button className={modalStyles.btnCancel} onClick={onClose}>
             취소
           </button>
-          <button className={styles.btnConfirm} onClick={onConfirm}>
+          <button className={modalStyles.btnConfirm} onClick={onConfirm}>
             확인
           </button>
         </div>
