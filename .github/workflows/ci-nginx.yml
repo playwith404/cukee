@@ -3,7 +3,7 @@ name: Nginx CI/CD
 on:
   workflow_dispatch:
   push:
-    branches: [ "main", "dev", "feature/monitoring/CUK-150" ] 
+    branches: [ "main", "dev" ] 
     paths:
       - 'nginx/**' 
       - 'docker-compose.yml'

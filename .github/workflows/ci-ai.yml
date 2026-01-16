@@ -3,7 +3,7 @@ name: AI Server CI/CD
 on:
   workflow_dispatch:
   push:
-    branches: [ "main", "dev", "feature/monitoring/CUK-150" ]   
+    branches: [ "main", "dev" ]   
     paths:
       - 'ai/**' 
       - 'docker-compose.ai.yml'
