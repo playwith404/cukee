@@ -139,3 +139,107 @@
   border-radius: 50%;
   border: none;
 }
+
+/* =========================================================
+   반응형 미디어 쿼리 (사이즈만 조정)
+   ========================================================= */
+
+@media (max-height: 900px) {
+  /* 1. 컨테이너의 '물리적 높이'를 직접 줄임 */
+  .container {
+    height: 230px !important;  
+    min-height: 200px !important; 
+  }
+
+  /* 2. 내용물(말풍선)을 시각적으로 축소 */
+  .bubble {
+    transform: scale(0.8);       /* 0.7~0.8 배율로 축소 */
+    transform-origin: bottom center; /* ✅ 핵심: 바닥을 기준으로 축소되어야 공중에 안 뜸 */
+    /* 스케일로 인해 생기는 미세한 여백 조정 (필요 시) */
+    margin-bottom: 40px; 
+  }
+}
+@media (max-width: 1600px) {
+  /* 1. 컨테이너의 '물리적 높이'를 직접 줄임 */
+  .container {
+    height: 230px !important;  
+    min-height: 200px !important; 
+  }
+
+  /* 2. 내용물(말풍선)을 시각적으로 축소 */
+  .bubble {
+    transform: scale(0.8);       /* 0.7~0.8 배율로 축소 */
+    transform-origin: bottom center; /* ✅ 핵심: 바닥을 기준으로 축소되어야 공중에 안 뜸 */
+    /* 스케일로 인해 생기는 미세한 여백 조정 (필요 시) */
+    margin-bottom: 40px; 
+  }
+}
+
+/* 1. 태블릿 (1024px 이하) */
+/* @media (max-width: 1024px) {
+  .container{
+  }
+  .bubble {
+    width: 92%;
+    padding: 20px 15px;
+    border-radius: 30px;
+  }
+  
+  .bubble::after {
+    border-radius: 40px;
+  }
+} */
+
+/* 2. 모바일 (768px 이하) */
+@media (max-width: 768px) {
+  .bubble {
+    width: 92%;
+    padding: 20px 15px; /* 패딩 더 축소 */
+    border-radius: 30px;
+  }
+  
+  .bubble::after {
+    /* 테두리 간격 재계산 */
+    width: calc(100% + 15px);
+    height: calc(100% + 15px);
+    border-radius: 40px;
+  }
+  
+  .title {
+    font-size: 18px;
+    margin-bottom: 15px;
+  }
+  
+  .row {
+    flex-direction: column; /* 세로 배치로 변경 */
+    gap: 10px;
+    margin-bottom: 15px;
+  }
+  
+  .label {
+    text-align: center;
+    width: 100%;
+    margin-bottom: 2px;
+  }
+  
+  .optionButton {
+    /* 모바일에서 터치하기 좋게 살짝 키움 */
+    width: 60px; 
+    height: 40px;
+    font-size: 13px;
+  }
+
+  .confirmButton {
+    /* 화면 가리지 않게 크기 약간 축소 */
+    width: 45px;
+    height: 45px;
+    font-size: 22px;
+    right: 10px;
+    bottom: 10px;
+  }
+  
+  /* 체크 버튼이 컨텐츠 가리지 않도록 하단 패딩 추가 */
+  .container {
+    padding-bottom: 10px; 
+  }
+}

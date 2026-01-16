@@ -89,11 +89,6 @@
   .ticketImage {
     width: 200px;
   }
-  .galleryWrapper {
-    transform: scale(0.8); 
-    transform-origin: top center;
-  }
-
 }
 
 /* 2. 작은 노트북 및 태블릿 가로 (1200px 이하) */
@@ -119,16 +114,8 @@
     
     height: 100vh;
   }
-  .topControlSection {
-    margin-top: 35px;
-    margin-bottom: 5px;
-  }
   .moveUp { transform: translateY(-40px); }
   
-  /* 요소들 크기 줄임 */
-  .ticketImage { width: 150px; }
-  
-
 }
 
 @keyframes slideDownDrop {

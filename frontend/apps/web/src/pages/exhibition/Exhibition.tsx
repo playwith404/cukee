@@ -668,8 +668,8 @@ export const Exhibition = () => {
           onNext={handleNext}
           onSelect={setActiveIndex}
           onPosterClick={handlePosterClick}
-          onDelete={isReadOnly ? undefined : handleDelete}
-          onPin={isReadOnly ? undefined : handlePin}
+          onDelete={(!isReadOnly && bottomMode === 'action') ? handleDelete : undefined}
+          onPin={(!isReadOnly && bottomMode === 'action') ? handlePin : undefined}
         />
       </div>
       <div className={styles.curatorWrapper}>

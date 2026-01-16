@@ -82,7 +82,7 @@ export const Gallery3D = ({
   const [activeModal, setActiveModal] = useState<ModalState | null>(null);
 
   const maxIndex = frames.length - 1;
-  const isEditMode = onPin && onDelete;
+  const isEditMode = !!(onPin && onDelete);
 
   const getFrameStyle = (index: number) => {
     const diff = index - activeIndex;
@@ -157,7 +157,11 @@ export const Gallery3D = ({
 
   return (
     <>
-      <div className={styles.container}>
+      <div className={`${styles.container} ${isEditMode ? styles.editMode : ''}`}
+      style={{ 
+          height: isEditMode ? '280px' : '400px' 
+        }}
+      >
         {frames.map((frame, index) => {
           const positionClass = getFrameStyle(index);
           const movieTitle = frame.content || '영화';

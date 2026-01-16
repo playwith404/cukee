@@ -111,7 +111,12 @@
 /* =========================================
    반응형: scale 대신 직접 크기 조절
    ========================================= */
-
+@media (max-width: 1600px), (max-height: 900px) {
+  .moveUp {
+    /* 높이가 40px 줄었으니, 올라가는 높이도 그만큼 줄임 */
+    transform: translate(-60px, -215px) scale(0.8);
+  }
+}
 /* 1. 노트북 표준 (1440px 이하) - 약 85% 크기 */
 @media (max-width: 1440px) {
   .charImg {
@@ -129,47 +134,62 @@
   .bubble {
     /* padding: 16px 35px; */
   }
+  .moveUp {
+    /* X축 이동을 조금 줄이고(-40px), 높이 유지 */
+    transform: translate(-40px, -215px) scale(0.8);
+  }
 }
 
 
 /* 3. 태블릿 세로 및 좁은 화면 (1000px 이하) - 약 70% 크기 */
-@media (max-width: 1000px) {
+@media (max-width: 868px) {
   .charImg {
-    width: 175px; /* 250px -> 175px */
+    width: 160px; /* 250px -> 175px */
   }
   
-  .bubble {
-    transform: scale(0.7);
-    border-radius: 20px 20px 20px 0;
+  .bubbleWrapper {
+    height: auto;       /* 높이를 내용물에 맞게 유동적으로 */
+    min-height: 140px;  /* 최소 높이 확보 */
+    min-width: 250px;
+    padding-bottom: 10px;
   }
+  
   .likeInfo {
-    margin-bottom: 5px;
-    font-size: 14px;
+    margin-bottom: 8px; /* 간격 좁힘 */
+    font-size: 14px;    /* 좋아요 텍스트 작게 */
+  }
+
+  
+
+  /* ✅ 말풍선 자연스럽게 줄이기 */
+  .bubble {
+    /* transform: scale(0.7);  <-- 이거 삭제! */
+    transform: none; 
+    
+    /* 중요: JS에서 인라인 스타일로 폰트 크기를 넣고 있어서, 
+       CSS에서 강제로 덮어쓰려면 !important가 필요합니다. */
+    font-size: 16px !important; 
+    line-height: 1.4;
+    
+    padding: 15px 30px; /* 내부 여백 축소 */
+    border-radius: 20px 20px 20px 0; /* 둥글기 축소 */
+    
+    width: 90%;     /* 공간 꽉 채우기 */
+    max-width: none; /* 너비 제한 해제 */
   }
   
-  /* 말풍선 테두리(가상요소)도 둥글기 맞춰줘야 함 */
+  /* 말풍선 그림자(테두리) 위치/둥글기 재조정 */
   .bubble::after {
     border-radius: 20px 20px 20px 0;
-    top: -5px; /* 테두리 위치 미세 조정 */
-    left: 6px;
+    top: -4px;
+    left: 4px; /* 그림자 거리도 좁힘 */
   }
-
-  .bubbleWrapper {
-    height: 140px;
+}
+@media (max-width: 868px), (max-height: 800px) {
+  .container.moveUp {
+    visibility: hidden !important; /* 공간은 차지하되 눈에만 안 보임 */
+    opacity: 0; /* 혹시 모를 깜빡임 방지용 */
+    pointer-events: none; /* 클릭 방지 */
   }
 }
 
-/* 4. 세로 길이가 짧은 화면 (노트북 등) */
-@media (max-height: 800px) {
-  .charImg {
-    width: 180px; /* 세로 공간 확보를 위해 캐릭터 축소 */
-  }
-  
-  .bubbleWrapper {
-    height: 100px;
-  }
-  
-  .bubble {
-    transform: scale(0.7);
-  }
-}
