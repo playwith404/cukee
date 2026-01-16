@@ -160,7 +160,8 @@ export default function HomePage() {
                 <div>
                   <h1 className={styles.title}>
                     {greeting.line1}<br />
-                    {greeting.line2}
+                    {greeting.line2}<br />
+                    {greeting.line3}
                   </h1>
                   <p className={styles.subText}>
                     당신을 위한 큐레이터가 대기 중이에요.
