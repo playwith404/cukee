@@ -4,6 +4,7 @@ Cukee AI Model API Server
 import logging
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
+from prometheus_fastapi_instrumentator import Instrumentator
 
 from app.models.model_loader import model_manager
 from app.models.embedding_loader import embedding_manager
@@ -38,6 +39,8 @@ app = FastAPI(
     version="1.0.0",
     lifespan=lifespan
 )
+
+Instrumentator().instrument(app).expose(app)
 
 # 라우터 등록
 app.include_router(generation.router, prefix="/api/v1", tags=["AI"])

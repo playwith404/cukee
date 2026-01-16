@@ -18,3 +18,4 @@ pgvector
 nemoguardrails==0.10.1
 openai==1.59.3
 langchain-openai
+prometheus-fastapi-instrumentator==7.0.0

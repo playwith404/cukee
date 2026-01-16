@@ -5,7 +5,7 @@ on:
   push:
     branches: [ "main", "dev" ] 
     paths:
-      - 'nginx/**'
+      - 'nginx/**' 
       - 'docker-compose.yml'
       - '.github/workflows/ci-nginx.yml'
   pull_request:

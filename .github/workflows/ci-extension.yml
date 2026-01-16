@@ -4,7 +4,7 @@ on:
   push:
     branches: [ "main", "dev" ]
     paths:
-      - 'frontend/apps/extension/**'
+      - 'frontend/apps/extension/**' 
       - '.github/workflows/ci-extension.yml'
   pull_request:
     branches: [ "main", "dev" ]
