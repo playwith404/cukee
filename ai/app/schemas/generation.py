@@ -8,7 +8,7 @@ class GenerateRequest(BaseModel):
     theme: str = Field(..., description="테마")
     ticketId: int = Field(..., description="Ticket ID for filtering movies")
     pinnedMovieIds: List[int] = Field(default=[], description="고정된 영화 ID 목록")
-    adultExclude: bool = Field(False, description="19금 영화 제외 여부")
+    isAdultAllowed: bool = Field(False, description="19금 영화 허용 여부")
     max_length: Optional[int] = Field(2048, description="최대 생성 길이")
     temperature: Optional[float] = Field(0.7, description="Temperature")
     top_p: Optional[float] = Field(0.9, description="Top-p")

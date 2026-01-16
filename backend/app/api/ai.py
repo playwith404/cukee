@@ -73,7 +73,7 @@ async def generate_exhibition(
                     "theme": theme,
                     "ticketId": request_data.ticketId,
                     "pinnedMovieIds": request_data.pinnedMovieIds,
-                    "adultExclude": request_data.adultExclude,  # [추가] 필터 전달
+                    "isAdultAllowed": request_data.isAdultAllowed,  # [수정] 필터 파라미터 변경
                     "max_length": 2048,
                     "temperature": 0.7,
                     "top_p": 0.9,
@@ -154,7 +154,7 @@ async def curate_movies(
 
     ticket_id = request_data.get("ticketId")
     limit = request_data.get("limit", 5)
-    adult_exclude = request_data.get("adultExclude", False)  # [추가]
+    is_adult_allowed = request_data.get("isAdultAllowed", False)  # [수정] 19금 허용 여부
 
     if not ticket_id:
         raise BadRequestException(
@@ -170,7 +170,10 @@ async def curate_movies(
             FROM ticket_group_movies tgm
             JOIN movies m ON tgm.movie_id = m.id
             WHERE tgm.ticket_group_id = :ticket_id
-            AND (:adult_exclude = false OR m.certification IN ('ALL', '12', '15', 'G', 'PG', 'PG-13'))
+            AND (:is_adult_allowed = true 
+                 OR (m.certification IS NOT NULL 
+                     AND m.certification != '' 
+                     AND m.certification IN ('ALL', '12', '15', 'G', 'PG', 'PG-13')))
             ORDER BY RANDOM()
             LIMIT :limit
         """)
@@ -178,7 +181,7 @@ async def curate_movies(
         result = db.execute(query, {
             "ticket_id": ticket_id, 
             "limit": limit,
-            "adult_exclude": adult_exclude
+            "is_adult_allowed": is_adult_allowed
         })
         movies = result.fetchall()
 

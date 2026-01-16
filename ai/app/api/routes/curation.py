@@ -20,7 +20,10 @@ async def curate_movies_by_ticket(request: CurateMoviesRequest, db: Session = De
             FROM ticket_group_movies tgm
             JOIN movies m ON tgm.movie_id = m.id
             WHERE tgm.ticket_group_id = :ticket_id
-            AND (:adult_exclude = false OR m.certification IN ('ALL', '12', '15', 'G', 'PG', 'PG-13'))
+            AND (:is_adult_allowed = true 
+                 OR (m.certification IS NOT NULL 
+                     AND m.certification != '' 
+                     AND m.certification IN ('ALL', '12', '15', 'G', 'PG', 'PG-13')))
             ORDER BY RANDOM()
             LIMIT :limit
         """)
@@ -28,7 +31,7 @@ async def curate_movies_by_ticket(request: CurateMoviesRequest, db: Session = De
         result = db.execute(query, {
             "ticket_id": request.ticketId, 
             "limit": request.limit,
-            "adult_exclude": request.adultExclude
+            "is_adult_allowed": request.isAdultAllowed
         })
         rows = result.fetchall()
         

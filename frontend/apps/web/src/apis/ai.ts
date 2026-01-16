@@ -72,12 +72,12 @@ export interface MovieDetailResponse {
 export const curateMovies = async (
   ticketId: number,
   limit: number = 5,
-  adultExclude: boolean = false
+  isAdultAllowed: boolean = false
 ): Promise<CurateMoviesResponse> => {
   const response = await api.post<CurateMoviesResponse>('/ai/curate-movies', {
     ticketId,
     limit,
-    adultExclude,
+    isAdultAllowed,
   });
   return response.data;
 };
@@ -90,13 +90,13 @@ export const generateExhibition = async (
   prompt: string,
   ticketId: number,
   pinnedMovieIds: number[] = [],
-  adultExclude: boolean = false
+  isAdultAllowed: boolean = false
 ): Promise<AIExhibitionResponse> => {
   const response = await api.post<AIExhibitionResponse>('/ai/generate', {
     prompt,
     ticketId,
     pinnedMovieIds,
-    adultExclude
+    isAdultAllowed
   });
   return response.data;
 };

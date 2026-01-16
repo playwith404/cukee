@@ -529,7 +529,7 @@ export const Header: React.FC<HeaderProps> = ({
   exhibitionTitle
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isAdultExclude, setIsAdultExclude] = useState(false);
+  const [isAdultAllowed, setIsAdultAllowed] = useState(false);
 
   // ✅ 1. 토스트 표시 상태 추가
   const [showToast, setShowToast] = useState(false);
@@ -548,8 +548,8 @@ export const Header: React.FC<HeaderProps> = ({
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const saved = localStorage.getItem('adultExclude');
-    setIsAdultExclude(saved === 'true');
+    const saved = localStorage.getItem('isAdultAllowed');
+    setIsAdultAllowed(saved === 'true');
   }, []);
 
   // 2. 바깥 클릭 감지 로직 추가
@@ -574,9 +574,9 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   const toggleAdultFilter = () => {
-    const nextState = !isAdultExclude;
-    setIsAdultExclude(nextState);
-    localStorage.setItem('adultExclude', String(nextState));
+    const nextState = !isAdultAllowed;
+    setIsAdultAllowed(nextState);
+    localStorage.setItem('isAdultAllowed', String(nextState));
     setShowToast(true); // ✅ 클릭 시 토스트 활성화
   };
 
@@ -610,11 +610,11 @@ export const Header: React.FC<HeaderProps> = ({
         {/* 3. 우측 19금 필터 토글 */}
         <div className={styles.rightWrapper}>
           <button
-            className={`${styles.toggleBtn} ${!isAdultExclude ? styles.toggleBtnActive : ''}`}
+            className={`${styles.toggleBtn} ${isAdultAllowed ? styles.toggleBtnActive : ''}`}
             onClick={toggleAdultFilter}
             title="19금 컨텐츠 필터링"
           >
-            {isAdultExclude ? '19+ OFF' : '19+ ON'}
+            {isAdultAllowed ? '19+ ON' : '19+ OFF'}
           </button>
         </div>
 
@@ -622,7 +622,7 @@ export const Header: React.FC<HeaderProps> = ({
         {showToast && (
           <div className={styles.toastOverlay}>
             <div className={styles.toastMessage}>
-              {isAdultExclude ? "성인 컨텐츠 필터링 중" : "성인 컨텐츠 포함"}
+              {isAdultAllowed ? "성인 컨텐츠 포함" : "성인 컨텐츠 필터링 중"}
             </div>
           </div>
         )}
