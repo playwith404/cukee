@@ -159,7 +159,8 @@ export default function HomePage() {
               <div className={`${styles.textSection} ${viewMode === 'viewAll' ? styles.fadeOut : ''}`}>
                 <div>
                   <h1 className={styles.title}>
-                    {greeting}
+                    {greeting.line1}<br />
+                    {greeting.line2}
                   </h1>
                   <p className={styles.subText}>
                     당신을 위한 큐레이터가 대기 중이에요.
