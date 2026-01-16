@@ -159,7 +159,7 @@ export const Gallery3D = ({
     <>
       <div className={`${styles.container} ${isEditMode ? styles.editMode : ''}`}
       style={{ 
-          height: isEditMode ? '280px' : '400px' 
+          height: isEditMode ? '330px' : '400px' 
         }}
       >
         {frames.map((frame, index) => {

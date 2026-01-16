@@ -69,7 +69,7 @@
   font-weight: 500;
   width: fit-content;
   /* 수정: 말풍선 최대 너비 700px   */
-  max-width: 700px;
+  max-width: 900px;
 
   /* 텍스트가 길어지면 줄바꿈 처리 */
   word-break: keep-all;
@@ -133,6 +133,7 @@
   
   .bubble {
     /* padding: 16px 35px; */
+    margin-bottom: 10px;
   }
   .moveUp {
     /* X축 이동을 조금 줄이고(-40px), 높이 유지 */
@@ -158,32 +159,44 @@
     margin-bottom: 8px; /* 간격 좁힘 */
     font-size: 14px;    /* 좋아요 텍스트 작게 */
   }
-
-  
-
-  /* ✅ 말풍선 자연스럽게 줄이기 */
   .bubble {
-    /* transform: scale(0.7);  <-- 이거 삭제! */
     transform: none; 
-    
-    /* 중요: JS에서 인라인 스타일로 폰트 크기를 넣고 있어서, 
-       CSS에서 강제로 덮어쓰려면 !important가 필요합니다. */
     font-size: 16px !important; 
     line-height: 1.4;
-    
     padding: 15px 30px; /* 내부 여백 축소 */
     border-radius: 20px 20px 20px 0; /* 둥글기 축소 */
     
     width: 90%;     /* 공간 꽉 채우기 */
     max-width: none; /* 너비 제한 해제 */
+    max-height: 120px;     /* 높이 제한 */
+    overflow-y: auto;      /* 세로 스크롤 허용 */
+    overflow-x: hidden;    
+    
+    word-break: break-all; /* 단어가 길면 강제로 다음 줄로 넘김 (가로 스크롤 원인 차단) */
+    white-space: normal;   /* 텍스트 줄바꿈 허용 */
+    
+    overscroll-behavior: contain;
+
   }
-  
+  /* 스크롤바 디자인 */
+  .bubble::-webkit-scrollbar {
+    width: 2px;
+  }
+  .bubble::-webkit-scrollbar-thumb {
+    background-color: rgba(55, 52, 49, 0.3);
+    border-radius: 4px;
+    border-top: 20px solid transparent;    /* 위쪽 여백 */
+    border-bottom: 20px solid transparent; /* 아래쪽 여백 */
+    background-clip: padding-box;          /* 배경색이 테두리(투명) 안쪽까지만 칠해지게 설정 */
+  }
+  .bubble::-webkit-scrollbar-track {
+    background: transparent;
+  }
   /* 말풍선 그림자(테두리) 위치/둥글기 재조정 */
   .bubble::after {
-    border-radius: 20px 20px 20px 0;
-    top: -4px;
-    left: 4px; /* 그림자 거리도 좁힘 */
+    display: none;
   }
+
 }
 @media (max-width: 868px), (max-height: 800px) {
   .container.moveUp {
