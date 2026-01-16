@@ -23,16 +23,25 @@
   cursor: pointer;
   transition: opacity 0.2s;
   pointer-events: auto;
-  padding-top: 100px;
-  z-index: 10;
+  z-index: 100;
+
+  width: 300px;  /* 너비 확보 */
+  height: 200px; /* 높이 확보 */
+  /* 텍스트(화살표)를 박스 정중앙에 배치 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0; 
+  top: 50%;
+  transform: translateY(-50%); /* 정확한 수직 중앙 정렬 */
 }
 
 .prev {
-  left: 15%;
+  left: calc(50% - 650px);
 }
 
 .next {
-  right: 15%;
+  right: calc(50% - 650px);
 }
 
 /* .poster-frame -> .frame */
@@ -396,6 +405,19 @@
   .container {
     transform: scale(0.8); /* 더 작게 */
     transform-origin: top center;
+  }
+  .arrow {
+    width: 150px;
+    font-size: 80px;
+  }
+  
+  /* 화면이 너무 작으면 고정 거리(calc) 대신 다시 %로 붙임 */
+  .prev {
+    left: calc(50% - 300px); 
+  }
+  
+  .next {
+    right: calc(50% - 300px);
   }
 }
 

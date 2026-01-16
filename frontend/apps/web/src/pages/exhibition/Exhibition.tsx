@@ -229,7 +229,7 @@ export const Exhibition = () => {
         // AI가 생성한 코멘트가 있으면 최우선으로 보여줌
         if (aiCuratorComment) return aiCuratorComment;
         // 기본 멘트 (API에서 받아온 것 or 기본값)
-        return ticketInfo?.curatorMessage || '안녕하세요! 당신을 위한 영화를 추천해드릴게요.';
+        return ticketInfo?.curatorMessage || '안녕하세요! 당신을 위한 영화를 추천해드릴게요. 안녕하세요! 당신을 위한 영화를 추천해드릴게요.안녕하세요! 당신을 위한 영화를 추천해드릴게요.안녕하세요! 당신을 위한 영화를 추천해드릴게요.안녕하세요! 당신을 위한 영화를 추천해드릴게요.안녕하세요! 당신을 위한 영화를 추천해드릴게요.';
     }
   };
 
