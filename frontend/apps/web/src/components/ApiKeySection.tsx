@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 const ApiKeySection = () => {
   // 샘플 데이터 (나중에 DB 연동)
-  const [keys, setKeys] = useState([
+  const [keys, _setKeys] = useState([
     { id: 1, name: 'Production Key', key: 'ck_live_51Pz...8x92', date: '2026.01.17' },
     { id: 2, name: 'Development Key', key: 'ck_test_92a...3v11', date: '2026.01.10' },
   ]);
