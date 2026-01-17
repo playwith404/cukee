@@ -24,6 +24,9 @@ function App() {
       <Suspense fallback={<Loading text="페이지 이동 중..." characterCount={5} />}>
         <Routes>
           <Route path="/" element={<Navigate to="/auth/login" replace />} />
+          
+          <Route path="/console/login" element={<ConsoleLogin />} />
+          <Route path="/console/dashboard" element={<ConsoleDashboard />} />
 
           <Route path="/console/login" element={<ConsoleLogin />} />
           <Route path="/console/dashboard" element={<ConsoleDashboard />} />
