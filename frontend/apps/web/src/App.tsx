@@ -15,12 +15,18 @@ const KakaoCallback = lazy(() => import('./pages/auth/KakaoCallback').then(modul
 const Exhibition = lazy(() => import('./pages/exhibition/Exhibition').then(module => ({ default: module.Exhibition })));
 const EmailVerifyPage = lazy(() => import("./pages/auth/EmailVerifyPage"));
 
+const ConsoleLogin = lazy(() => import('./pages/console/ConsoleLogin'));
+const ConsoleDashboard = lazy(() => import('./pages/console/ConsoleDashboard'));
+
 function App() {
   return (
     <AuthProvider>
       <Suspense fallback={<Loading text="페이지 이동 중..." characterCount={5} />}>
         <Routes>
           <Route path="/" element={<Navigate to="/auth/login" replace />} />
+          
+          <Route path="/console/login" element={<ConsoleLogin />} />
+          <Route path="/console/dashboard" element={<ConsoleDashboard />} />
 
           {/* Public Routes (로그인 상태면 /home으로 리다이렉트) */}
           <Route element={<PublicRoute />}>
