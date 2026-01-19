@@ -18,6 +18,7 @@ class AdminTokenInfo(BaseModel):
 
 class CreateConsoleTokenRequest(BaseModel):
     name: Optional[str] = None
+    expires_in_days: Optional[int] = None
 
 
 class ConsoleTokenItem(BaseModel):
@@ -25,6 +26,7 @@ class ConsoleTokenItem(BaseModel):
     name: Optional[str]
     token_preview: str
     created_at: datetime
+    expires_at: Optional[datetime]
     is_revoked: bool
 
 
@@ -48,6 +50,7 @@ class CreatedTokenResponse(BaseModel):
     token: str
     api_key: str
     created_at: datetime
+    expires_at: Optional[datetime]
 
 
 class CreatedApiKeyResponse(BaseModel):
