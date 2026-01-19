@@ -1,0 +1,198 @@
+.alert-section-container {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.section-title {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  margin-bottom: 2rem;
+}
+
+/* 카드 공통 스타일 */
+.alert-card-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.card-bg-offset {
+  position: absolute;
+  inset: 0;
+  background-color: #000;
+  border: 3px solid #000;
+  transform: translate(8px, 8px); /* Tailwind의 translate-x-2 */
+  z-index: 0;
+}
+
+.alert-card-content {
+  position: relative;
+  background-color: #fff;
+  border: 3px solid #000;
+  padding: 2rem;
+  z-index: 1;
+}
+
+/* 수신 채널 섹션 */
+.channel-title {
+  font-size: 1.25rem;
+  font-weight: 900;
+  font-style: italic;
+  margin-bottom: 1.5rem;
+  text-decoration: underline;
+  text-decoration-color: #ffee58;
+  text-decoration-thickness: 4px;
+  text-underline-offset: 4px;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.field-label {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.neobrutal-input {
+  width: 100%;
+  border: 3px solid #000;
+  padding: 0.75rem;
+  font-weight: 700;
+  font-size: 0.9rem;
+  outline: none;
+  transition: background-color 0.2s;
+}
+
+.neobrutal-input:focus {
+  background-color: #fffde7;
+}
+
+.neobrutal-input.mono {
+  font-family: 'Courier New', Courier, monospace;
+}
+
+/* 리스트 아이템 섹션 */
+.alert-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.alert-card-wrapper.small .card-bg-offset {
+  transform: translate(6px, 6px);
+}
+
+.list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+}
+
+.item-info {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.item-icon-box {
+  width: 3rem;
+  height: 3rem;
+  border: 3px solid #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  box-shadow: 2px 2px 0px 0px #000;
+}
+
+.item-title {
+  font-size: 1rem;
+  font-weight: 900;
+  margin: 0;
+}
+
+.item-desc {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #666;
+  margin: 0;
+}
+
+/* 토글 스위치 */
+.neobrutal-toggle {
+  width: 4rem;
+  height: 2rem;
+  border: 3px solid #000;
+  position: relative;
+  cursor: pointer;
+  background-color: #eee;
+  transition: background-color 0.2s;
+  padding: 0;
+}
+
+.neobrutal-toggle.active {
+  background-color: #ffee58;
+}
+
+.toggle-handle {
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  left: 2px;
+  width: 1.5rem;
+  background-color: #fff;
+  border: 2px solid #000;
+  transition: all 0.2s;
+  box-shadow: 2px 0px 0px 0px #000;
+}
+
+.neobrutal-toggle.active .toggle-handle {
+  left: calc(100% - 1.5rem - 4px);
+  box-shadow: -2px 0px 0px 0px #000;
+}
+
+/* 저장 버튼 */
+.save-button-wrapper {
+  position: relative;
+  align-self: center;
+  margin-top: 1.5rem;
+}
+
+.button-bg-offset {
+  position: absolute;
+  inset: 0;
+  background-color: #000;
+  transform: translate(6px, 6px);
+}
+
+.neobrutal-save-button {
+  position: relative;
+  background-color: #000;
+  color: #fff;
+  border: 3px solid #000;
+  padding: 0.75rem 3rem;
+  font-size: 1.1rem;
+  font-weight: 900;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+.neobrutal-save-button:hover {
+  transform: translate(-2px, -2px);
+}
+
+.neobrutal-save-button:active {
+  transform: translate(4px, 4px);
+}
