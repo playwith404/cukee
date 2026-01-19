@@ -153,7 +153,7 @@
 
 .dropdownGlass {
   /* ✅ [유지] 요청하신 투명 스타일 그대로 */
-  backdrop-filter: blur(35px);
+  backdrop-filter: blur(45px);
   background-color: transparent; 
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 16px;
