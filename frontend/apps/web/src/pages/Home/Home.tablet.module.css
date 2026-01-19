@@ -36,7 +36,7 @@
 /* 메인 컨텐츠 래퍼 */
 .mainContent {
     width: 100%;
-    margin-top: 24px;
+    margin-top: 30px;
     display: flex;
     flex-direction: column;
     flex: 1;
@@ -59,11 +59,11 @@
    2. 상단 영역 (좌우 분할)
    ============================================================================= */
 
-/* 상단 분할 영역 (태블릿: 좌우 배치) */
+/* 상단 분할 영역 (태블릿: 상하 배치) */
 .upperSplit {
     display: flex;
-    flex-direction: row;
-    align-items: stretch;
+    flex-direction: column;
+    align-items: center;
     position: relative;
     width: 100%;
     flex: 1;
@@ -119,8 +119,9 @@
     padding: 0;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    width: 45%;
+    justify-content: center;
+    width: 100%;
+    /* 전체 너비로 변경 */
     flex-shrink: 0;
     transition: opacity 0.5s ease, transform 0.5s ease;
     opacity: 1;
@@ -138,26 +139,36 @@
 
 /* 메인 타이틀 박스 */
 .title {
-    font-size: 42px;
+    font-size: clamp(42px, 5vw, 100px);
     font-weight: 500;
     line-height: 1.15;
     letter-spacing: -0.05em;
     margin: 0 0 12px 0;
     border: 1px solid #000000;
-    width: calc(100vw - 80px); /* 좌우 패딩(40px * 2) 제외한 전체 너비 */
-    padding: 14px 14px 14px 40px;
+    width: 100%;
+    padding: 20px 50px 20px 40px;
     box-sizing: border-box;
+}
+
+/* 두 번째 br 숨김 -> 2줄 만들기 */
+.title br:nth-of-type(2) {
+    display: none;
 }
 
 /* 서브 텍스트 */
 .subText {
-    font-size: 22px;
+    font-size: clamp(14px, 3vw, 24px);
     color: #000000;
-    border-bottom: 1px solid #000000;
+    /* border-bottom: 1px solid #000000; */
     padding: 5px 5px 5px 40px;
-    width: fit-content;
+    width: 90%;
+    /* 전체 너비 차지 */
+    text-align: right;
+    /* 텍스트 오른쪽 정렬 */
     margin: 0;
     letter-spacing: -0.03em;
+    white-space: nowrap;
+    box-sizing: border-box;
 }
 
 /* =============================================================================
@@ -182,13 +193,15 @@
 
 .carouselWrapper {
     position: relative;
-    width: 55%;
+    width: 100%;
+    /* 전체 너비 */
     height: 100%;
     display: flex;
     justify-content: center;
     align-items: flex-end;
     z-index: 20;
-    padding-bottom: 100px;
+    padding-bottom: 80px;
+    /* 아래 공간 확보 */
 }
 
 /* =============================================================================
@@ -203,14 +216,14 @@
     left: 0;
     right: 0;
     width: 100%;
-    background: linear-gradient(to top, rgba(55, 52, 49, 0.95) 0%, rgba(55, 52, 49, 0.85) 70%, transparent 100%);
+    background-color: #373431;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
     align-items: flex-start;
-    padding: 60px 40px 24px 40px;
+    padding: 60px 40px 60px 80px;
     box-sizing: border-box;
-    z-index: 30;
+    z-index: 10;
 }
 
 /* viewAll 모드에서 숨김 */
@@ -226,13 +239,14 @@
     box-sizing: border-box;
     color: #EDE6DD;
     display: flex;
-    align-items: flex-start;
-    gap: 24px;
+    align-items: flex-end;
+    /* 하단 정렬 */
+    gap: 30px;
 }
 
 /* 큐레이터 이름 */
 .curatorName {
-    font-size: 24px;
+    font-size: 30px;
     font-weight: 600;
     color: #EDE6DD;
     margin: 0;
@@ -254,19 +268,9 @@
     color: rgba(255, 255, 255, 0.8);
 }
 
-/* 말풍선 스타일 */
+/* 말풍선 스타일 - 태블릿에서 숨김 */
 .speechBubble {
-    position: relative;
-    background-color: rgba(255, 255, 255, 0.95);
-    color: #373431;
-    padding: 10px 20px;
-    border-radius: 20px 20px 0px 20px;
-    font-size: 14px;
-    line-height: 1.4;
-    font-weight: 500;
-    width: fit-content;
-    max-width: 400px;
-    margin-top: 0;
+    display: none;
 }
 
 /* 말풍선 꼬리 숨김 */
@@ -286,6 +290,8 @@
     display: flex;
     justify-content: center;
     pointer-events: none;
+    transform: scale(0.8);
+    transform-origin: top center;
 }
 
 /* 숨김 상태 */
@@ -408,6 +414,7 @@
         opacity: 0;
         transform: translate(-20px, -50%);
     }
+
     to {
         opacity: 1;
         transform: translate(0, -50%);

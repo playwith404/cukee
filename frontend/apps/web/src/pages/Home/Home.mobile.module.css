@@ -25,12 +25,17 @@
 /* 최상위 컨테이너 - 전체 화면 차지 */
 .killcho {
     width: 100%;
+    min-width: 360px;
+    /* 최소 너비 설정으로 과도한 줄바꿈 방지 */
     min-height: 100vh;
-    min-height: 100dvh; /* 모바일 브라우저 주소창 대응 */
+    min-height: 100dvh;
+    /* 모바일 브라우저 주소창 대응 */
     position: relative;
     display: flex;
     flex-direction: column;
     background-color: #EDE6DD;
+    overflow-x: hidden;
+    /* 가로 스크롤 방지 */
 }
 
 /* 메인 컨텐츠 래퍼 */
@@ -83,9 +88,12 @@
 
 /* 인사말 텍스트 영역 */
 .textSection {
+    min-height: 300px;
     padding: 0;
     display: flex;
     flex-direction: column;
+    justify-content: center;
+    /* 세로 중앙 정렬 */
     flex-shrink: 0;
     transition: opacity 0.5s ease, transform 0.5s ease;
     opacity: 1;
@@ -102,26 +110,39 @@
 
 /* 메인 타이틀 박스 */
 .title {
-    font-size: 28px;
+    font-size: clamp(28px, 6vw, 50px);
+    /* 더 작은 화면에서도 적절한 크기 */
+    /* 반응형 글자 크기 */
     font-weight: 500;
     line-height: 1.25;
     letter-spacing: -0.03em;
     margin: 10px 0 8px 0;
-    border: 1px solid #373431;
+    /* border: 1px solid #373431; */
+    /* 테두리 제거 */
     padding: 12px 16px;
-    width: calc(100vw - 32px); /* 좌우 패딩(16px * 2) 제외한 전체 너비 */
+    width: 100%;
+    /* 부모 컨테이너 기준 100% */
     box-sizing: border-box;
+}
+
+/* 두 번째 br 숨김 -> 2줄 만들기 */
+.title br:nth-of-type(2) {
+    display: none;
 }
 
 /* 서브 텍스트 */
 .subText {
-    font-size: 14px;
+    font-size: clamp(16px, 5vw, 24px);
+    /* 반응형 글자 크기 */
     color: #000000;
-    border-bottom: 1px solid #000000;
-    padding: 4px 0 4px 16px;
+    border-top: 1px solid #000000;
+    /* 테두리 제거 */
+    padding: 8px 20px 4px 20px;
     width: fit-content;
     margin: 0 0 12px 0;
     letter-spacing: -0.02em;
+    white-space: nowrap;
+    /* 줄바꿈 방지 */
 }
 
 /* =============================================================================
@@ -163,14 +184,14 @@
     left: 0;
     right: 0;
     width: 100%;
-    background: linear-gradient(to top, rgba(55, 52, 49, 0.95) 0%, rgba(55, 52, 49, 0.85) 70%, transparent 100%);
+    background-color: #373431;
+    /* 그래디언트 제거, 단색 박스 */
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     justify-content: flex-end;
     align-items: flex-start;
-    padding: 40px 16px 20px 16px;
+    padding: 40px 40px 40px 40px;
     box-sizing: border-box;
-    z-index: 30;
 }
 
 /* viewAll 모드에서 숨김 */
@@ -191,37 +212,33 @@
 
 /* 큐레이터 이름 */
 .curatorName {
-    font-size: 18px;
+    font-size: clamp(20px, 6vw, 28px);
+    /* 반응형 글자 크기 */
     font-weight: 600;
     color: #EDE6DD;
     margin: 0;
+    white-space: nowrap;
+    /* 줄바꿈 방지 */
 }
 
 /* 좋아요 텍스트 */
 .curatorLikes {
-    font-size: 12px;
+    font-size: clamp(12px, 4vw, 16px);
+    /* 반응형 글자 크기 */
     line-height: 1.5;
     color: rgba(255, 255, 255, 0.8);
 }
 
 /* 좋아요 정보 래퍼 내 p 태그 */
 .curatorLikesInfo p {
-    font-size: 12px;
+    font-size: clamp(8px, 4vw, 16px);
+    white-space: nowrap;
+    /* 줄바꿈 방지 */
 }
 
 /* 말풍선 스타일 */
 .speechBubble {
-    position: relative;
-    background-color: rgba(255, 255, 255, 0.95);
-    color: #373431;
-    padding: 8px 14px;
-    border-radius: 14px 14px 0 14px;
-    font-size: 12px;
-    line-height: 1.4;
-    font-weight: 500;
-    width: fit-content;
-    max-width: 280px;
-    margin-top: 4px;
+    display: none;
 }
 
 /* 말풍선 꼬리 숨김 (모바일) */

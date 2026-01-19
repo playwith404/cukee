@@ -57,7 +57,7 @@
 .ticketCluster {
     position: relative;
     width: 100%;
-    height: 320px;
+    height: 360px;
     display: flex;
     align-items: flex-start;
     justify-content: center;
@@ -76,13 +76,14 @@
 /* 모든 티켓의 기본 스타일 */
 .ticketBase {
     position: absolute;
-    top: 0; /* 상단 정렬 */
-    left: 50%;
-    height: 320px;
+    bottom: -20px;
+    height: 90%;
+    max-height: 60vw;
+    /* 반응형 높이 */
     width: auto;
-    transform-origin: top center; /* 상단 중심 기준 변환 */
-    transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1),
-                opacity 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    transform-origin: bottom center;
+    /* 하단 중심 기준 */
+    transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
     background: transparent;
     box-shadow: none;
     border: none;
@@ -104,66 +105,66 @@
    - 각 레이어별 위치, 크기, 투명도 정의
    ============================================================================= */
 
-/* [Main] 가장 앞 - 정확히 가운데 */
+/* [Main] 첫 번째 - 왼쪽 (20%) */
 .layerMain {
     position: absolute;
-    left: 50%;
-    z-index: 3;
+    left: 25%;
+    z-index: 30;
     opacity: 1;
-    transform: translateX(-50%) scale(1);
+    transform: translateX(-50%) scale(1.2);
     cursor: pointer;
 }
 
 .layerMain:hover {
-    transform: translateX(-50%) scale(1.02);
+    transform: translateX(-50%) scale(1.23);
 }
 
-/* [Second] 두 번째 - 오른쪽 뒤 */
+/* [Second] 두 번째 - 중앙 (50%) */
 .layerSecond {
     position: absolute;
-    left: 50%;
-    z-index: 2;
-    opacity: 0.6;
-    transform: translateX(-50%) translateX(50px) scale(0.7);
+    left: 55%;
+    z-index: 20;
+    opacity: 1;
+    transform: translateX(-50%) scale(0.8);
 }
 
-/* [Third] 세 번째 - 더 오른쪽 뒤 */
+/* [Third] 세 번째 - 오른쪽 (80%) */
 .layerThird {
     position: absolute;
-    left: 50%;
-    z-index: 1;
-    opacity: 0.35;
-    transform: translateX(-50%) translateX(80px) scale(0.55);
+    left: 80%;
+    z-index: 10;
+    opacity: 1;
+    transform: translateX(-50%) scale(0.8);
 }
 
 /* [Fourth, Fifth] 숨김 처리 */
 .layerFourth,
 .layerFifth {
     position: absolute;
-    left: 50%;
+    left: 100%;
     z-index: 0;
     opacity: 0;
     pointer-events: none;
-    transform: translateX(-50%) translateX(100px) scale(0.4);
+    transform: translateX(-50%) scale(0.8);
 }
 
-/* [Hidden Left] 왼쪽 대기 - 이전 버튼 클릭 시 등장 */
+/* [Hidden Left] 왼쪽 대기 */
 .layerHiddenLeft {
     position: absolute;
-    left: 50%;
+    left: -10%;
     z-index: 0;
     opacity: 0;
-    transform: translateX(-50%) translateX(-70px) scale(0.85);
+    transform: translateX(-50%) scale(0.9);
     pointer-events: none;
 }
 
-/* [Hidden Right] 오른쪽 대기 - 다음 버튼 클릭 시 등장 */
+/* [Hidden Right] 오른쪽 대기 */
 .layerHiddenRight {
     position: absolute;
-    left: 50%;
+    left: 110%;
     z-index: 0;
     opacity: 0;
-    transform: translateX(-50%) translateX(110px) scale(0.4);
+    transform: translateX(-50%) scale(0.8);
     pointer-events: none;
 }
 
@@ -179,7 +180,7 @@
     transform: translateY(-50%);
     background: none;
     border: none;
-    font-size: 32px;
+    font-size: 60px;
     color: #3e3e3e;
     cursor: pointer;
     transition: color 0.2s ease;
@@ -204,148 +205,31 @@
 
 /* 이전 버튼 위치 */
 .prevBtn {
-    left: 5px;
+    left: 0;
 }
 
 /* 다음 버튼 위치 */
 .nextBtn {
-    right: 5px;
+    right: 0;
 }
 
 /* =============================================================================
-   5. 하단 링크 텍스트 - 모바일에서는 숨김
+   5. 반응형: 500px 미만에서는 메인 티켓만 표시
    ============================================================================= */
 
-.linkText {
-    display: none;
-}
+@media screen and (max-width: 499px) {
 
-/* =============================================================================
-   6. 반응형 배경 - 기본 모드에서는 숨김
-   ============================================================================= */
-
-.responsiveBackDrop {
-    display: none;
-}
-
-/* =============================================================================
-   7. 돌아가기 버튼
-   ============================================================================= */
-
-.backButtonFixed {
-    position: absolute;
-    bottom: 30px;
-    right: 16px;
-    top: auto;
-    transform: none;
-    font-size: 16px;
-    color: #EDE6DD;
-    cursor: pointer;
-    opacity: 0;
-    animation: fadeInButton 0.5s ease 0.5s forwards;
-}
-
-/* 버튼 등장 애니메이션 */
-@keyframes fadeInButton {
-    from {
+    .layerSecond,
+    .layerThird {
         opacity: 0;
-        transform: translateX(-10px);
+        pointer-events: none;
     }
-    to {
-        opacity: 1;
-        transform: translateX(0);
+
+    .layerMain {
+        transform: scale(1.5);
     }
-}
 
-/* =============================================================================
-   8. [VIEW ALL MODE] - 모바일
-   - 티켓만 보기 모드의 전체 화면 레이아웃
-   ============================================================================= */
-
-.viewAllMode {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    height: 100dvh; /* 모바일 브라우저 주소창 대응 */
-    z-index: 2000;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-end;
-    background-color: #EDE6DD;
-    animation: fadeInFixed 0.5s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
-}
-
-/* viewAll 모드 등장 애니메이션 */
-@keyframes fadeInFixed {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-/* viewAll: 배경 표시 */
-.viewAllMode .responsiveBackDrop {
-    display: block;
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 100px;
-    background-color: #373431;
-    z-index: 0;
-    opacity: 1;
-}
-
-/* viewAll: 티켓 클러스터 위치 조정 */
-.viewAllMode .ticketCluster {
-    position: absolute;
-    width: 100%;
-    height: 320px;
-    bottom: 120px;
-    left: 0;
-    transform: none;
-}
-
-/* viewAll: 티켓 크기 조정 */
-.viewAllMode .ticketBase {
-    height: 260px;
-}
-
-/* viewAll: 메인 티켓만 크게 보여주기 */
-.viewAllMode .layerMain {
-    left: 50%;
-    transform: translateX(-50%) scale(1.1);
-}
-
-/* viewAll: 다른 티켓들 숨김 */
-.viewAllMode .layerSecond,
-.viewAllMode .layerThird,
-.viewAllMode .layerFourth,
-.viewAllMode .layerFifth {
-    opacity: 0;
-    pointer-events: none;
-}
-
-/* viewAll: 왼쪽 대기 티켓 */
-.viewAllMode .layerHiddenLeft {
-    transform: translateX(-50%) translateX(-100px) scale(0.9);
-    opacity: 0;
-}
-
-/* viewAll: 오른쪽 대기 티켓 */
-.viewAllMode .layerHiddenRight {
-    transform: translateX(-50%) translateX(100px) scale(0.9);
-    opacity: 0;
-}
-
-/* viewAll: 네비게이션 버튼 위치 조정 */
-.viewAllMode .prevBtn {
-    left: 16px;
-    font-size: 28px;
-}
-
-.viewAllMode .nextBtn {
-    right: 16px;
-    font-size: 28px;
+    .layerMain:hover {
+        transform: scale(1.6);
+    }
 }

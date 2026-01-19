@@ -62,9 +62,10 @@
     width: 100%;
     height: 100%;
     display: flex;
-    align-items: flex-end;
+    align-items: center;
     justify-content: center;
     overflow: visible;
+    /* transform 제거 (픽셀값으로 직접 조정) */
 }
 
 /* viewAll 모드에서 확장 (예약) */
@@ -79,14 +80,14 @@
 /* 모든 티켓의 기본 스타일 */
 .ticketBase {
     position: absolute;
-    bottom: 0; /* 하단 정렬 */
-    left: 50%;
+    bottom: 40px;
     height: 90%;
-    max-height: 520px;
+    max-height: 35vw;
+    /* 반응형 높이 설정 */
     width: auto;
-    transform-origin: bottom center; /* 하단 중심 기준 변환 */
-    transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1),
-                opacity 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    transform-origin: bottom center;
+    /* 하단 중심 기준 변환 */
+    transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
     background: transparent;
     box-shadow: none;
     border: none;
@@ -108,46 +109,57 @@
    - 각 레이어별 위치, 크기, 투명도 정의
    ============================================================================= */
 
-/* [Main] 가장 앞 */
+/* [Main] 가장 앞 - 왼쪽 끝 강조 (반응형 % 배치) */
 .layerMain {
-    z-index: 3;
+    z-index: 5;
     opacity: 1;
-    transform: translateX(-50%) scale(1);
+    left: 15%;
+    transform: translateX(-50%) scale(1.27);
     cursor: pointer;
 }
 
 .layerMain:hover {
-    transform: translateX(-50%) scale(1.025);
+    transform: translateX(-50%) scale(1.3);
 }
 
-/* [Second] 두 번째 - 오른쪽 뒤 */
+/* [Second] 두 번째 */
 .layerSecond {
-    z-index: 2;
-    opacity: 0.7;
-    transform: translateX(-50%) translateX(80px) scale(0.75);
+    z-index: 4;
+    opacity: 1;
+    left: 37%;
+    transform: translateX(-50%) scale(0.75);
 }
 
-/* [Third] 세 번째 - 더 오른쪽 뒤 */
+/* [Third] 세 번째 (중앙) */
 .layerThird {
-    z-index: 1;
-    opacity: 0.5;
-    transform: translateX(-50%) translateX(130px) scale(0.6);
+    z-index: 3;
+    opacity: 1;
+    left: 54%;
+    transform: translateX(-50%) scale(0.75);
 }
 
-/* [Fourth, Fifth] 숨김 처리 */
-.layerFourth,
+/* [Fourth] 네 번째 */
+.layerFourth {
+    z-index: 2;
+    opacity: 1;
+    left: 71%;
+    transform: translateX(-50%) scale(0.75);
+}
+
+/* [Fifth] 다섯 번째 */
 .layerFifth {
-    z-index: 0;
-    opacity: 0;
-    pointer-events: none;
-    transform: translateX(-50%) translateX(160px) scale(0.5);
+    z-index: 1;
+    opacity: 1;
+    left: 88%;
+    transform: translateX(-50%) scale(0.75);
 }
 
 /* [Hidden Left] 왼쪽 대기 - 이전 버튼 클릭 시 등장 */
 .layerHiddenLeft {
     z-index: 0;
     opacity: 0;
-    transform: translateX(-50%) translateX(-100px) scale(0.9);
+    left: -10%;
+    transform: translateX(-50%) scale(0.75);
     pointer-events: none;
 }
 
@@ -155,7 +167,8 @@
 .layerHiddenRight {
     z-index: 0;
     opacity: 0;
-    transform: translateX(-50%) translateX(180px) scale(0.5);
+    left: 110%;
+    transform: translateX(-50%) scale(0.75);
     pointer-events: none;
 }
 
@@ -167,15 +180,16 @@
 .prevBtn,
 .nextBtn {
     position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
+    top: auto;
+    bottom: 200px;
+    transform: translateY(50%);
     background: none;
     border: none;
-    font-size: 40px;
+    font-size: 60px;
     color: #3e3e3e;
     cursor: pointer;
     transition: color 0.2s ease;
-    width: 60px;
+    width: 100px;
     height: 120px;
     display: flex;
     justify-content: center;
@@ -196,214 +210,11 @@
 
 /* 이전 버튼 위치 */
 .prevBtn {
-    left: 10px;
+    left: 0%;
 }
 
 /* 다음 버튼 위치 */
 .nextBtn {
-    right: 10px;
-}
-
-/* =============================================================================
-   5. 하단 링크 텍스트 ("티켓만 보기")
-   ============================================================================= */
-
-.linkText {
-    position: absolute;
-    bottom: -30px;
-    right: 20px;
-    font-size: 24px;
-    color: #EDE6DD;
-    cursor: pointer;
-    white-space: nowrap;
-    opacity: 0;
-    transform: translateY(20px);
-    animation: fadeInUpLink 0.8s cubic-bezier(0.25, 0.8, 0.25, 1) 0.5s forwards;
-    transition: transform 0.3s ease, color 0.3s ease;
-}
-
-/* 링크 텍스트 등장 애니메이션 */
-@keyframes fadeInUpLink {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* =============================================================================
-   6. 반응형 배경
-   - 기본 모드에서는 숨김, viewAll 모드에서 표시
-   ============================================================================= */
-
-.responsiveBackDrop {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 200px;
-    background-color: #373431;
-    z-index: 0;
-    opacity: 0;
-    pointer-events: none;
-    transition: none;
-}
-
-/* =============================================================================
-   7. 돌아가기 버튼
-   ============================================================================= */
-
-.backButtonFixed {
-    position: absolute;
-    top: 93%;
-    right: 8%;
-    transform: translateY(-50%);
-    font-size: 24px;
-    color: #EDE6DD;
-    cursor: pointer;
-    opacity: 0;
-    animation: fadeInButton 0.5s ease 0.5s forwards;
-}
-
-/* 버튼 등장 애니메이션 */
-@keyframes fadeInButton {
-    from {
-        opacity: 0;
-        transform: translate(-20px, -50%);
-    }
-    to {
-        opacity: 1;
-        transform: translate(0, -50%);
-    }
-}
-
-/* =============================================================================
-   8. [VIEW ALL MODE] - 태블릿
-   - 티켓만 보기 모드의 전체 화면 레이아웃
-   - 5개 티켓을 가로로 배치
-   ============================================================================= */
-
-.viewAllMode {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    z-index: 2000;
-    min-height: 700px;
-    display: block;
-    animation: fadeInFixed 0.5s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
-}
-
-/* viewAll 모드 등장 애니메이션 */
-@keyframes fadeInFixed {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-/* viewAll: 배경 표시 */
-.viewAllMode .responsiveBackDrop {
-    opacity: 1;
-}
-
-/* viewAll: 티켓 클러스터 위치 및 크기 */
-.viewAllMode .ticketCluster {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 800px;
-    height: 400px;
-    bottom: 80px;
-    top: auto;
-    margin: 0;
-    flex-shrink: 0;
-}
-
-/* viewAll: 캐릭터 영역 숨김 */
-.viewAllMode .characterArea {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-}
-
-/* viewAll: 모든 티켓 공통 설정 */
-.viewAllMode .ticketCluster > div {
-    position: absolute;
-    left: 50%;
-    opacity: 1;
-    pointer-events: auto;
-    bottom: 0;
-    transform-origin: bottom center;
-    transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
-}
-
-/* =============================================================================
-   8-1. viewAll 모드 티켓 배치
-   - 5개 티켓을 가로로 펼쳐서 배치
-   ============================================================================= */
-
-/* 메인 티켓 - 왼쪽 끝, 크게 */
-.viewAllMode .layerMain {
-    transform: translateX(-50%) translateX(-380px) scale(1.4);
-}
-
-/* 두 번째 티켓 */
-.viewAllMode .layerSecond {
-    left: 50%;
-    transform: translateX(-50%) translateX(-170px) scale(0.75);
-}
-
-/* 세 번째 티켓 - 중앙 */
-.viewAllMode .layerThird {
-    left: 50%;
-    transform: translateX(-50%) scale(0.75);
-}
-
-/* 네 번째 티켓 - 표시 */
-.viewAllMode .layerFourth {
-    left: 50%;
-    transform: translateX(-50%) translateX(170px) scale(0.75);
-    opacity: 1;
-    pointer-events: auto;
-}
-
-/* 다섯 번째 티켓 - 표시 */
-.viewAllMode .layerFifth {
-    left: 50%;
-    transform: translateX(-50%) translateX(340px) scale(0.75);
-    opacity: 1;
-    pointer-events: auto;
-}
-
-/* 오른쪽 대기 티켓 - 숨김 */
-.viewAllMode .ticketCluster .layerHiddenRight {
-    left: 50%;
-    transform: translateX(-50%) translateX(510px) scale(0.75);
-    opacity: 0;
-    pointer-events: none;
-}
-
-/* 왼쪽 대기 티켓 - 숨김 */
-.viewAllMode .ticketCluster .layerHiddenLeft {
-    transform: translateX(-50%) translateX(-600px) scale(1.2);
-    opacity: 0;
-    pointer-events: none;
-}
-
-/* =============================================================================
-   8-2. viewAll 모드 네비게이션 버튼
-   ============================================================================= */
-
-.viewAllMode .prevBtn {
-    position: absolute;
-    left: 5%;
-}
-
-.viewAllMode .nextBtn {
-    position: absolute;
-    right: 5%;
+    right: 0%;
     left: auto;
 }

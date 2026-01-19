@@ -236,12 +236,12 @@ export default function HomePage() {
    */
   const carouselWrapperStyle = deviceType === 'desktop'
     ? {
-        position: 'absolute' as const,
-        right: '0',
-        bottom: '-120px',
-        zIndex: 20,
-        transition: 'transform 0.6s ease',
-      }
+      position: 'absolute' as const,
+      right: '0',
+      bottom: '-120px',
+      zIndex: 20,
+      transition: 'transform 0.6s ease',
+    }
     : undefined;
 
   // ---------------------------------------------------------------------------
@@ -293,6 +293,7 @@ export default function HomePage() {
                 - decoBoxFixed: viewAll 모드에서 고정되는 라인 */}
             <div className={`${styles.decoBox} ${viewMode ? styles.decoBoxHidden : ''}`} />
             <div className={`${styles.decoBoxFixed} ${viewMode ? styles.decoBoxFixedVisible : ''}`} />
+            <div className={`${styles.decoBoxFixed} ${viewMode ? styles.decoBoxFixedFixedVisible : ''}`} />
 
             {/* 텍스트 섹션
                 - viewAll 모드에서는 페이드 아웃 */}
@@ -301,7 +302,7 @@ export default function HomePage() {
                 {/* 인사말 타이틀 */}
                 <h1 className={styles.title}>
                   {greeting.line1}<br />
-                  {greeting.line2}<br />
+                  {greeting.line2}<br />{' '}
                   {greeting.line3}
                 </h1>
                 {/* 서브 텍스트 */}

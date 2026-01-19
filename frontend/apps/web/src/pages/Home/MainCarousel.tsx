@@ -448,8 +448,9 @@ export const MainCarousel: React.FC<MainCarouselProps> = ({
           모드 전환 버튼
           - default 모드: "티켓만 보기" 링크 표시
           - viewAll 모드: "돌아가기" 버튼 표시
+          - 태블릿/모바일 모드에서는 표시하지 않음
           =================================================================== */}
-      {viewMode === 'default' && (
+      {viewMode === 'default' && deviceType !== 'tablet' && deviceType !== 'mobile' && (
         <div
           className={styles.linkText}
           onClick={(e) => {
@@ -461,7 +462,7 @@ export const MainCarousel: React.FC<MainCarouselProps> = ({
         </div>
       )}
 
-      {viewMode === 'viewAll' && (
+      {viewMode === 'viewAll' && deviceType !== 'tablet' && deviceType !== 'mobile' && (
         <div
           className={styles.backButtonFixed}
           onClick={(e) => {
