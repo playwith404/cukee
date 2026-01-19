@@ -98,7 +98,8 @@ def create_console_token(
         name=data.name,
         token=raw_token,
         api_key=raw_api_key,
-        created_at=record.created_at
+        created_at=record.created_at,
+        expires_at=record.expires_at,
     )
 
 
@@ -114,6 +115,7 @@ def list_console_tokens(
             name=None,
             token_preview=f"{t.access_token[:4]}...{t.access_token[-4:]}",
             created_at=t.created_at,
+            expires_at=t.expires_at,
             is_revoked=False,
         )
         for t in tokens
