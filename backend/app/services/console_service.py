@@ -1,5 +1,5 @@
 """콘솔 토큰/API 키 서비스 (기존 테이블 사용)"""
-from datetime import datetime
+from datetime import datetime, timedelta
 from sqlalchemy.orm import Session as DBSession
 
 from app.core.config import settings
@@ -11,15 +11,23 @@ class ConsoleTokenService:
     """콘솔 액세스 토큰 관리"""
 
     @staticmethod
-    def create_access_token(db: DBSession) -> tuple[ApiAccessToken, str, str]:
+    def create_access_token(
+        db: DBSession,
+        name: str | None = None,
+        expires_in_days: int | None = None,
+    ) -> tuple[ApiAccessToken, str, str]:
         raw_access_token = generate_token(settings.CONSOLE_TOKEN_LENGTH)
         raw_api_key = ConsoleTokenService.generate_api_key()
+        token_name = name.strip() if name and name.strip() else "Bearer"
+        expires_at = None
+        if expires_in_days and expires_in_days > 0:
+            expires_at = datetime.utcnow() + timedelta(days=expires_in_days)
 
         record = ApiAccessToken(
             api_key=raw_api_key,
             access_token=raw_access_token,
-            token_type="Bearer",
-            expires_at=None,
+            token_type=token_name,
+            expires_at=expires_at,
         )
         db.add(record)
         db.commit()

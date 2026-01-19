@@ -92,10 +92,15 @@ def create_console_token(
     _token=Depends(get_admin_token),
     db: DBSession = Depends(get_db)
 ):
-    record, raw_token, raw_api_key = ConsoleTokenService.create_access_token(db)
+    record, raw_token, raw_api_key = ConsoleTokenService.create_access_token(
+        db,
+        name=data.name,
+        expires_in_days=data.expires_in_days,
+    )
+    display_name = record.token_type if record.token_type and record.token_type != "Bearer" else None
     return CreatedTokenResponse(
         id=record.id,
-        name=data.name,
+        name=display_name,
         token=raw_token,
         api_key=raw_api_key,
         created_at=record.created_at,
@@ -109,17 +114,20 @@ def list_console_tokens(
     db: DBSession = Depends(get_db)
 ):
     tokens = db.query(ApiAccessToken).order_by(ApiAccessToken.created_at.desc()).all()
-    return [
-        ConsoleTokenItem(
-            id=t.id,
-            name=None,
-            token_preview=f"{t.access_token[:4]}...{t.access_token[-4:]}",
-            created_at=t.created_at,
-            expires_at=t.expires_at,
-            is_revoked=False,
+    items: list[ConsoleTokenItem] = []
+    for t in tokens:
+        name = t.token_type if t.token_type and t.token_type != "Bearer" else None
+        items.append(
+            ConsoleTokenItem(
+                id=t.id,
+                name=name,
+                token_preview=f"{t.access_token[:4]}...{t.access_token[-4:]}",
+                created_at=t.created_at,
+                expires_at=t.expires_at,
+                is_revoked=False,
+            )
         )
-        for t in tokens
-    ]
+    return items
 
 
 @router.post("/console-tokens/{token_id}/revoke", status_code=status.HTTP_200_OK)
