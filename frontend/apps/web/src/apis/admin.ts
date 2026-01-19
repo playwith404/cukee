@@ -34,8 +34,9 @@ export const fetchConsoleTokens = async (): Promise<AdminConsoleToken[]> => {
   return response.data;
 };
 
-export const createConsoleToken = async (name?: string): Promise<{ id: number; name: string | null; token: string; api_key: string; created_at: string; }>
-  => {
+export const createConsoleToken = async (
+  name?: string
+): Promise<{ id: number; name: string | null; token: string; api_key: string; created_at: string; }> => {
   const response = await api.post('/admin/console-tokens', { name: name || null });
   return response.data;
 };
@@ -49,8 +50,10 @@ export const fetchApiKeys = async (): Promise<AdminApiKey[]> => {
   return response.data;
 };
 
-export const createApiKey = async (ownerTokenId: number, name?: string): Promise<{ id: number; owner_token_id: number; name: string | null; key: string; created_at: string; }>
-  => {
+export const createApiKey = async (
+  ownerTokenId: number,
+  name?: string
+): Promise<{ id: number; owner_token_id: number; name: string | null; key: string; created_at: string; }> => {
   const response = await api.post('/admin/api-keys', { owner_token_id: ownerTokenId, name: name || null });
   return response.data;
 };

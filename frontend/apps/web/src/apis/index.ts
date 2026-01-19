@@ -34,27 +34,19 @@ api.interceptors.response.use(
         return Promise.reject(error);
       }
       if (requestUrl.includes('/console/')) {
-        if (window.location.pathname !== '/console/login') {
-          window.location.href = '/console/login';
-        }
-        return Promise.reject(error);
-      }
-
-      if (requestUrl.includes('/console/')) {
-        if (window.location.pathname !== '/console/login') {
+        if (currentPath !== '/console/login') {
           window.location.href = '/console/login';
         }
         return Promise.reject(error);
       }
 
       if (requestUrl.includes('/admin/')) {
-        if (window.location.pathname !== '/admin') {
+        if (currentPath !== '/admin') {
           window.location.href = '/admin';
         }
         return Promise.reject(error);
       }
 
-      const currentPath = window.location.pathname;
       if (currentPath.startsWith('/console') || currentPath.startsWith('/admin')) {
         return Promise.reject(error);
       }
