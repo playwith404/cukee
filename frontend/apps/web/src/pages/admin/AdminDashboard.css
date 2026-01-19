@@ -55,6 +55,10 @@
   margin-bottom: 1.5rem;
 }
 
+.admin-form--compact {
+  grid-template-columns: 1fr auto;
+}
+
 .admin-form input,
 .admin-form select {
   border: 3px solid #000;

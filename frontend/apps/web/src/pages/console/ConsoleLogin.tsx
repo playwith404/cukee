@@ -1,13 +1,27 @@
 // useState는 값(함수)이고, FormEvent와 ChangeEvent는 타입입니다.
-import { useState, type FormEvent, type ChangeEvent } from 'react';
+import { useEffect, useState, type FormEvent, type ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './ConsoleLogin.css';
-import { loginConsole } from '../../apis/console';
+import { checkConsoleAuth, loginConsole } from '../../apis/console';
 
 const ConsoleLogin = () => {
   const [token, setToken] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    let isActive = true;
+    checkConsoleAuth()
+      .then(() => {
+        if (isActive) {
+          navigate('/console/dashboard', { replace: true });
+        }
+      })
+      .catch(() => {});
+    return () => {
+      isActive = false;
+    };
+  }, [navigate]);
 
   // e: FormEvent 타입을 사용하여 폼 제출 처리
   const handleLogin = async (e: FormEvent) => {
@@ -19,7 +33,7 @@ const ConsoleLogin = () => {
     setIsSubmitting(true);
     try {
       await loginConsole(token);
-      navigate('/console/dashboard');
+      navigate('/console/dashboard', { replace: true });
     } catch (error) {
       alert("토큰이 유효하지 않습니다.");
     } finally {
@@ -51,7 +65,6 @@ const ConsoleLogin = () => {
             <input 
               type="text"
               className="token-input" 
-              placeholder="ck_xxxx..." 
               value={token}
               onChange={handleInputChange}
             />

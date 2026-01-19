@@ -16,13 +16,15 @@ const AdminDashboard = () => {
   const [consoleTokens, setConsoleTokens] = useState<AdminConsoleToken[]>([]);
   const [apiKeys, setApiKeys] = useState<AdminApiKey[]>([]);
   const [newConsoleName, setNewConsoleName] = useState('');
-  const [newApiName, setNewApiName] = useState('');
   const [selectedTokenId, setSelectedTokenId] = useState<number | ''>('');
   const [modalOpen, setModalOpen] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
   const [modalRows, setModalRows] = useState<Array<{ label: string; value: string }>>([]);
   const [modalHint, setModalHint] = useState<string | null>(null);
   const navigate = useNavigate();
+  const tokenNameById = new Map(
+    consoleTokens.map((token) => [token.id, token.name || `Token #${token.id}`])
+  );
 
   const openModal = (title: string, rows: Array<{ label: string; value: string }>, hint?: string) => {
     setModalTitle(title);
@@ -70,13 +72,12 @@ const AdminDashboard = () => {
       return;
     }
     try {
-      const result = await createApiKey(Number(selectedTokenId), newApiName || undefined);
+      const result = await createApiKey(Number(selectedTokenId));
       openModal(
         'API 키 발급 완료',
         [{ label: 'API 키', value: result.key }],
         '보안상 다시 표시되지 않으니 안전하게 보관하세요.'
       );
-      setNewApiName('');
       await loadData();
     } catch (error) {
       alert('API 키 생성에 실패했습니다.');
@@ -136,13 +137,7 @@ const AdminDashboard = () => {
 
       <section className="admin-section">
         <h2>API 키 발급</h2>
-        <form className="admin-form" onSubmit={handleCreateApiKey}>
-          <input
-            type="text"
-            placeholder="키 이름 (선택)"
-            value={newApiName}
-            onChange={(e) => setNewApiName(e.target.value)}
-          />
+        <form className="admin-form admin-form--compact" onSubmit={handleCreateApiKey}>
           <select
             value={selectedTokenId}
             onChange={(e) => setSelectedTokenId(e.target.value ? Number(e.target.value) : '')}
@@ -160,7 +155,9 @@ const AdminDashboard = () => {
           {apiKeys.map((key) => (
             <div key={key.id} className="admin-card">
               <div>
-                <div className="admin-title">{key.name || 'Untitled Key'}</div>
+                <div className="admin-title">
+                  {tokenNameById.get(key.owner_token_id) || `Token #${key.owner_token_id}`} Key
+                </div>
                 <div className="admin-sub">{key.key_preview}</div>
                 <div className="admin-meta">Owner Token ID: {key.owner_token_id}</div>
                 <div className="admin-meta">Created: {key.created_at}</div>
