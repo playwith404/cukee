@@ -18,7 +18,7 @@ class ConsoleTokenService:
     ) -> tuple[ApiAccessToken, str, str]:
         raw_access_token = generate_token(settings.CONSOLE_TOKEN_LENGTH)
         raw_api_key = ConsoleTokenService.generate_api_key()
-        token_name = name.strip() if name and name.strip() else "Bearer"
+        token_name = name.strip() if name and name.strip() else None
         expires_at = None
         if expires_in_days and expires_in_days > 0:
             expires_at = datetime.utcnow() + timedelta(days=expires_in_days)
@@ -26,7 +26,7 @@ class ConsoleTokenService:
         record = ApiAccessToken(
             api_key=raw_api_key,
             access_token=raw_access_token,
-            token_type=token_name,
+            token_name=token_name,
             expires_at=expires_at,
         )
         db.add(record)

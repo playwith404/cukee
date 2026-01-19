@@ -97,7 +97,7 @@ def create_console_token(
         name=data.name,
         expires_in_days=data.expires_in_days,
     )
-    display_name = record.token_type if record.token_type and record.token_type != "Bearer" else None
+    display_name = record.token_name
     return CreatedTokenResponse(
         id=record.id,
         name=display_name,
@@ -116,11 +116,10 @@ def list_console_tokens(
     tokens = db.query(ApiAccessToken).order_by(ApiAccessToken.created_at.desc()).all()
     items: list[ConsoleTokenItem] = []
     for t in tokens:
-        name = t.token_type if t.token_type and t.token_type != "Bearer" else None
         items.append(
             ConsoleTokenItem(
                 id=t.id,
-                name=name,
+                name=t.token_name,
                 token_preview=f"{t.access_token[:4]}...{t.access_token[-4:]}",
                 created_at=t.created_at,
                 expires_at=t.expires_at,
