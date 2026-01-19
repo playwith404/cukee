@@ -9,9 +9,12 @@ from app.models.exhibition import (
     UserSavedExhibition, UserPinnedExhibition
 )
 from app.models.movie import Movie
+from app.models.admin import AdminToken
+from app.models.console import ApiAccessToken
 
 __all__ = [
     "User", "Session", "TicketGroup", "TicketGroupMovie",
     "Exhibition", "ExhibitionDesign", "ExhibitionMovie", "ExhibitionKeyword",
-    "UserSavedExhibition", "UserPinnedExhibition", "Movie"
+    "UserSavedExhibition", "UserPinnedExhibition", "Movie",
+    "AdminToken", "ApiAccessToken"
 ]

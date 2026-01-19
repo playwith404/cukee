@@ -3,7 +3,7 @@ name: Frontend CI/CD
 on:
   workflow_dispatch:
   push:
-    branches: [ "main", "dev" ] 
+    branches: [ "main", "dev", "feature/console/cuk-154"] 
     paths: 
       - 'frontend/**' 
       - 'docker-compose.yml'

@@ -1,9 +1,11 @@
-import { useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
+import { useNavigate } from 'react-router-dom';
 import UsageSection from '../../components/UsageSection'; 
 import ApiKeySection from '../../components/ApiKeySection';
 import BillingSection from '../../components/BillingSection';
 import AlertSection from '../../components/AlertSection';
 import './ConsoleDashboard.css';
+import { checkConsoleAuth } from '../../apis/console';
 
 // 탭 타입 정의
 type TabType = 'main' | 'usage' | 'billing' | 'keys' | 'alerts';
@@ -17,6 +19,18 @@ interface MenuItem {
 
 const ConsoleDashboard = () => {
   const [activeTab, setActiveTab] = useState<TabType>('main');
+  const [authReady, setAuthReady] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    checkConsoleAuth()
+      .then(() => setAuthReady(true))
+      .catch(() => navigate('/console/login'));
+  }, [navigate]);
+
+  if (!authReady) {
+    return <div className="dashboard-container">인증 확인 중...</div>;
+  }
 
   const menuItems: MenuItem[] = [
     { id: 'usage', title: "Usage", desc: "실시간 API 호출 통계 및 트렌드 분석을 제공합니다.", icon: "📊" },

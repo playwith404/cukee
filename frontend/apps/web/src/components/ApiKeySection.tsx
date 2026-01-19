@@ -1,24 +1,26 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import './ApiKeySection.css';
-
-interface ApiKey {
-  id: number;
-  name: string;
-  key: string;
-  date: string;
-}
+import { fetchConsoleKeys, type ConsoleKey } from '../apis/console';
 
 const ApiKeySection = () => {
-  // 샘플 데이터
-  const [keys] = useState<ApiKey[]>([
-    { id: 1, name: 'Production Key', key: 'ck_live_51Pz...8x92', date: '2026.01.17' },
-    { id: 2, name: 'Development Key', key: 'ck_test_92a...3v11', date: '2026.01.10' },
-  ]);
+  const [keys, setKeys] = useState<ConsoleKey[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const copyToClipboard = (text: string) => {
+    if (text.includes('...')) {
+      alert('전체 키는 생성 시에만 제공됩니다.');
+      return;
+    }
     navigator.clipboard.writeText(text);
     alert('API 키가 복사되었습니다.');
   };
+
+  useEffect(() => {
+    fetchConsoleKeys()
+      .then(setKeys)
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, []);
 
   return (
     <div className="api-section-container fade-in">
@@ -30,7 +32,7 @@ const ApiKeySection = () => {
         </div>
         <div className="create-button-wrapper">
           <div className="button-shadow"></div>
-          <button className="create-button">
+          <button className="create-button" onClick={() => alert('키 발급은 관리자에게 문의해주세요.')}>
             + 새 키 생성
           </button>
         </div>
@@ -38,25 +40,26 @@ const ApiKeySection = () => {
 
       {/* 2. API 키 리스트 */}
       <div className="api-list">
-        {keys.map((item) => (
+        {loading && <div>로딩 중...</div>}
+        {!loading && keys.map((item) => (
           <div key={item.id} className="key-card-wrapper">
             <div className="key-card-shadow"></div>
             <div className="key-card-content">
               <div className="key-info">
                 <div className="key-name-row">
-                  <span className="key-name">{item.name}</span>
+                  <span className="key-name">{item.name || 'Untitled Key'}</span>
                   <span className="status-badge">Active</span>
                 </div>
                 <div className="key-value-row">
-                  <code className="key-code">{item.key}</code>
-                  <button 
-                    onClick={() => copyToClipboard(item.key)}
+                  <code className="key-code">{item.key_preview}</code>
+                  <button
+                    onClick={() => copyToClipboard(item.key_preview)}
                     className="copy-text-btn"
                   >
                     COPY
                   </button>
                 </div>
-                <p className="key-date">Created at: {item.date}</p>
+                <p className="key-date">Created at: {item.created_at}</p>
               </div>
 
               <button className="delete-btn">

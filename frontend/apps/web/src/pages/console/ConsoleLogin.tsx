@@ -2,18 +2,28 @@
 import { useState, type FormEvent, type ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './ConsoleLogin.css';
+import { loginConsole } from '../../apis/console';
 
 const ConsoleLogin = () => {
   const [token, setToken] = useState<string>('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
   // e: FormEvent 타입을 사용하여 폼 제출 처리
-  const handleLogin = (e: FormEvent) => {
+  const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
-    if (token.length > 5) {
+    if (token.length !== 16) {
+      alert("16자리 토큰을 입력해주세요.");
+      return;
+    }
+    setIsSubmitting(true);
+    try {
+      await loginConsole(token);
       navigate('/console/dashboard');
-    } else {
-      alert("유효한 토큰을 입력해주세요.");
+    } catch (error) {
+      alert("토큰이 유효하지 않습니다.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -46,7 +56,7 @@ const ConsoleLogin = () => {
               onChange={handleInputChange}
             />
             <button type="submit" className="submit-button">
-              로그인
+              {isSubmitting ? '확인 중...' : '로그인'}
             </button>
           </form>
         </div>

@@ -2,6 +2,8 @@
 FastAPI 메인 애플리케이션
 """
 from fastapi import FastAPI
+import threading
+import time
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import RequestValidationError
 from pydantic import ValidationError
@@ -9,7 +11,7 @@ from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from prometheus_fastapi_instrumentator import Instrumentator
 
 from app.core.config import settings
-from app.core.database import Base, engine
+from app.core.database import Base, engine, SessionLocal
 from app.core.exceptions import CukeeException
 from app.core.exception_handlers import (
     cukee_exception_handler,
@@ -18,7 +20,9 @@ from app.core.exception_handlers import (
     sqlalchemy_exception_handler,
     general_exception_handler
 )
-from app.api import auth, users, ai, exhibitions, tickets, google_oauth, kakao_oauth, animalese
+from app.api import auth, users, ai, exhibitions, tickets, google_oauth, kakao_oauth, animalese, admin, console
+from app.services.admin_service import AdminTokenService
+from app.services.metrics_service import ApiMetricsMiddleware
 
 # 데이터베이스 테이블 생성
 Base.metadata.create_all(bind=engine)
@@ -33,6 +37,7 @@ app = FastAPI(
 )
 
 Instrumentator().instrument(app).expose(app, endpoint="/api/metrics")
+app.add_middleware(ApiMetricsMiddleware)
 
 # CORS 설정
 app.add_middleware(
@@ -60,6 +65,8 @@ app.include_router(exhibitions.router)  # 전시회 API (DB 연동)
 app.include_router(google_oauth.router)  # Google OAuth
 app.include_router(kakao_oauth.router)  # Kakao OAuth
 app.include_router(animalese.router)  # Animalese 음성 합성
+app.include_router(admin.router)  # Admin API
+app.include_router(console.router)  # Console API
 
 
 @app.get("/")
@@ -71,6 +78,23 @@ def root():
         "version": "1.6.0",
         "environment": settings.ENVIRONMENT
     }
+
+
+@app.on_event("startup")
+def ensure_admin_token_on_startup():
+    def refresh_loop():
+        while True:
+            db = SessionLocal()
+            try:
+                AdminTokenService.ensure_token(db)
+            except Exception as exc:
+                print(f"[admin] 토큰 갱신 실패: {exc}")
+            finally:
+                db.close()
+            time.sleep(3600)
+
+    thread = threading.Thread(target=refresh_loop, daemon=True)
+    thread.start()
 
 
 @app.get("/health")

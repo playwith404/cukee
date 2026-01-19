@@ -1,4 +1,6 @@
+import { useEffect, useState } from 'react';
 import './BillingSection.css';
+import { fetchBillingSummary, type BillingSummary } from '../apis/console';
 
 interface BillingItem {
   date: string;
@@ -8,15 +10,35 @@ interface BillingItem {
 }
 
 const BillingSection = () => {
-  const billingHistory: BillingItem[] = [
-    { date: '2026-01-01', amount: '₩ 154,000', status: 'Paid', color: '#e2e8b6' },
-    { date: '2025-12-01', amount: '₩ 142,000', status: 'Paid', color: '#e2e8b6' },
-    { date: '2025-11-01', amount: '₩ 168,000', status: 'Refund', color: '#f2d8d8' },
-  ];
+  const [summary, setSummary] = useState<BillingSummary | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchBillingSummary()
+      .then(setSummary)
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, []);
+
+  const formatCurrency = (value: number) => `₩ ${value.toLocaleString()}`;
+
+  const data = summary || {
+    total_30d: 0,
+    history: [],
+    next_billing_date: '-',
+  };
+
+  const billingHistory: BillingItem[] = (data.history || []).map((item) => ({
+    date: item.date,
+    amount: formatCurrency(item.amount),
+    status: item.status,
+    color: item.status === 'Refund' ? '#f2d8d8' : '#e2e8b6',
+  }));
 
   return (
     <div className="billing-section-container fade-in">
       <h2 className="section-title">Billing & Plans</h2>
+      {loading && <p>로딩 중...</p>}
 
       {/* 1. 상단 카드 그리드 */}
       <div className="billing-grid">
@@ -38,10 +60,10 @@ const BillingSection = () => {
           <div className="billing-card-content yellow">
             <div className="card-info">
               <p className="card-label dark">Estimated Total</p>
-              <h3 className="estimated-amount">₩ 452,100</h3>
+              <h3 className="estimated-amount">{formatCurrency(data.total_30d)}</h3>
             </div>
             <p className="next-billing-date">
-              Next billing date: Feb 01, 2026
+              Next billing date: {data.next_billing_date}
             </p>
           </div>
         </div>

@@ -17,6 +17,8 @@ const EmailVerifyPage = lazy(() => import("./pages/auth/EmailVerifyPage"));
 
 const ConsoleLogin = lazy(() => import('./pages/console/ConsoleLogin'));
 const ConsoleDashboard = lazy(() => import('./pages/console/ConsoleDashboard'));
+const AdminLogin = lazy(() => import('./pages/admin/AdminLogin'));
+const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
 
 function App() {
   return (
@@ -27,6 +29,9 @@ function App() {
 
           <Route path="/console/login" element={<ConsoleLogin />} />
           <Route path="/console/dashboard" element={<ConsoleDashboard />} />
+          <Route path="/admin" element={<AdminLogin />} />
+          <Route path="/admind" element={<AdminLogin />} />
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
 
           {/* Public Routes (로그인 상태면 /home으로 리다이렉트) */}
           <Route element={<PublicRoute />}>
