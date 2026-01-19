@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { checkAuth, login as apiLogin, logout as apiLogout } from '../apis/auth';
 const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true'; // 환경변수 확인
 
@@ -30,9 +31,15 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [user, setUser] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const location = useLocation();
 
     useEffect(() => {
         const initAuth = async () => {
+            const path = location.pathname;
+            if (path.startsWith('/console') || path.startsWith('/admin')) {
+                setIsLoading(false);
+                return;
+            }
             // [모드 1] 모킹 모드일 때
             if (USE_MOCK) {
                 console.log("🛠️ [Mock Mode] 강제 로그인 처리됨");
@@ -53,7 +60,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         };
 
         initAuth();
-    }, []);
+    }, [location.pathname]);
 
     const login = async (email: string, password: string) => {
         // [1] Mock 모드면 API 호출 아예 안 함 (바로 성공 처리)
