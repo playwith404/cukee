@@ -1,7 +1,5 @@
 /* apps/web/src/styles/globals.css */
 
-@import "tailwindcss";
-
 /* 1. 폰트 및 초기화 */
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
 
