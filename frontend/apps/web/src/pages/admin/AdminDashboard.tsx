@@ -2,7 +2,6 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './AdminDashboard.css';
 import {
-  checkAdminAuth,
   fetchConsoleTokens,
   createConsoleToken,
   revokeConsoleToken,
@@ -14,13 +13,23 @@ import {
 } from '../../apis/admin';
 
 const AdminDashboard = () => {
-  const [authReady, setAuthReady] = useState(false);
   const [consoleTokens, setConsoleTokens] = useState<AdminConsoleToken[]>([]);
   const [apiKeys, setApiKeys] = useState<AdminApiKey[]>([]);
   const [newConsoleName, setNewConsoleName] = useState('');
   const [newApiName, setNewApiName] = useState('');
   const [selectedTokenId, setSelectedTokenId] = useState<number | ''>('');
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalTitle, setModalTitle] = useState('');
+  const [modalRows, setModalRows] = useState<Array<{ label: string; value: string }>>([]);
+  const [modalHint, setModalHint] = useState<string | null>(null);
   const navigate = useNavigate();
+
+  const openModal = (title: string, rows: Array<{ label: string; value: string }>, hint?: string) => {
+    setModalTitle(title);
+    setModalRows(rows);
+    setModalHint(hint ?? null);
+    setModalOpen(true);
+  };
 
   const loadData = async () => {
     const [tokens, keys] = await Promise.all([
@@ -32,22 +41,21 @@ const AdminDashboard = () => {
   };
 
   useEffect(() => {
-    checkAdminAuth()
-      .then(() => setAuthReady(true))
-      .catch(() => navigate('/admin'));
-  }, [navigate]);
-
-  useEffect(() => {
-    if (authReady) {
-      loadData().catch(console.error);
-    }
-  }, [authReady]);
+    loadData().catch(console.error);
+  }, []);
 
   const handleCreateConsoleToken = async (e: FormEvent) => {
     e.preventDefault();
     try {
       const result = await createConsoleToken(newConsoleName || undefined);
-      alert(`콘솔 토큰: ${result.token}\nAPI 키: ${result.api_key}`);
+      openModal(
+        '콘솔 토큰 발급 완료',
+        [
+          { label: '콘솔 토큰', value: result.token },
+          { label: 'API 키', value: result.api_key },
+        ],
+        '보안상 다시 표시되지 않으니 안전하게 보관하세요.'
+      );
       setNewConsoleName('');
       await loadData();
     } catch (error) {
@@ -63,7 +71,11 @@ const AdminDashboard = () => {
     }
     try {
       const result = await createApiKey(Number(selectedTokenId), newApiName || undefined);
-      alert(`API 키가 생성되었습니다: ${result.key}`);
+      openModal(
+        'API 키 발급 완료',
+        [{ label: 'API 키', value: result.key }],
+        '보안상 다시 표시되지 않으니 안전하게 보관하세요.'
+      );
       setNewApiName('');
       await loadData();
     } catch (error) {
@@ -72,20 +84,16 @@ const AdminDashboard = () => {
   };
 
   const handleRevokeConsoleToken = async (tokenId: number) => {
-    if (!confirm('콘솔 토큰을 비활성화할까요?')) return;
+    if (!confirm('콘솔 토큰을 삭제할까요? 삭제하면 복구할 수 없습니다.')) return;
     await revokeConsoleToken(tokenId);
     await loadData();
   };
 
   const handleRevokeApiKey = async (keyId: number) => {
-    if (!confirm('API 키를 비활성화할까요?')) return;
+    if (!confirm('API 키를 삭제할까요? 삭제하면 복구할 수 없습니다.')) return;
     await revokeApiKey(keyId);
     await loadData();
   };
-
-  if (!authReady) {
-    return <div className="admin-container">인증 확인 중...</div>;
-  }
 
   return (
     <div className="admin-container">
@@ -119,7 +127,7 @@ const AdminDashboard = () => {
                 <div className="admin-meta">Created: {token.created_at}</div>
               </div>
               <button className="danger" onClick={() => handleRevokeConsoleToken(token.id)}>
-                비활성화
+                삭제
               </button>
             </div>
           ))}
@@ -158,12 +166,52 @@ const AdminDashboard = () => {
                 <div className="admin-meta">Created: {key.created_at}</div>
               </div>
               <button className="danger" onClick={() => handleRevokeApiKey(key.id)}>
-                비활성화
+                삭제
               </button>
             </div>
           ))}
         </div>
       </section>
+
+      {modalOpen && (
+        <div
+          className="admin-modal-overlay"
+          role="dialog"
+          aria-modal="true"
+          onClick={(event) => {
+            if (event.target === event.currentTarget) {
+              setModalOpen(false);
+            }
+          }}
+        >
+          <div className="admin-modal">
+            <div className="admin-modal-header">
+              <h3 className="admin-modal-title">{modalTitle}</h3>
+              <button
+                type="button"
+                className="admin-modal-close"
+                onClick={() => setModalOpen(false)}
+              >
+                닫기
+              </button>
+            </div>
+            <div className="admin-modal-body">
+              {modalRows.map((row) => (
+                <div key={row.label} className="admin-modal-row">
+                  <div className="admin-modal-label">{row.label}</div>
+                  <div className="admin-modal-value">{row.value}</div>
+                </div>
+              ))}
+              {modalHint && <div className="admin-modal-hint">{modalHint}</div>}
+            </div>
+            <div className="admin-modal-actions">
+              <button type="button" className="admin-modal-primary" onClick={() => setModalOpen(false)}>
+                확인
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
