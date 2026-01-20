@@ -57,9 +57,11 @@
 .ticketCluster {
     position: relative;
     width: 100%;
-    height: 360px;
+    height: 45vh;
+    /* 2. 최소 높이: 이보다 작아지면 스크롤 발생 시작 */
+    min-height: 200px;
     display: flex;
-    align-items: flex-start;
+    align-items: flex-end;
     justify-content: center;
     overflow: visible;
 }
@@ -76,9 +78,8 @@
 /* 모든 티켓의 기본 스타일 */
 .ticketBase {
     position: absolute;
-    bottom: -20px;
-    height: 90%;
-    max-height: 60vw;
+    bottom: -10%;
+    height: 85%;
     /* 반응형 높이 */
     width: auto;
     transform-origin: bottom center;
@@ -226,10 +227,10 @@
     }
 
     .layerMain {
-        transform: scale(1.5);
+        transform: scale(1.2);
     }
 
     .layerMain:hover {
-        transform: scale(1.6);
+        transform: scale(1.23);
     }
 }

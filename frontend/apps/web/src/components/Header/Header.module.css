@@ -10,7 +10,7 @@
   justify-content: center;
   pointer-events: none;
   /* 좌우 여백 추가하여 화면에 꽉 차지 않게 */
-  padding: 0 20px; 
+  padding: 0 20px;
   box-sizing: border-box;
 }
 
@@ -18,12 +18,12 @@
   /* [수정] 고정 width: 1300px 제거 -> 반응형으로 변경 */
   width: 100%;
   max-width: 1300px;
-  
+
   display: flex;
   /* [수정] 요소들을 양 끝과 중앙으로 자연스럽게 배치 */
-  justify-content: space-between; 
+  justify-content: space-between;
   align-items: center;
-  
+
   padding: 10px 20px;
   border-radius: 9999px;
   box-shadow: inset 0 4px 10px 0 rgba(0, 0, 0, 0.15);
@@ -37,8 +37,8 @@
   flex: 1;
   max-width: 700px;
   /* 화면이 좁아져도 최소한의 크기는 유지 */
-  min-width: 200px; 
-  
+  min-width: 200px;
+
   height: 45px;
   background-color: #8F8784;
   border-radius: 9999px;
@@ -48,7 +48,8 @@
   padding: 0 20px;
   box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.25);
   color: white;
-  margin: 0 10px; /* 좌우 버튼들과 간격 */
+  margin: 0 10px;
+  /* 좌우 버튼들과 간격 */
   overflow: hidden;
   white-space: nowrap;
 }
@@ -62,7 +63,8 @@
   height: 50px;
   display: flex;
   align-items: center;
-  flex-shrink: 0; /* 공간 좁아져도 찌그러지지 않게 */
+  flex-shrink: 0;
+  /* 공간 좁아져도 찌그러지지 않게 */
 }
 
 .menuWrapper {
@@ -95,7 +97,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 10px; /* 터치 영역 확보 */
+  padding: 0 10px;
+  /* 터치 영역 확보 */
 }
 
 .cookieIcon {
@@ -116,8 +119,8 @@
   transition: all 0.2s;
   white-space: nowrap;
   font-weight: 500;
-  
-  border: 1.5px solid #8F8784; 
+
+  border: 1.5px solid #8F8784;
   color: #8F8784;
 }
 
@@ -126,13 +129,13 @@
 }
 
 .toggleBtnActive {
-  background-color: #ff4d4f; 
+  background-color: #ff4d4f;
   border: 1.5px solid #ff4d4f;
   color: white;
 }
 
 .toggleBtnActive:hover {
-  background-color: #ff7875; 
+  background-color: #ff7875;
   border-color: #ff7875;
   color: white;
 }
@@ -143,24 +146,26 @@
    ========================================= */
 .dropdownOuter {
   position: absolute;
-  top: 100%; /* 헤더 바로 밑 */
+  top: 100%;
+  /* 헤더 바로 밑 */
   left: 0;
   width: 100%;
   z-index: 102;
-  padding: 0; /* 상하 여백 살짝 */
+  padding: 0;
+  /* 상하 여백 살짝 */
   box-sizing: border-box;
 }
 
 .dropdownGlass {
   /* ✅ [유지] 요청하신 투명 스타일 그대로 */
   backdrop-filter: blur(35px);
-  background-color: transparent; 
+  background-color: transparent;
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 16px;
   padding: 30px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
   position: relative;
-  
+
   /* 높이는 내용물에 따라 유동적으로 (height: 360px 제거 또는 min-height로 변경) */
   min-height: 360px;
   height: auto;
@@ -174,7 +179,7 @@
 }
 
 /* === 공통: 왼쪽/오른쪽 섹션 === */
-.dropLeft, 
+.dropLeft,
 .dropRight {
   flex: 1;
   display: flex;
@@ -204,8 +209,8 @@
   padding: 5px 0;
 }
 
-.menuLabel, 
-.menuBtn, 
+.menuLabel,
+.menuBtn,
 .menuBtnMore {
   font-size: 24px;
   font-weight: 300;
@@ -217,8 +222,8 @@
   padding: 0;
 }
 
-.menuLabel:hover, 
-.menuBtn:hover, 
+.menuLabel:hover,
+.menuBtn:hover,
 .menuBtnMore:hover {
   font-weight: 500;
 }
@@ -334,7 +339,8 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  max-width: 200px; /* 말줄임 위해 추가 */
+  max-width: 200px;
+  /* 말줄임 위해 추가 */
 }
 
 .editInput {
@@ -354,7 +360,7 @@
   border-bottom: 2px solid #373431;
 }
 
-.iconBtn, 
+.iconBtn,
 .deleteBtn {
   background: none;
   border: none;
@@ -389,9 +395,10 @@
 .dropFooter {
   /* position: absolute; 제거하고 flex 흐름 따르거나 margin-top 사용 */
   margin-top: 20px;
-  align-self: flex-end; /* 우측 정렬 */
+  align-self: flex-end;
+  /* 우측 정렬 */
   margin-right: 20px;
-  
+
   font-size: 16px;
   color: #8F8784;
   cursor: pointer;
@@ -412,38 +419,44 @@
 /* 태블릿 이하 (1024px ~) */
 @media (max-width: 1024px) {
   .title {
-    font-size: 16px; /* 폰트 줄임 */
+    font-size: 16px;
+    /* 폰트 줄임 */
   }
+
   .cookieIcon {
     width: 24px;
     height: 24px;
     margin-right: 10px;
   }
-  .menuLabel, .menuBtn {
+
+  .menuLabel,
+  .menuBtn {
     font-size: 20px;
   }
 }
 
 /* 모바일 (768px 이하) */
 @media (max-width: 768px) {
+
   /* 헤더 패딩 축소 */
   .outerWrapper {
-    padding: 0 10px; 
+    padding: 0 10px;
   }
+
   .header {
     padding: 8px 10px;
   }
-  
+
   /* 가운데 알약 크기 축소 */
   .container {
     height: 40px;
     padding: 0 10px;
   }
-  
+
   .title {
     font-size: 14px;
   }
-  
+
   .toggleBtn {
     font-size: 12px;
     padding: 4px 8px;
@@ -451,31 +464,35 @@
 
   /* 드롭다운 메뉴: 세로 배치로 변경 */
   .dropSplit {
-    flex-direction: column; /* 좌우 배치를 상하 배치로 */
+    flex-direction: column;
+    /* 좌우 배치를 상하 배치로 */
   }
 
   .dropLeft {
     border-right: none;
-    border-bottom: 1px solid rgba(143, 135, 132, 0.3); /* 구분선 가로로 변경 */
+    border-bottom: 1px solid rgba(143, 135, 132, 0.3);
+    /* 구분선 가로로 변경 */
     padding-bottom: 20px;
     margin-bottom: 20px;
   }
 
   /* 드롭다운 내부 폰트 조정 */
-  .menuLabel, .menuBtn {
+  .menuLabel,
+  .menuBtn {
     font-size: 18px;
   }
-  
+
   .profileName {
     font-size: 16px;
   }
-  
+
   .listTitle {
     font-size: 20px;
   }
-  
+
   .dropFooter {
-    align-self: center; /* 모바일에서는 중앙 정렬 */
+    align-self: center;
+    /* 모바일에서는 중앙 정렬 */
     margin-right: 0;
   }
 }
@@ -483,8 +500,10 @@
 /* 아주 작은 화면 (480px 이하) */
 @media (max-width: 480px) {
   .cookieIcon {
-    display: none; /* 공간 부족 시 아이콘 숨김 */
+    display: none;
+    /* 공간 부족 시 아이콘 숨김 */
   }
+
   .menuButton {
     font-size: 24px;
   }
@@ -517,19 +536,139 @@
 }
 
 @keyframes smoothFadeInOut {
-  0% { 
-    opacity: 0; 
-    transform: translateY(20px) scale(0.95); 
-    filter: blur(4px); 
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+    filter: blur(4px);
   }
-  15%, 80% { 
-    opacity: 1; 
-    transform: translateY(0) scale(1); 
-    filter: blur(0); 
+
+  15%,
+  80% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
   }
-  100% { 
-    opacity: 0; 
-    transform: translateY(-20px) scale(1.05); 
-    filter: blur(8px); 
+
+  100% {
+    opacity: 0;
+    transform: translateY(-20px) scale(1.05);
+    filter: blur(8px);
+  }
+}
+
+/* =========================================
+   ✅ [추가] 초소형 모바일 (450px 이하) 최적화
+   ========================================= */
+@media (max-width: 450px) {
+
+  /* 1. 헤더 레이아웃 최적화 */
+  .outerWrapper {
+    top: 10px;
+    /* 상단 여백 축소 */
+    padding: 0 8px;
+  }
+
+  .header {
+    padding: 6px 12px;
+    gap: 2px;
+    /* 요소 간 최소 간격 */
+  }
+
+  /* 2. 중앙 알약(Container) 영역 */
+  .container {
+    height: 36px;
+    /* 높이 축소 */
+    margin: 0 4px;
+    /* 좌우 마진 축소 */
+    padding: 0 12px;
+    min-width: 0;
+    /* min-width 해제하여 유연하게 축소 */
+    flex: 2;
+    /* 버튼들에 비해 공간을 더 차지하도록 설정 */
+  }
+
+  .title {
+    font-size: 13px;
+    /* 가독성 유지하며 폰트 축소 */
+  }
+
+  /* 3. 좌우 버튼 및 아이콘 */
+  .menuWrapper {
+    margin-right: 10px;
+    /* 기존 30px에서 대폭 축소 */
+    margin-left: 0;
+  }
+
+  .rightWrapper {
+    margin-left: 10px;
+    /* 기존 30px에서 대폭 축소 */
+    margin-right: 0;
+  }
+
+  .cookieIcon {
+    display: none;
+    /* 480px 이하에서 숨기기 유지 */
+  }
+
+  .toggleBtn {
+    font-size: 11px;
+    padding: 3px 6px;
+    border-width: 1px;
+    /* 선 굵기 가늘게 */
+  }
+
+  .menuButton {
+    font-size: 24px;
+    padding: 0 5px;
+  }
+
+  /* 4. 드롭다운 메뉴 최적화 */
+  .dropdownGlass {
+    padding: 20px 15px;
+    /* 내부 패딩 축소 */
+    min-height: 300px;
+  }
+
+  .menuContainer {
+    gap: 15px;
+    /* 메뉴 간격 축소 */
+  }
+
+  .menuLabel,
+  .menuBtn {
+    font-size: 16px;
+  }
+
+  .listTitle {
+    font-size: 18px;
+    margin-bottom: 12px;
+  }
+
+  /* 전시회 리스트 아이템 줄임 처리 강화 */
+  .exhibitionTitle {
+    max-width: 140px;
+    /* 좁은 화면에서 제목이 버튼을 침범하지 않게 */
+    font-size: 14px;
+  }
+
+  .scrollList {
+    max-height: 180px;
+    /* 세로 공간 절약 */
+  }
+
+  /* 하단 푸터 텍스트 축소 */
+  .dropFooter {
+    font-size: 13px;
+    margin-top: 15px;
+  }
+
+  /* 5. 토스트 메시지 크기 조정 */
+  .toastMessage {
+    width: 80%;
+    /* 화면 너비에 맞게 */
+    padding: 10px 16px;
+    font-size: 14px;
+    text-align: center;
+    justify-content: center;
   }
 }
