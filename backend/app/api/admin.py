@@ -102,12 +102,16 @@ def create_console_token(
         name=data.name,
         expires_in_days=data.expires_in_days,
     )
-    ApiKeyService.create_api_key(
-        db,
-        console_token_id=record.id,
-        name=record.token_name,
-        api_key_value=raw_api_key,
-    )
+    try:
+        ApiKeyService.create_api_key(
+            db,
+            console_token_id=record.id,
+            name=record.token_name,
+            api_key_value=raw_api_key,
+        )
+    except SQLAlchemyError as exc:
+        db.rollback()
+        logger.error("Failed to create api key in new table: %s", exc)
     display_name = record.token_name
     return CreatedTokenResponse(
         id=record.id,
@@ -179,6 +183,7 @@ def create_api_key(
             created_at=api_key_record.created_at,
         )
     except SQLAlchemyError as exc:
+        db.rollback()
         logger.error("Failed to create api key in new table: %s", exc)
         raw_api_key = ConsoleTokenService.generate_api_key()
         record.api_key = raw_api_key
@@ -200,6 +205,7 @@ def list_api_keys(
     try:
         keys = db.query(CukApiKey).order_by(CukApiKey.created_at.desc()).all()
     except SQLAlchemyError as exc:
+        db.rollback()
         logger.error("Failed to read api keys from new table: %s", exc)
         keys = []
     if not keys:

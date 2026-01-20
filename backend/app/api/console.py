@@ -91,12 +91,17 @@ def list_keys(
     token=Depends(get_console_token),
     db: DBSession = Depends(get_db),
 ):
-    keys = (
-        db.query(CukApiKey)
-        .filter(CukApiKey.console_token_id == token.id, CukApiKey.status == "active")
-        .order_by(CukApiKey.created_at.desc())
-        .all()
-    )
+    try:
+        keys = (
+            db.query(CukApiKey)
+            .filter(CukApiKey.console_token_id == token.id, CukApiKey.status == "active")
+            .order_by(CukApiKey.created_at.desc())
+            .all()
+        )
+    except SQLAlchemyError as exc:
+        db.rollback()
+        logger.error("Failed to read api keys for console: %s", exc)
+        keys = []
     if not keys:
         return [
             ConsoleKeyItem(
@@ -127,6 +132,7 @@ def usage_summary(
             row.id for row in db.query(CukApiKey.id).filter(CukApiKey.console_token_id == token.id).all()
         ]
     except SQLAlchemyError as exc:
+        db.rollback()
         logger.error("Failed to read api key ids for usage summary: %s", exc)
         key_ids = []
     if not key_ids:
@@ -234,6 +240,7 @@ def billing_summary(
             row.id for row in db.query(CukApiKey.id).filter(CukApiKey.console_token_id == token.id).all()
         ]
     except SQLAlchemyError as exc:
+        db.rollback()
         logger.error("Failed to read api key ids for billing summary: %s", exc)
         key_ids = []
     if not key_ids:

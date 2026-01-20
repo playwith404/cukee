@@ -12,7 +12,7 @@ class CukApiKey(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     console_token_id = Column(Integer, ForeignKey("api_access_tokens.id"), nullable=False, index=True)
-    api_key = Column(String(100), nullable=False, unique=True, index=True)
+    api_key = Column("apikey", String(100), nullable=False, unique=True, index=True)
     token_name = Column(String(100), nullable=True)
     status = Column(String(20), nullable=False, server_default="active")
     expires_at = Column(DateTime(timezone=True), nullable=True)
