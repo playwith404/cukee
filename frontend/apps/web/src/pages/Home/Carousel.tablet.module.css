@@ -70,9 +70,9 @@
 }
 
 /* viewAll 모드에서 확장 (예약) */
-.clusterExpanded {
-    /* viewAll 모드에서 사용 */
-}
+/* .clusterExpanded {
+    viewAll 모드에서 사용 
+} */
 
 /* =============================================================================
    3-2. 티켓 카드 공통 스타일
@@ -181,31 +181,29 @@
 .prevBtn,
 .nextBtn {
     position: absolute;
-    top: auto;
-    bottom: 200px;
-    transform: translateY(50%);
-    background: none;
+    top: 50%;
+    /* 하단 기준 말고 티켓 높이에 맞춰 중앙 */
+    transform: translateY(-50%);
+    background: transparent;
     border: none;
-    font-size: 60px;
-    color: #3e3e3e;
     cursor: pointer;
-    transition: color 0.2s ease;
-    width: 100px;
-    height: 120px;
+    transition: all 0.2s ease;
+    width: 250px;
+    /* 클릭 영역 확장 */
+    height: 400px;
+    /* 티켓 높이에 맞춰 확장 */
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 40;
+    z-index: 100;
+    /* 티켓보다 위에 오도록 */
 }
 
-.prevBtn:hover,
-.nextBtn:hover {
-    color: #000;
-}
+/* 호버 효과 제거 */
 
 .prevBtn:disabled,
 .nextBtn:disabled {
-    opacity: 0.5;
+    opacity: 0;
     cursor: not-allowed;
 }
 

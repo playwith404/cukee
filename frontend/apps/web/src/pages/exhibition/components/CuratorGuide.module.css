@@ -13,7 +13,7 @@
 }
 
 .moveUp {
-  transform: translate(-80px, -255px) scale(0.8);
+  transform: translate(-80px, -250px) scale(0.8);
 }
 
 .charWrapper {
@@ -37,7 +37,7 @@
   pointer-events: auto;
 
   flex: 1;
-  min-width: 0; 
+  min-width: 0;
   margin-right: 10px;
   margin-bottom: 10px;
 }
@@ -100,10 +100,14 @@
 }
 
 @keyframes blink {
-  0%, 50% {
+
+  0%,
+  50% {
     opacity: 1;
   }
-  51%, 100% {
+
+  51%,
+  100% {
     opacity: 0;
   }
 }
@@ -112,98 +116,129 @@
 /* =========================================
    반응형: scale 대신 직접 크기 조절
    ========================================= */
-@media (max-width: 1600px), (max-height: 900px) {
+@media (max-width: 1600px),
+(max-height: 900px) {
   .moveUp {
-    /* 높이가 40px 줄었으니, 올라가는 높이도 그만큼 줄임 */
-    transform: translate(-60px, -215px) scale(0.8);
+    /* 높이가 40px 줄었으니, 올라가는 높이도 그만큼 줄임 (기존 -215px -> -205px) */
+    transform: translate(-60px, -205px) scale(0.75);
   }
 }
+
 /* 1. 노트북 표준 (1440px 이하) - 약 85% 크기 */
 @media (max-width: 1440px) {
   .charImg {
-    width: 215px; /* 250px -> 215px */
+    width: 200px;
+    /* 250px -> 215px */
   }
-  
+
 }
 
 /* 2. 작은 노트북/태블릿 (1200px 이하) - 약 80% 크기 */
 @media (max-width: 1200px) {
   .charImg {
-    width: 200px; /* 250px -> 200px */
+    width: 185px;
+    /* 250px -> 200px */
   }
-  
+
   .bubble {
     /* padding: 16px 35px; */
     margin-bottom: 10px;
   }
+
   .moveUp {
-    /* X축 이동을 조금 줄이고(-40px), 높이 유지 */
-    transform: translate(-40px, -215px) scale(0.8);
+    /* X축 이동을 조금 줄이고(-40px), 높이 유지 (기존 -215px -> -205px) */
+    transform: translate(-40px, -205px) scale(0.75);
   }
 }
 
 
 /* 3. 태블릿 세로 및 좁은 화면 (1000px 이하) - 약 70% 크기 */
-@media (max-width: 868px) {
+@media (max-width: 1100px),
+(max-height: 850px) {
   .charImg {
-    width: 160px; /* 250px -> 175px */
+    width: 150px;
+    /* 250px -> 175px */
   }
-  
+
   .bubbleWrapper {
-    height: auto;       /* 높이를 내용물에 맞게 유동적으로 */
-    min-height: 140px;  /* 최소 높이 확보 */
+    height: auto;
+    /* 높이를 내용물에 맞게 유동적으로 */
+    min-height: 120px;
+    /* 최소 높이 확보 */
     min-width: 250px;
     padding-bottom: 10px;
   }
-  
+
   .likeInfo {
-    margin-bottom: 8px; /* 간격 좁힘 */
-    font-size: 14px;    /* 좋아요 텍스트 작게 */
+    margin-bottom: 8px;
+    /* 간격 좁힘 */
+    font-size: 14px;
+    /* 좋아요 텍스트 작게 */
   }
+
   .bubble {
-    transform: none; 
-    font-size: 16px !important; 
+    transform: none;
+    font-size: 16px !important;
     line-height: 1.4;
-    padding: 15px 30px; /* 내부 여백 축소 */
-    border-radius: 20px 20px 20px 0; /* 둥글기 축소 */
-    
-    width: 90%;     /* 공간 꽉 채우기 */
-    max-width: none; /* 너비 제한 해제 */
-    max-height: 120px;     /* 높이 제한 */
-    overflow-y: auto;      /* 세로 스크롤 허용 */
-    overflow-x: hidden;    
-    
-    word-break: break-all; /* 단어가 길면 강제로 다음 줄로 넘김 (가로 스크롤 원인 차단) */
-    white-space: normal;   /* 텍스트 줄바꿈 허용 */
-    
+    padding: 15px 30px;
+    /* 내부 여백 축소 */
+    border-radius: 20px 20px 20px 0;
+    /* 둥글기 축소 */
+
+    width: 90%;
+    /* 공간 꽉 채우기 */
+    max-width: none;
+    /* 너비 제한 해제 */
+    max-height: 100px;
+    /* 높이 제한 */
+    overflow-y: auto;
+    /* 세로 스크롤 허용 */
+    overflow-x: hidden;
+
+    word-break: break-all;
+    /* 단어가 길면 강제로 다음 줄로 넘김 (가로 스크롤 원인 차단) */
+    white-space: normal;
+    /* 텍스트 줄바꿈 허용 */
+
     overscroll-behavior: contain;
 
   }
+
   /* 스크롤바 디자인 */
   .bubble::-webkit-scrollbar {
     width: 2px;
   }
+
   .bubble::-webkit-scrollbar-thumb {
     background-color: rgba(55, 52, 49, 0.3);
     border-radius: 4px;
-    border-top: 20px solid transparent;    /* 위쪽 여백 */
-    border-bottom: 20px solid transparent; /* 아래쪽 여백 */
-    background-clip: padding-box;          /* 배경색이 테두리(투명) 안쪽까지만 칠해지게 설정 */
+    border-top: 20px solid transparent;
+    /* 위쪽 여백 */
+    border-bottom: 20px solid transparent;
+    /* 아래쪽 여백 */
+    background-clip: padding-box;
+    /* 배경색이 테두리(투명) 안쪽까지만 칠해지게 설정 */
   }
+
   .bubble::-webkit-scrollbar-track {
     background: transparent;
   }
+
   /* 말풍선 그림자(테두리) 위치/둥글기 재조정 */
   .bubble::after {
     display: none;
   }
 
 }
-@media (max-width: 868px), (max-height: 800px) {
+
+@media (max-width: 1100px),
+(max-height: 850px) {
   .container.moveUp {
-    visibility: hidden !important; /* 공간은 차지하되 눈에만 안 보임 */
-    opacity: 0; /* 혹시 모를 깜빡임 방지용 */
-    pointer-events: none; /* 클릭 방지 */
+    visibility: hidden !important;
+    /* 공간은 차지하되 눈에만 안 보임 */
+    opacity: 0;
+    /* 혹시 모를 깜빡임 방지용 */
+    pointer-events: none;
+    /* 클릭 방지 */
   }
 }
-

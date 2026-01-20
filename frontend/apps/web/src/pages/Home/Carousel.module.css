@@ -279,44 +279,38 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: none;
+  background: transparent;
   border: none;
-  font-size: 70px;
-  color: #3e3e3e;
   cursor: pointer;
-  transition: color 0.2s ease;
+  transition: all 0.2s ease;
 
-  width: 120px;
-  /* 가로 넓게 */
-  height: 200px;
+  width: 400px;
+  /* 클릭 영역 대폭 확장 */
+  height: 600px;
   /* 세로도 넉넉하게 */
 
-  /* 2. 글자(<)가 커진 영역 안에서 정중앙에 오도록 설정 */
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.prevBtn:hover,
-.nextBtn:hover {
-  color: #000;
-}
+/* 호버 효과 제거 */
 
 /* 애니메이션 중 버튼 비활성화 스타일 */
 .prevBtn:disabled,
 .nextBtn:disabled {
-  opacity: 0.5;
+  opacity: 0;
   cursor: not-allowed;
 }
 
 .prevBtn {
-  left: -150px;
+  left: -200px;
   z-index: 40;
 }
 
 .nextBtn {
-  right: 0px;
-  z-index: 30;
+  right: -100px;
+  z-index: 40;
 }
 
 /* =============================================================================

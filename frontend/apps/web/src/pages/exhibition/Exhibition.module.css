@@ -8,7 +8,8 @@
   display: flex;
   flex-direction: column;
   background-color: transparent;
-  overflow-x: hidden; /* 가로 스크롤 방지 */
+  overflow-x: hidden;
+  /* 가로 스크롤 방지 */
 }
 
 .topControlSection {
@@ -18,7 +19,8 @@
   justify-content: center;
   /* margin-top: 30px; */
   position: relative;
-  z-index: 50; /* 갤러리보다 위에 오도록 */
+  z-index: 50;
+  /* 갤러리보다 위에 오도록 */
 }
 
 /* 갤러리 감싸는 기본 래퍼 */
@@ -27,6 +29,10 @@
   flex: 1;
   display: flex;
   justify-content: center;
+  align-items: center;
+  /* 세로 중앙 정렬 추가 */
+  margin-top: 100px;
+  /* 고정된 TopControls 공간 확보 */
   /* 애니메이션 */
   animation: slideDownDrop 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) 0.2s forwards;
   transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), margin-top 0.5s ease;
@@ -36,7 +42,14 @@
 }
 
 .moveUp {
-  transform: translateY(-80px); 
+  margin-top: 0px !important;
+}
+
+/* 큰 화면(전체화면 등)에서 꾸미기 모드 시 갤러리를 더 위로 올림 */
+@media (min-width: 1441px) {
+  .moveUp {
+    margin-top: -50px !important;
+  }
 }
 
 .moveDown {
@@ -60,23 +73,25 @@
   bottom: 0px;
 
   /* 기본 데스크탑 위치 (중앙 기준 오른쪽으로 500px 이동) */
-  left: 50%; 
+  left: 50%;
   margin-left: 500px;
   right: auto;
-  z-index: 20; 
-  transition: all 0.5s ease; /* 위치 변경 시 부드럽게 */
+  z-index: 20;
+  transition: all 0.5s ease;
+  /* 위치 변경 시 부드럽게 */
 }
 
 .ticketImage {
-  width: 240px; 
+  width: 240px;
   height: auto;
   display: block;
   transition: width 0.3s ease;
 }
 
-.curatorWrapper{
+.curatorWrapper {
   transform-origin: bottom left;
 }
+
 /* =========================================
    ✅ [완성] 반응형 미디어 쿼리 (큐레이터 포함)
    ========================================= */
@@ -86,6 +101,7 @@
   .ticketWrapper {
     display: none;
   }
+
   .ticketImage {
     width: 200px;
   }
@@ -94,31 +110,38 @@
 /* 2. 작은 노트북 및 태블릿 가로 (1200px 이하) */
 @media (max-width: 1200px) {
 
-  .ticketImage { width: 180px; }
+  .ticketImage {
+    width: 180px;
+  }
 
 
 }
 
 /* 3. 태블릿 세로 및 좁은 화면 (768px ~ 1000px) */
-@media (max-width: 1000px) {
-
-  
-
-  
-}
+@media (max-width: 1000px) {}
 
 /* 4. 세로 길이가 짧은 화면 (노트북 등) 대응 */
 @media (max-height: 800px) {
   .container {
     min-height: auto;
-    
+
     height: 100vh;
   }
-  .moveUp { transform: translateY(-40px); }
-  
+
+  .moveUp {
+    transform: translateY(-40px);
+  }
+
 }
 
 @keyframes slideDownDrop {
-  0% { transform: translateY(-50px); opacity: 0; }
-  100% { transform: translateY(0); opacity: 1; }
+  0% {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }

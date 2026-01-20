@@ -1,13 +1,24 @@
-/* .exh-top-controls -> .container */
 .container {
-  position: relative;
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
   width: 100%;
   max-width: 1500px;
-  margin: 30px auto 10px auto;
+  margin: 0;
   display: flex;
   justify-content: space-between;
-  padding: 0 50px;
+  padding: 100px 50px;
+  /* 기존 margin-top(30px)을 패딩으로 전환 */
   box-sizing: border-box;
+  z-index: 1000;
+  pointer-events: none;
+  /* 컨테이너 자체는 클릭 무시 (뒤쪽 요소 클릭 가능하도록) */
+}
+
+/* 버튼은 다시 클릭 가능하게 설정 */
+.button {
+  pointer-events: auto;
 }
 
 /* .control-btn -> .button */
@@ -26,6 +37,7 @@
   white-space: nowrap;
   flex-shrink: 0;
 }
+
 .button:hover {
   background-color: #373431;
   color: #EDE6DD;
@@ -40,28 +52,39 @@
 
 @media (max-width: 1440px) {
   .button {
-    font-size: 20px;    /* 24px -> 20px */
-    padding: 8px 24px;  /* 패딩도 살짝 줄임 */
+    font-size: 20px;
+    /* 24px -> 20px */
+    padding: 8px 24px;
+    /* 패딩도 살짝 줄임 */
   }
 }
 
 /* 2. 작은 노트북/태블릿 (1200px 이하) -> 더 작게 */
 @media (max-width: 1200px) {
   .button {
-    font-size: 18px;    /* 20px -> 18px */
-    padding: 8px 20px; 
+    font-size: 18px;
+    /* 20px -> 18px */
+    padding: 8px 20px;
   }
 }
 
 /* 3. 모바일/좁은 화면 (768px 이하) -> 제일 작게 */
 @media (max-width: 768px) {
   .button {
-    border-radius: 20px; /* 모서리 둥글기도 살짝 조정 */
+    border-radius: 20px;
+    /* 모서리 둥글기도 살짝 조정 */
   }
-  
-  /* 컨테이너 여백도 좁은 화면에선 조금 줄여주면 좋습니다 */
+
+  /* 컨테이너 여백 조정: 헤더(sticky)와 겹치지 않도록 하고 중앙 정렬 유지 */
   .container {
-    padding: 0 15px; 
-    margin: 30px auto 40px auto;
+    position: fixed;
+    /* 고정 상태 유지 */
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 90px 15px 20px 15px;
+    /* 헤더 높이만큼 띄워줌 (기존 100px에서 조절) */
+    margin: 0;
+    /* margin 제거 */
   }
 }
