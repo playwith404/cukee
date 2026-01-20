@@ -1,0 +1,422 @@
+/**
+ * Home.tablet.module.css
+ *
+ * 태블릿 전용 Home 페이지 스타일 (768px ~ 1199px)
+ *
+ * 특징:
+ * - Desktop CSS와 완전히 독립적 (미디어쿼리 미사용)
+ * - 좌우 분할 레이아웃 (텍스트 45% + 캐러셀 55%)
+ * - 데코박스 좌측 세로선 표시
+ * - 카운터 숨김
+ * - 큐레이터 박스 하단 오버레이 방식
+ *
+ * 주요 클래스:
+ * - .killcho: 메인 컨테이너
+ * - .upperSplit: 좌우 분할 레이아웃
+ * - .textSection: 좌측 텍스트 영역 (45%)
+ * - .carouselWrapper: 우측 캐러셀 영역 (55%)
+ * - .curatorBox: 큐레이터 정보 오버레이
+ */
+
+/* =============================================================================
+   1. 메인 컨테이너
+   ============================================================================= */
+
+/* 최상위 컨테이너 - 전체 화면 고정 높이 */
+.killcho {
+    width: 100%;
+    height: 100vh;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background-color: #EDE6DD;
+    overflow: hidden;
+}
+
+/* 메인 컨텐츠 래퍼 */
+.mainContent {
+    width: 100%;
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+/* 내부 컨테이너 - 좌우 40px 패딩 */
+.innerContainer {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 0 40px 0 40px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    box-sizing: border-box;
+}
+
+/* =============================================================================
+   2. 상단 영역 (좌우 분할)
+   ============================================================================= */
+
+/* 상단 분할 영역 (태블릿: 상하 배치) */
+.upperSplit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    width: 100%;
+    flex: 1;
+    min-height: 0;
+}
+
+/* =============================================================================
+   3. 데코박스 (좌측 세로선)
+   ============================================================================= */
+
+/* 기본 데코박스 - 좌측에 세로선 */
+.decoBox {
+    position: absolute;
+    top: -80px;
+    bottom: 0;
+    left: 0;
+    width: 0px;
+    border-right: 1px solid #373431;
+    pointer-events: none;
+    opacity: 1;
+}
+
+/* viewAll 모드에서 숨김 */
+.decoBoxHidden {
+    opacity: 0;
+}
+
+/* 고정 데코박스 - viewAll 모드에서 사용 */
+.decoBoxFixed {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 40px;
+    width: 0px;
+    border-right: 1px solid #373431;
+    z-index: 40;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    pointer-events: none;
+}
+
+/* viewAll 모드에서 고정 데코박스 표시 */
+.decoBoxFixedVisible {
+    opacity: 1;
+}
+
+/* =============================================================================
+   4. 텍스트 섹션 (좌측 45%)
+   ============================================================================= */
+
+/* 인사말 텍스트 영역 */
+.textSection {
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    /* 전체 너비로 변경 */
+    flex-shrink: 0;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    opacity: 1;
+    transition-delay: 0.3s;
+    transform: translateX(0);
+}
+
+/* viewAll 모드에서 페이드 아웃 */
+.fadeOut {
+    opacity: 0;
+    transform: translateX(-50px);
+    pointer-events: none;
+    transition-delay: 0s;
+}
+
+/* 메인 타이틀 박스 */
+.title {
+    font-size: clamp(42px, 5vw, 100px);
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: -0.05em;
+    margin: 0 0 12px 0;
+    border: 1px solid #000000;
+    width: 100%;
+    padding: 20px 50px 20px 40px;
+    box-sizing: border-box;
+}
+
+/* 두 번째 br 숨김 -> 2줄 만들기 */
+.title br:nth-of-type(2) {
+    display: none;
+}
+
+/* 서브 텍스트 */
+.subText {
+    font-size: clamp(14px, 3vw, 24px);
+    color: #000000;
+    /* border-bottom: 1px solid #000000; */
+    padding: 5px 5px 5px 40px;
+    width: 90%;
+    /* 전체 너비 차지 */
+    text-align: right;
+    /* 텍스트 오른쪽 정렬 */
+    margin: 0;
+    letter-spacing: -0.03em;
+    white-space: nowrap;
+    box-sizing: border-box;
+}
+
+/* =============================================================================
+   5. 카운터 - 태블릿에서는 숨김
+   ============================================================================= */
+
+.ticketCounter {
+    display: none;
+}
+
+.counterCurrent {
+    display: none;
+}
+
+.counterTotal {
+    display: none;
+}
+
+/* =============================================================================
+   6. 캐러셀 래퍼 (우측 55%)
+   ============================================================================= */
+
+.carouselWrapper {
+    position: relative;
+    width: 100%;
+    /* 전체 너비 */
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    z-index: 20;
+    padding-top: 100px;
+    /* 아래 공간 확보 */
+}
+
+/* =============================================================================
+   7. 큐레이터 박스 (하단 오버레이)
+   - 하단에 고정된 그라데이션 오버레이
+   - 좌우 배치 (큐레이터 이름 + 정보)
+   ============================================================================= */
+
+.curatorBox {
+    position: relative;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    background-color: #373431;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-start;
+    padding: 60px 40px 60px 80px;
+    box-sizing: border-box;
+    z-index: 10;
+}
+
+/* viewAll 모드에서 숨김 */
+.curatorBoxMoved {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* 큐레이터 컨텐츠 래퍼 - 가로 배치 */
+.curatorContent {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    color: #EDE6DD;
+    display: flex;
+    align-items: flex-end;
+    /* 하단 정렬 */
+    gap: 30px;
+}
+
+/* 큐레이터 이름 */
+.curatorName {
+    font-size: 30px;
+    font-weight: 600;
+    color: #EDE6DD;
+    margin: 0;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+/* 좋아요 정보 래퍼 */
+.curatorLikesInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* 좋아요 텍스트 */
+.curatorLikes {
+    font-size: 13px;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* 말풍선 스타일 - 태블릿에서 숨김 */
+.speechBubble {
+    display: none;
+}
+
+/* 말풍선 꼬리 숨김 */
+.speechBubble::after {
+    display: none;
+}
+
+/* =============================================================================
+   8. 헤더 래퍼
+   ============================================================================= */
+
+.headerWrapper {
+    position: sticky;
+    top: 15px;
+    z-index: 100;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    pointer-events: none;
+    transform: scale(0.8);
+    transform-origin: top center;
+}
+
+/* 숨김 상태 */
+.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* =============================================================================
+   9. viewAll 모드 헤더
+   - 티켓만 보기 모드에서 표시되는 좌측 상단 정보
+   ============================================================================= */
+
+.viewAllHeader {
+    position: fixed;
+    top: 120px;
+    left: 40px;
+    width: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    z-index: 50;
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: opacity 0.5s ease 0.3s, transform 0.5s ease 0.1s;
+    pointer-events: none;
+}
+
+/* viewAll 모드 활성화 시 */
+.viewAllHeader.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* 카운터 래퍼 */
+.centerCounter {
+    text-align: left;
+    color: #373431;
+    display: flex;
+    align-items: baseline;
+    margin-bottom: 20px;
+}
+
+/* 현재 번호 (큰 숫자) */
+.bigCount {
+    font-size: 48px;
+    font-weight: 600;
+    letter-spacing: -0.05em;
+}
+
+/* 전체 개수 (작은 숫자) */
+.smallCount {
+    font-size: 32px;
+    color: #6e6e6e;
+    margin-left: 5px;
+}
+
+/* 구분선 */
+.separatorLine {
+    width: 400px;
+    max-width: 400px;
+    height: 1px;
+    background-color: #373431;
+    margin-bottom: 28px;
+    transform-origin: left;
+    transform: scaleX(0);
+    transition: transform 0.5s ease 0.4s;
+}
+
+/* viewAll 모드에서 구분선 애니메이션 */
+.viewAllHeader.visible .separatorLine {
+    transform: scaleX(1);
+}
+
+/* 큐레이터 텍스트 래퍼 */
+.viewAllTextWrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    color: #373431;
+}
+
+/* viewAll 모드 큐레이터 이름 */
+.viewAllCuratorName {
+    font-size: 26px;
+    font-weight: 600;
+    margin: 0 0 10px 0;
+    letter-spacing: -0.03em;
+}
+
+/* viewAll 모드 큐레이터 메시지 */
+.viewAllCuratorMessage {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.5;
+    margin: 0;
+    max-width: 300px;
+    word-break: keep-all;
+    color: #5a5a5a;
+}
+
+/* =============================================================================
+   10. 스크롤 잠금
+   - viewAll 모드에서 배경 스크롤 방지
+   ============================================================================= */
+
+.scrollLocked {
+    max-width: 100%;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* =============================================================================
+   11. 애니메이션
+   ============================================================================= */
+
+/* 버튼 등장 애니메이션 */
+@keyframes fadeInButton {
+    from {
+        opacity: 0;
+        transform: translate(-20px, -50%);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate(0, -50%);
+    }
+}
