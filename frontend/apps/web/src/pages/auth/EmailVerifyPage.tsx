@@ -95,30 +95,47 @@ export default function EmailVerifyPage() {
 
   return (
     <div className="verify-container">
-      <div className="verify-card">
-        <h1>이메일 인증</h1>
-        <p><strong>{state.email}</strong>로 전송된 6자리 인증코드를 입력해주세요.</p>
+      {/* Header */}
+      <header className="verify-header">
+        <h1 className="logo">cukee</h1>
+      </header>
 
-        <VerificationCodeInput length={6} onComplete={handleComplete} />
+      {/* Main */}
+      <main className="verify-main">
+        <div className="verify-card">
+          <h1>이메일 인증</h1>
+          <p>
+            <strong>{state.email}</strong>로 전송된 6자리 인증코드를 입력해주세요.
+          </p>
 
-        {error && <p className="error-text">{error}</p>}
+          <VerificationCodeInput length={6} onComplete={handleComplete} />
 
-        <button
-          className="verify-button"
-          onClick={handleVerify}
-          disabled={loading || code.length !== 6}
-        >
-          {loading ? "확인 중..." : "확인"}
-        </button>
+          {error && <p className="error-text">{error}</p>}
 
-        <button
-          className="resend-button"
-          onClick={handleResend}
-          disabled={resendCooldown > 0}
-        >
-          {resendCooldown > 0 ? `${resendCooldown}초 후 재발송 가능` : "인증번호 재발송"}
-        </button>
-      </div>
+          <button
+            className="verify-button"
+            onClick={handleVerify}
+            disabled={loading || code.length !== 6}
+          >
+            {loading ? "확인 중..." : "확인"}
+          </button>
+
+          <button
+            className="resend-button"
+            onClick={handleResend}
+            disabled={resendCooldown > 0}
+          >
+            {resendCooldown > 0
+              ? `${resendCooldown}초 후 재발송 가능`
+              : "인증번호 재발송"}
+          </button>
+        </div>
+      </main>
+
+      {/* Footer */}
+      <footer className="verify-footer">
+        <p>♥ by playwith404</p>
+      </footer>
     </div>
   );
 }
