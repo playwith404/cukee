@@ -2,7 +2,7 @@ name: Extension CI/CD
 
 on:
   push:
-    branches: [ "main", "dev","feature/console/cuk-154" ]
+    branches: [ "main", "dev"]
     paths:
       - 'frontend/apps/extension/**' 
       - '.github/workflows/ci-extension.yml'
