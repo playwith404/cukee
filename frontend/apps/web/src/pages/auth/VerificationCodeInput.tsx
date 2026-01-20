@@ -1,3 +1,5 @@
+// src/pages/VerificationCodeInput.tsx
+
 import { useRef, useState } from "react";
 
 interface Props {

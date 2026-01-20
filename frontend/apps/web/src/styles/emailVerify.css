@@ -1,14 +1,59 @@
 /* src/styles/emailVerify.css */
-/* 전체 배경 */
+/* ===============================
+   전체 페이지 레이아웃
+   =============================== */
 .verify-container {
   min-height: 100vh;
   background: #EDE6DD;
+  display: flex;
+  flex-direction: column;
+
+  background: linear-gradient(
+    to bottom,
+    #EDE6DD 0%, 
+    #EDE6DD calc(100% - 262px),
+    #373431 calc(100% - 262px),
+    #373431 100%
+  );
+}
+
+/* ===============================
+   헤더
+   =============================== */
+.verify-header {
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: #EDE6DD;
+  z-index: 100;
+}
+
+.verify-header .logo {
+  font-size: 2rem;
+  font-weight: 600;
+  font-weight: 300;
+  color: #373431;
+  text-decoration: none;
+}
+
+/* ===============================
+   메인 (카드 영역)
+   =============================== */
+.verify-main {
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-/* 카드 */
+/* ===============================
+   카드 
+   =============================== */
 .verify-card {
   width: 100%;
   max-width: 500px;
@@ -33,7 +78,9 @@
   margin-bottom: 28px;
 }
 
-/* 인증 코드 영역 */
+/* ===============================
+   인증 코드 입력
+   =============================== */
 .code-input-wrapper {
   display: flex;
   justify-content: space-between;
@@ -41,7 +88,6 @@
   margin-bottom: 16px;
 }
 
-/* 인증 코드 input */
 .code-input {
   width: 52px;
   height: 60px;
@@ -53,21 +99,24 @@
   transition: all 0.2s ease;
 }
 
-/* 포커스 효과 */
 .code-input:focus {
   border-color: #373431;
   box-shadow: 0 0 0 4px rgba(55, 52, 49, 0.15);
   outline: none;
 }
 
-/* 에러 메시지 */
+/* ===============================
+   에러
+   =============================== */
 .error-text {
   margin-top: 8px;
   font-size: 13px;
   color: #dc2626;
 }
 
-/* 버튼 */
+/* ===============================
+   버튼
+   =============================== */
 .verify-button {
   margin-top: 20px;
   width: 100%;
@@ -82,18 +131,60 @@
   transition: all 0.2s ease;
 }
 
-/* hover */
 .verify-button:hover:not(:disabled) {
   background: #373431;
 }
 
-/* disabled */
 .verify-button:disabled {
   background: #77716a;
   cursor: not-allowed;
 }
 
-/* 로딩 중 */
 .verify-button.loading {
   opacity: 0.8;
+}
+
+.resend-button {
+  margin-top: 14px;
+  padding: 8px 14px;
+  background: #f5f5f4;
+  border: 1px solid #e5e7eb;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* hover */
+.resend-button:hover:not(:disabled) {
+  background: #ebeae8;
+  color: #373431;
+}
+
+/* disabled */
+.resend-button:disabled {
+  background: #f1f1f1;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+/* ===============================
+   푸터
+   =============================== */
+.verify-footer {
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.verify-footer p {
+  margin-bottom: 3rem;
+  font-size: 1rem;
+  font-weight: 200;
+  color: #ffffff;
+  letter-spacing: 0.05em;
+  padding-bottom: 1rem;
 }
