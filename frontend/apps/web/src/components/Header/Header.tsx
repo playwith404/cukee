@@ -198,7 +198,10 @@ const DeleteAccountModal: React.FC<DeleteAccountModalProps> = ({ onClose, nickna
   );
 };
 // === 내부 컴포넌트: 드롭다운 메뉴 ===
-const DropdownMenu = () => {
+interface DropdownMenuProps {
+  isClosing: boolean;
+}
+const DropdownMenu: React.FC<DropdownMenuProps> = ({ isClosing }) => {
   const navigate = useNavigate();
   const { logout, user, updateNickname } = useAuth();
 
@@ -322,7 +325,10 @@ const DropdownMenu = () => {
   };
   return (
     <>
-      <div className={styles.dropdownOuter} onClick={(e) => e.stopPropagation()}>
+      <div
+        className={`${styles.dropdownOuter} ${isClosing ? styles.isClosing : ''}`}
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className={styles.dropdownGlass}>
           <div className={styles.dropSplit}>
 
@@ -529,6 +535,7 @@ export const Header: React.FC<HeaderProps> = ({
   exhibitionTitle
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
   const [isAdultAllowed, setIsAdultAllowed] = useState(false);
 
   // ✅ 1. 토스트 표시 상태 추가
@@ -556,8 +563,8 @@ export const Header: React.FC<HeaderProps> = ({
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       // 메뉴가 열려 있고, 클릭한 대상이 menuRef(메뉴 영역) 안이 아닐 때만 닫기
-      if (isMenuOpen && menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setIsMenuOpen(false);
+      if (isMenuOpen && !isClosing && menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        handleCloseMenu();
       }
     };
 
@@ -569,8 +576,20 @@ export const Header: React.FC<HeaderProps> = ({
     };
   }, [isMenuOpen]); // isMenuOpen 상태가 바뀔 때마다 리스너 동기화
 
+  const handleCloseMenu = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setIsMenuOpen(false);
+      setIsClosing(false);
+    }, 300); // CSS 애니메이션 시간과 일치 (0.3s)
+  };
+
   const toggleMenu = () => {
-    setIsMenuOpen((prev) => !prev);
+    if (isMenuOpen) {
+      handleCloseMenu();
+    } else {
+      setIsMenuOpen(true);
+    }
   };
 
   const toggleAdultFilter = () => {
@@ -628,7 +647,7 @@ export const Header: React.FC<HeaderProps> = ({
         )}
 
         {/* 3. 드롭다운 메뉴 (조건부 렌더링) */}
-        {isMenuOpen && <DropdownMenu />}
+        {isMenuOpen && <DropdownMenu isClosing={isClosing} />}
 
       </header>
     </div>

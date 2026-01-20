@@ -154,16 +154,53 @@
   padding: 0;
   /* 상하 여백 살짝 */
   box-sizing: border-box;
+
+  /* 애니메이션 추가 */
+  animation: dropdownReveal 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  transform-origin: top center;
+}
+
+/* 닫히는 애니메이션 클래스 */
+.isClosing {
+  animation: dropdownHide 0.3s cubic-bezier(0.22, 1, 0.36, 1) forwards !important;
+}
+
+@keyframes dropdownReveal {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px) scaleY(0.95);
+    filter: blur(4px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scaleY(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes dropdownHide {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scaleY(1);
+    filter: blur(0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-20px) scaleY(0.95);
+    filter: blur(8px);
+  }
 }
 
 .dropdownGlass {
-  /* ✅ [유지] 요청하신 투명 스타일 그대로 */
+  /* ✅ 배경 불투명도 강화: 뒷배경이 덜 비치도록 수정 */
   backdrop-filter: blur(45px);
-  background-color: transparent; 
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  background-color: rgba(237, 230, 221, 0.95);
+  border: 1px solid rgba(143, 135, 132, 0.2);
   border-radius: 16px;
   padding: 30px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
   position: relative;
 
   /* 높이는 내용물에 따라 유동적으로 (height: 360px 제거 또는 min-height로 변경) */

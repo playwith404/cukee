@@ -158,8 +158,8 @@ export const Gallery3D = ({
   return (
     <>
       <div className={`${styles.container} ${isEditMode ? styles.editMode : ''}`}
-      style={{ 
-          height: isEditMode ? '330px' : '400px' 
+        style={{
+          height: isEditMode ? '330px' : '400px'
         }}
       >
         {frames.map((frame, index) => {
@@ -174,10 +174,10 @@ export const Gallery3D = ({
                 ${styles.frame} 
                 ${positionClass} 
                 ${styles[`style_${frameStyle}`]}
-            `} 
+            `}
               onClick={() => onSelect(index)}
             >
-              
+
               {/* 1. 이미지 영역 (content) */}
               <div className={styles.content}>
                 {frame.imageUrl ? (
@@ -245,16 +245,16 @@ export const Gallery3D = ({
           className={`${styles.arrow} ${styles.prev}`}
           onClick={onPrev}
           disabled={activeIndex === 0}
+          aria-label="Previous"
         >
-          &lt;
         </button>
 
         <button
           className={`${styles.arrow} ${styles.next}`}
           onClick={onNext}
           disabled={activeIndex === maxIndex || frames.length === 0}
+          aria-label="Next"
         >
-          &gt;
         </button>
       </div>
 

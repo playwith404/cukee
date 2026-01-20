@@ -433,15 +433,15 @@ export const MainCarousel: React.FC<MainCarouselProps> = ({
         className={styles.prevBtn}
         onClick={handlePrev}
         disabled={isAnimating || isClickAnimating}
+        aria-label="Previous ticket"
       >
-        &lt;
       </button>
       <button
         className={styles.nextBtn}
         onClick={handleNext}
         disabled={isAnimating || isClickAnimating}
+        aria-label="Next ticket"
       >
-        &gt;
       </button>
 
       {/* ===================================================================
