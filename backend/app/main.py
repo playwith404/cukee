@@ -20,7 +20,7 @@ from app.core.exception_handlers import (
     sqlalchemy_exception_handler,
     general_exception_handler
 )
-from app.api import auth, users, ai, exhibitions, tickets, google_oauth, kakao_oauth, animalese, admin, console
+from app.api import auth, users, ai, public_ai, exhibitions, tickets, google_oauth, kakao_oauth, animalese, admin, console
 from app.services.admin_service import AdminTokenService
 from app.services.metrics_service import ApiMetricsMiddleware
 
@@ -60,6 +60,7 @@ app.add_exception_handler(Exception, general_exception_handler)
 app.include_router(auth.router)
 app.include_router(users.router)
 app.include_router(ai.router)
+app.include_router(public_ai.router)
 app.include_router(tickets.router)  # 티켓 API
 app.include_router(exhibitions.router)  # 전시회 API (DB 연동)
 app.include_router(google_oauth.router)  # Google OAuth
