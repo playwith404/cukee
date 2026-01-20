@@ -17,8 +17,10 @@ from app.schemas.admin import (
 )
 from app.services.admin_service import AdminTokenService
 from app.services.console_service import ConsoleTokenService
+from app.services.api_key_service import ApiKeyService
 from app.utils.dependencies import get_admin_token
 from app.models.console import ApiAccessToken
+from app.models.api_usage import CukApiKey
 
 router = APIRouter(prefix="/api/admin", tags=["Admin"])
 
@@ -97,6 +99,12 @@ def create_console_token(
         name=data.name,
         expires_in_days=data.expires_in_days,
     )
+    ApiKeyService.create_api_key(
+        db,
+        console_token_id=record.id,
+        name=record.token_name,
+        api_key_value=raw_api_key,
+    )
     display_name = record.token_name
     return CreatedTokenResponse(
         id=record.id,
@@ -152,15 +160,17 @@ def create_api_key(
     record = db.query(ApiAccessToken).filter(ApiAccessToken.id == data.owner_token_id).first()
     if not record:
         raise BadRequestException(message="유효하지 않은 콘솔 토큰입니다.")
-    raw_api_key = ConsoleTokenService.generate_api_key()
-    record.api_key = raw_api_key
-    db.commit()
-    return CreatedApiKeyResponse(
-        id=record.id,
-        owner_token_id=record.id,
+    api_key_record, raw_api_key = ApiKeyService.create_api_key(
+        db,
+        console_token_id=record.id,
         name=data.name,
+    )
+    return CreatedApiKeyResponse(
+        id=api_key_record.id,
+        owner_token_id=api_key_record.console_token_id,
+        name=api_key_record.token_name,
         key=raw_api_key,
-        created_at=record.created_at
+        created_at=api_key_record.created_at,
     )
 
 
@@ -169,15 +179,15 @@ def list_api_keys(
     _token=Depends(get_admin_token),
     db: DBSession = Depends(get_db)
 ):
-    keys = db.query(ApiAccessToken).order_by(ApiAccessToken.created_at.desc()).all()
+    keys = db.query(CukApiKey).order_by(CukApiKey.created_at.desc()).all()
     return [
         ApiKeyItem(
             id=k.id,
-            owner_token_id=k.id,
-            name=None,
+            owner_token_id=k.console_token_id,
+            name=k.token_name,
             key_preview=f"{k.api_key[:6]}...{k.api_key[-4:]}",
             created_at=k.created_at,
-            is_revoked=False,
+            is_revoked=(k.status == "revoked" or k.revoked_at is not None),
         )
         for k in keys
     ]
@@ -189,9 +199,7 @@ def revoke_api_key(
     _token=Depends(get_admin_token),
     db: DBSession = Depends(get_db)
 ):
-    record = db.query(ApiAccessToken).filter(ApiAccessToken.id == key_id).first()
+    record = ApiKeyService.revoke_api_key(db, key_id)
     if not record:
         raise NotFoundException(message="API 키를 찾을 수 없습니다.")
-    db.delete(record)
-    db.commit()
     return {"message": "ok"}

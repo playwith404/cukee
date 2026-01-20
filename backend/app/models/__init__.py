@@ -11,10 +11,12 @@ from app.models.exhibition import (
 from app.models.movie import Movie
 from app.models.admin import AdminToken
 from app.models.console import ApiAccessToken
+from app.models.api_usage import CukApiKey, CukApiUsageLog, CukApiUsageDaily
 
 __all__ = [
     "User", "Session", "TicketGroup", "TicketGroupMovie",
     "Exhibition", "ExhibitionDesign", "ExhibitionMovie", "ExhibitionKeyword",
     "UserSavedExhibition", "UserPinnedExhibition", "Movie",
-    "AdminToken", "ApiAccessToken"
+    "AdminToken", "ApiAccessToken",
+    "CukApiKey", "CukApiUsageLog", "CukApiUsageDaily"
 ]

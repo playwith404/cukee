@@ -6,6 +6,7 @@ from __future__ import annotations
 import logging
 import time
 import uuid
+from datetime import datetime
 from typing import Any, Optional
 
 import httpx
@@ -14,7 +15,8 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session as DBSession
 
 from app.core.database import get_db
-from app.services.console_service import ConsoleTokenService
+from app.services.api_key_service import ApiKeyService
+from app.services.api_usage_service import estimate_tokens, log_usage
 
 logger = logging.getLogger(__name__)
 
@@ -112,6 +114,18 @@ async def enterprise_chat(
     x_api_key: Optional[str] = Header(None),
     db: DBSession = Depends(get_db),
 ):
+    start_time = time.monotonic()
+    endpoint = request.url.path
+    api_key_record = None
+    prompt = None
+    ip = None
+    user_agent = request.headers.get("user-agent")
+    forwarded_for = request.headers.get("x-forwarded-for")
+    if forwarded_for:
+        ip = forwarded_for.split(",")[0].strip()
+    elif request.client:
+        ip = request.client.host
+
     try:
         payload = await request.json()
     except Exception:
@@ -129,8 +143,8 @@ async def enterprise_chat(
             status_code=401,
         )
 
-    token_record = ConsoleTokenService.get_by_api_key(db, api_key)
-    if not token_record:
+    api_key_record = ApiKeyService.get_by_api_key(db, api_key)
+    if not api_key_record:
         return _openai_error(
             "Invalid API key.",
             param="authorization",
@@ -138,50 +152,140 @@ async def enterprise_chat(
             status_code=401,
         )
 
+    if (
+        api_key_record.status != "active"
+        or api_key_record.revoked_at is not None
+        or (api_key_record.expires_at and api_key_record.expires_at <= datetime.utcnow())
+    ):
+        return _openai_error(
+            "API key is not active.",
+            param="authorization",
+            code="invalid_api_key",
+            status_code=401,
+        )
+
     model = payload.get("model") or EXTERNAL_MODEL_NAME
     if model != EXTERNAL_MODEL_NAME:
-        return _openai_error(
+        response = _openai_error(
             f"Model '{model}' not found.",
             param="model",
             code="model_not_found",
         )
+        _log_public_usage(
+            db=db,
+            api_key_id=api_key_record.id,
+            endpoint=endpoint,
+            model=model,
+            prompt_text=prompt,
+            completion_text=None,
+            status_code=response.status_code,
+            latency_ms=_elapsed_ms(start_time),
+            ip=ip,
+            user_agent=user_agent,
+        )
+        return response
 
     if payload.get("stream") is True:
-        return _openai_error(
+        response = _openai_error(
             "Streaming is not supported.",
             param="stream",
             code="unsupported",
         )
+        _log_public_usage(
+            db=db,
+            api_key_id=api_key_record.id,
+            endpoint=endpoint,
+            model=model,
+            prompt_text=prompt,
+            completion_text=None,
+            status_code=response.status_code,
+            latency_ms=_elapsed_ms(start_time),
+            ip=ip,
+            user_agent=user_agent,
+        )
+        return response
 
     prompt = _extract_prompt(payload.get("messages"))
     if not prompt:
-        return _openai_error(
+        response = _openai_error(
             "messages must include a user prompt.",
             param="messages",
         )
+        _log_public_usage(
+            db=db,
+            api_key_id=api_key_record.id,
+            endpoint=endpoint,
+            model=model,
+            prompt_text=prompt,
+            completion_text=None,
+            status_code=response.status_code,
+            latency_ms=_elapsed_ms(start_time),
+            ip=ip,
+            user_agent=user_agent,
+        )
+        return response
 
     ticket_id = payload.get("ticketId", 3)
     try:
         ticket_id = int(ticket_id)
     except (TypeError, ValueError):
-        return _openai_error(
+        response = _openai_error(
             "ticketId must be an integer.",
             param="ticketId",
         )
+        _log_public_usage(
+            db=db,
+            api_key_id=api_key_record.id,
+            endpoint=endpoint,
+            model=model,
+            prompt_text=prompt,
+            completion_text=None,
+            status_code=response.status_code,
+            latency_ms=_elapsed_ms(start_time),
+            ip=ip,
+            user_agent=user_agent,
+        )
+        return response
 
     theme = TICKET_TO_THEME.get(ticket_id)
     if not theme:
-        return _openai_error(
+        response = _openai_error(
             f"ticketId {ticket_id} is not supported.",
             param="ticketId",
         )
+        _log_public_usage(
+            db=db,
+            api_key_id=api_key_record.id,
+            endpoint=endpoint,
+            model=model,
+            prompt_text=prompt,
+            completion_text=None,
+            status_code=response.status_code,
+            latency_ms=_elapsed_ms(start_time),
+            ip=ip,
+            user_agent=user_agent,
+        )
+        return response
 
     pinned_ids = payload.get("pinnedMovieIds") or []
     if not isinstance(pinned_ids, list):
-        return _openai_error(
+        response = _openai_error(
             "pinnedMovieIds must be an array.",
             param="pinnedMovieIds",
         )
+        _log_public_usage(
+            db=db,
+            api_key_id=api_key_record.id,
+            endpoint=endpoint,
+            model=model,
+            prompt_text=prompt,
+            completion_text=None,
+            status_code=response.status_code,
+            latency_ms=_elapsed_ms(start_time),
+            ip=ip,
+            user_agent=user_agent,
+        )
+        return response
 
     is_adult_allowed = bool(payload.get("isAdultAllowed", False))
 
@@ -210,27 +314,66 @@ async def enterprise_chat(
             )
         if response.status_code != 200:
             logger.error("AI server error: %s - %s", response.status_code, response.text)
-            return _openai_error(
+            error_response = _openai_error(
                 "Upstream AI server error.",
                 error_type="server_error",
                 code="upstream_error",
                 status_code=502,
             )
+            _log_public_usage(
+                db=db,
+                api_key_id=api_key_record.id,
+                endpoint=endpoint,
+                model=model,
+                prompt_text=prompt,
+                completion_text=None,
+                status_code=error_response.status_code,
+                latency_ms=_elapsed_ms(start_time),
+                ip=ip,
+                user_agent=user_agent,
+            )
+            return error_response
     except httpx.TimeoutException:
-        return _openai_error(
+        error_response = _openai_error(
             "Upstream AI server timeout.",
             error_type="server_error",
             code="timeout",
             status_code=504,
         )
+        _log_public_usage(
+            db=db,
+            api_key_id=api_key_record.id,
+            endpoint=endpoint,
+            model=model,
+            prompt_text=prompt,
+            completion_text=None,
+            status_code=error_response.status_code,
+            latency_ms=_elapsed_ms(start_time),
+            ip=ip,
+            user_agent=user_agent,
+        )
+        return error_response
     except httpx.RequestError as exc:
         logger.error("AI server connection error: %s", exc)
-        return _openai_error(
+        error_response = _openai_error(
             "Upstream AI server connection error.",
             error_type="server_error",
             code="upstream_unavailable",
             status_code=502,
         )
+        _log_public_usage(
+            db=db,
+            api_key_id=api_key_record.id,
+            endpoint=endpoint,
+            model=model,
+            prompt_text=prompt,
+            completion_text=None,
+            status_code=error_response.status_code,
+            latency_ms=_elapsed_ms(start_time),
+            ip=ip,
+            user_agent=user_agent,
+        )
+        return error_response
 
     result = response.json()
     result_json = result.get("result_json", result.get("resultJson", {}))
@@ -240,7 +383,23 @@ async def enterprise_chat(
     if not content:
         content = "OK"
 
+    prompt_tokens = estimate_tokens(prompt)
+    completion_tokens = estimate_tokens(content)
+    total_tokens, api_cost = _log_public_usage(
+        db=db,
+        api_key_id=api_key_record.id,
+        endpoint=endpoint,
+        model=model,
+        prompt_text=prompt,
+        completion_text=content,
+        status_code=200,
+        latency_ms=_elapsed_ms(start_time),
+        ip=ip,
+        user_agent=user_agent,
+    )
+
     request.state.api_model = EXTERNAL_MODEL_NAME
+    request.state.api_cost = api_cost
 
     return JSONResponse(
         status_code=200,
@@ -257,9 +416,46 @@ async def enterprise_chat(
                 }
             ],
             "usage": {
-                "prompt_tokens": 0,
-                "completion_tokens": 0,
-                "total_tokens": 0,
+                "prompt_tokens": prompt_tokens,
+                "completion_tokens": completion_tokens,
+                "total_tokens": total_tokens,
             },
         },
     )
+
+
+def _elapsed_ms(start_time: float) -> int:
+    return int((time.monotonic() - start_time) * 1000)
+
+
+def _log_public_usage(
+    db: DBSession,
+    api_key_id: int,
+    endpoint: str,
+    model: str,
+    prompt_text: Optional[str],
+    completion_text: Optional[str],
+    status_code: int,
+    latency_ms: int,
+    ip: Optional[str],
+    user_agent: Optional[str],
+) -> tuple[int, float]:
+    model_value = model if isinstance(model, str) else str(model)
+    prompt_tokens = estimate_tokens(prompt_text)
+    completion_tokens = estimate_tokens(completion_text)
+    try:
+        return log_usage(
+            db=db,
+            api_key_id=api_key_id,
+            endpoint=endpoint,
+            model=model_value,
+            prompt_tokens=prompt_tokens,
+            completion_tokens=completion_tokens,
+            status_code=status_code,
+            latency_ms=latency_ms,
+            ip=ip,
+            user_agent=user_agent,
+        )
+    except Exception as exc:
+        logger.error("Failed to log API usage: %s", exc)
+        return prompt_tokens + completion_tokens, 0.0

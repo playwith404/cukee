@@ -1,6 +1,7 @@
 """콘솔 API"""
 from datetime import datetime, timedelta
 from fastapi import APIRouter, Depends, Response, status, Cookie
+from sqlalchemy import func, desc
 from sqlalchemy.orm import Session as DBSession
 
 from app.core.config import settings
@@ -8,8 +9,8 @@ from app.core.database import get_db
 from app.core.exceptions import UnauthorizedException
 from app.schemas.console import ConsoleLoginRequest, ConsoleLoginResponse, ConsoleKeyItem
 from app.services.console_service import ConsoleTokenService
+from app.models.api_usage import CukApiKey, CukApiUsageLog, CukApiUsageDaily
 from app.utils.dependencies import get_console_token
-from app.services.prometheus_service import query_instant, query_range, query_vector
 
 router = APIRouter(prefix="/api/console", tags=["Console"])
 
@@ -84,91 +85,204 @@ def console_me(_token=Depends(get_console_token)):
 
 @router.get("/keys", response_model=list[ConsoleKeyItem], status_code=status.HTTP_200_OK)
 def list_keys(
-    token=Depends(get_console_token)
+    token=Depends(get_console_token),
+    db: DBSession = Depends(get_db),
 ):
+    keys = (
+        db.query(CukApiKey)
+        .filter(CukApiKey.console_token_id == token.id, CukApiKey.status == "active")
+        .order_by(CukApiKey.created_at.desc())
+        .all()
+    )
+    if not keys:
+        return [
+            ConsoleKeyItem(
+                id=token.id,
+                name=token.token_name,
+                key_preview=f"{token.api_key[:6]}...{token.api_key[-4:]}",
+                created_at=token.created_at,
+            )
+        ]
     return [
         ConsoleKeyItem(
-            id=token.id,
-            name=None,
-            key_preview=f"{token.api_key[:6]}...{token.api_key[-4:]}",
-            created_at=token.created_at,
+            id=key.id,
+            name=key.token_name,
+            key_preview=f"{key.api_key[:6]}...{key.api_key[-4:]}",
+            created_at=key.created_at,
         )
+        for key in keys
     ]
 
 
 @router.get("/usage/summary", status_code=status.HTTP_200_OK)
-async def usage_summary(token=Depends(get_console_token)):
-    token_id = token.id
-    total_query = f'sum(cukee_api_requests_total{{token_id="{token_id}"}})'
-    success_query = f'sum(cukee_api_requests_total{{token_id="{token_id}",status=~"2..|3.."}})'
-    latency_sum_query = f'sum(rate(cukee_api_request_latency_ms_sum{{token_id="{token_id}"}}[5m]))'
-    latency_count_query = f'sum(rate(cukee_api_request_latency_ms_count{{token_id="{token_id}"}}[5m]))'
+def usage_summary(
+    token=Depends(get_console_token),
+    db: DBSession = Depends(get_db),
+):
+    key_ids = [
+        row.id for row in db.query(CukApiKey.id).filter(CukApiKey.console_token_id == token.id).all()
+    ]
+    if not key_ids:
+        return {
+            "total_requests": 0,
+            "success_rate": 0.0,
+            "avg_latency_ms": 0.0,
+            "traffic": [0] * 12,
+            "top_endpoints": [],
+        }
 
-    total_requests = await query_instant(total_query)
-    success_requests = await query_instant(success_query)
-    latency_sum = await query_instant(latency_sum_query)
-    latency_count = await query_instant(latency_count_query)
+    end_time = datetime.utcnow()
+    start_time = end_time - timedelta(hours=24)
+
+    total_requests = (
+        db.query(func.count(CukApiUsageLog.id))
+        .filter(
+            CukApiUsageLog.api_key_id.in_(key_ids),
+            CukApiUsageLog.created_at >= start_time,
+        )
+        .scalar()
+        or 0
+    )
+    success_requests = (
+        db.query(func.count(CukApiUsageLog.id))
+        .filter(
+            CukApiUsageLog.api_key_id.in_(key_ids),
+            CukApiUsageLog.created_at >= start_time,
+            CukApiUsageLog.status_code.between(200, 399),
+        )
+        .scalar()
+        or 0
+    )
+    latency_avg = (
+        db.query(func.avg(CukApiUsageLog.latency_ms))
+        .filter(
+            CukApiUsageLog.api_key_id.in_(key_ids),
+            CukApiUsageLog.created_at >= start_time,
+        )
+        .scalar()
+    )
+    avg_latency_ms = float(latency_avg) if latency_avg else 0.0
+
+    traffic = []
+    for i in range(12):
+        bucket_start = start_time + timedelta(hours=2 * i)
+        bucket_end = bucket_start + timedelta(hours=2)
+        count = (
+            db.query(func.count(CukApiUsageLog.id))
+            .filter(
+                CukApiUsageLog.api_key_id.in_(key_ids),
+                CukApiUsageLog.created_at >= bucket_start,
+                CukApiUsageLog.created_at < bucket_end,
+            )
+            .scalar()
+            or 0
+        )
+        traffic.append(int(count))
+
+    top_rows = (
+        db.query(
+            CukApiUsageLog.endpoint,
+            CukApiUsageLog.status_code,
+            func.count(CukApiUsageLog.id).label("count"),
+        )
+        .filter(
+            CukApiUsageLog.api_key_id.in_(key_ids),
+            CukApiUsageLog.created_at >= start_time,
+        )
+        .group_by(CukApiUsageLog.endpoint, CukApiUsageLog.status_code)
+        .order_by(desc("count"))
+        .limit(5)
+        .all()
+    )
+    top_endpoints = [
+        {
+            "endpoint": row.endpoint,
+            "method": "POST",
+            "status": str(row.status_code),
+            "count": int(row.count),
+        }
+        for row in top_rows
+    ]
 
     success_rate = 0.0
     if total_requests > 0:
         success_rate = (success_requests / total_requests) * 100
 
-    avg_latency_ms = 0.0
-    if latency_count > 0:
-        avg_latency_ms = latency_sum / latency_count
-
-    end = datetime.utcnow().timestamp()
-    start = (datetime.utcnow() - timedelta(hours=24)).timestamp()
-    traffic_query = f'sum(increase(cukee_api_requests_total{{token_id="{token_id}"}}[2h]))'
-    traffic = await query_range(traffic_query, start, end, 7200)
-
-    top_query = (
-        f'topk(5, sum by (endpoint, method, status) '
-        f'(increase(cukee_api_requests_total{{token_id="{token_id}"}}[24h])))'
-    )
-    top_rows = await query_vector(top_query)
-    top_endpoints = [
-        {
-            "endpoint": row["metric"].get("endpoint", "-"),
-            "method": row["metric"].get("method", "-"),
-            "status": row["metric"].get("status", "-"),
-            "count": int(row["value"]),
-        }
-        for row in top_rows
-    ]
-
     return {
         "total_requests": int(total_requests),
         "success_rate": round(success_rate, 2),
         "avg_latency_ms": round(avg_latency_ms, 2),
-        "traffic": [int(v) for v in traffic],
+        "traffic": traffic,
         "top_endpoints": top_endpoints,
     }
 
 
 @router.get("/billing/summary", status_code=status.HTTP_200_OK)
-async def billing_summary(token=Depends(get_console_token)):
-    token_id = token.id
-    total_query = f'sum(increase(cukee_api_cost_total{{token_id="{token_id}"}}[30d]))'
-    total_cost = await query_instant(total_query)
+def billing_summary(
+    token=Depends(get_console_token),
+    db: DBSession = Depends(get_db),
+):
+    key_ids = [
+        row.id for row in db.query(CukApiKey.id).filter(CukApiKey.console_token_id == token.id).all()
+    ]
+    if not key_ids:
+        next_month = (_first_day_of_month(datetime.utcnow()) + timedelta(days=32)).replace(day=1)
+        return {
+            "total_30d": 0.0,
+            "history": [],
+            "next_billing_date": next_month.strftime("%Y-%m-%d"),
+        }
 
-    end = datetime.utcnow()
-    start = end - timedelta(days=90)
-    history_query = f'sum(increase(cukee_api_cost_total{{token_id="{token_id}"}}[30d]))'
-    history_values = await query_range(history_query, start.timestamp(), end.timestamp(), 2592000)
+    today = datetime.utcnow().date()
+    start_date = today - timedelta(days=30)
+
+    total_cost = (
+        db.query(func.sum(CukApiUsageDaily.cost))
+        .filter(
+            CukApiUsageDaily.api_key_id.in_(key_ids),
+            CukApiUsageDaily.day >= start_date,
+        )
+        .scalar()
+        or 0
+    )
 
     history = []
-    for idx, value in enumerate(history_values[-3:]):
-        date = (end - timedelta(days=30 * (len(history_values[-3:]) - idx - 1))).strftime("%Y-%m")
-        history.append({
-            "date": date,
-            "amount": round(float(value), 2),
-            "status": "Paid"
-        })
+    current_month_start = _first_day_of_month(datetime.utcnow())
+    for offset in range(3, 0, -1):
+        period_start = _add_months(current_month_start, -offset)
+        period_end = _add_months(current_month_start, -(offset - 1))
+        period_cost = (
+            db.query(func.sum(CukApiUsageDaily.cost))
+            .filter(
+                CukApiUsageDaily.api_key_id.in_(key_ids),
+                CukApiUsageDaily.day >= period_start.date(),
+                CukApiUsageDaily.day < period_end.date(),
+            )
+            .scalar()
+            or 0
+        )
+        history.append(
+            {
+                "date": period_start.strftime("%Y-%m"),
+                "amount": round(float(period_cost), 2),
+                "status": "Paid",
+            }
+        )
 
-    next_month = (end.replace(day=1) + timedelta(days=32)).replace(day=1)
+    next_month = _add_months(current_month_start, 1)
     return {
-        "total_30d": round(total_cost, 2),
+        "total_30d": round(float(total_cost), 2),
         "history": history,
         "next_billing_date": next_month.strftime("%Y-%m-%d"),
     }
+
+
+def _first_day_of_month(dt: datetime) -> datetime:
+    return dt.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+
+
+def _add_months(dt: datetime, months: int) -> datetime:
+    month_index = dt.month - 1 + months
+    year = dt.year + month_index // 12
+    month = month_index % 12 + 1
+    return dt.replace(year=year, month=month, day=1, hour=0, minute=0, second=0, microsecond=0)
