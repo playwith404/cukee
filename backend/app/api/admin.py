@@ -1,6 +1,8 @@
 """관리자 콘솔 API"""
 from fastapi import APIRouter, Depends, Response, status, Cookie
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session as DBSession
+import logging
 
 from app.core.config import settings
 from app.core.database import get_db
@@ -23,6 +25,7 @@ from app.models.console import ApiAccessToken
 from app.models.api_usage import CukApiKey
 
 router = APIRouter(prefix="/api/admin", tags=["Admin"])
+logger = logging.getLogger(__name__)
 
 
 def set_admin_cookie(response: Response, token: str, environment: str = "development"):
@@ -160,18 +163,33 @@ def create_api_key(
     record = db.query(ApiAccessToken).filter(ApiAccessToken.id == data.owner_token_id).first()
     if not record:
         raise BadRequestException(message="유효하지 않은 콘솔 토큰입니다.")
-    api_key_record, raw_api_key = ApiKeyService.create_api_key(
-        db,
-        console_token_id=record.id,
-        name=data.name,
-    )
-    return CreatedApiKeyResponse(
-        id=api_key_record.id,
-        owner_token_id=api_key_record.console_token_id,
-        name=api_key_record.token_name,
-        key=raw_api_key,
-        created_at=api_key_record.created_at,
-    )
+    try:
+        api_key_record, raw_api_key = ApiKeyService.create_api_key(
+            db,
+            console_token_id=record.id,
+            name=data.name,
+        )
+        record.api_key = raw_api_key
+        db.commit()
+        return CreatedApiKeyResponse(
+            id=api_key_record.id,
+            owner_token_id=api_key_record.console_token_id,
+            name=api_key_record.token_name,
+            key=raw_api_key,
+            created_at=api_key_record.created_at,
+        )
+    except SQLAlchemyError as exc:
+        logger.error("Failed to create api key in new table: %s", exc)
+        raw_api_key = ConsoleTokenService.generate_api_key()
+        record.api_key = raw_api_key
+        db.commit()
+        return CreatedApiKeyResponse(
+            id=record.id,
+            owner_token_id=record.id,
+            name=data.name,
+            key=raw_api_key,
+            created_at=record.created_at,
+        )
 
 
 @router.get("/api-keys", response_model=list[ApiKeyItem], status_code=status.HTTP_200_OK)
@@ -179,7 +197,24 @@ def list_api_keys(
     _token=Depends(get_admin_token),
     db: DBSession = Depends(get_db)
 ):
-    keys = db.query(CukApiKey).order_by(CukApiKey.created_at.desc()).all()
+    try:
+        keys = db.query(CukApiKey).order_by(CukApiKey.created_at.desc()).all()
+    except SQLAlchemyError as exc:
+        logger.error("Failed to read api keys from new table: %s", exc)
+        keys = []
+    if not keys:
+        legacy_keys = db.query(ApiAccessToken).order_by(ApiAccessToken.created_at.desc()).all()
+        return [
+            ApiKeyItem(
+                id=k.id,
+                owner_token_id=k.id,
+                name=k.token_name,
+                key_preview=f"{k.api_key[:6]}...{k.api_key[-4:]}",
+                created_at=k.created_at,
+                is_revoked=False,
+            )
+            for k in legacy_keys
+        ]
     return [
         ApiKeyItem(
             id=k.id,

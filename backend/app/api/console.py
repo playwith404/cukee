@@ -1,8 +1,10 @@
 """콘솔 API"""
 from datetime import datetime, timedelta
 from fastapi import APIRouter, Depends, Response, status, Cookie
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import func, desc
 from sqlalchemy.orm import Session as DBSession
+import logging
 
 from app.core.config import settings
 from app.core.database import get_db
@@ -13,6 +15,7 @@ from app.models.api_usage import CukApiKey, CukApiUsageLog, CukApiUsageDaily
 from app.utils.dependencies import get_console_token
 
 router = APIRouter(prefix="/api/console", tags=["Console"])
+logger = logging.getLogger(__name__)
 
 
 def set_console_cookie(response: Response, token: str, environment: str = "development"):
@@ -119,9 +122,13 @@ def usage_summary(
     token=Depends(get_console_token),
     db: DBSession = Depends(get_db),
 ):
-    key_ids = [
-        row.id for row in db.query(CukApiKey.id).filter(CukApiKey.console_token_id == token.id).all()
-    ]
+    try:
+        key_ids = [
+            row.id for row in db.query(CukApiKey.id).filter(CukApiKey.console_token_id == token.id).all()
+        ]
+    except SQLAlchemyError as exc:
+        logger.error("Failed to read api key ids for usage summary: %s", exc)
+        key_ids = []
     if not key_ids:
         return {
             "total_requests": 0,
@@ -222,9 +229,13 @@ def billing_summary(
     token=Depends(get_console_token),
     db: DBSession = Depends(get_db),
 ):
-    key_ids = [
-        row.id for row in db.query(CukApiKey.id).filter(CukApiKey.console_token_id == token.id).all()
-    ]
+    try:
+        key_ids = [
+            row.id for row in db.query(CukApiKey.id).filter(CukApiKey.console_token_id == token.id).all()
+        ]
+    except SQLAlchemyError as exc:
+        logger.error("Failed to read api key ids for billing summary: %s", exc)
+        key_ids = []
     if not key_ids:
         next_month = (_first_day_of_month(datetime.utcnow()) + timedelta(days=32)).replace(day=1)
         return {
