@@ -25,6 +25,9 @@ class Settings(BaseSettings):
     # Redis
     REDIS_URL: str = "redis://localhost:6379/0"
 
+    # Prometheus
+    PROMETHEUS_URL: str = "http://localhost:9090"
+
     # Email (SMTP)
     SMTP_HOST: str = "smtp.gmail.com"
     SMTP_PORT: int = 587
@@ -32,6 +35,15 @@ class Settings(BaseSettings):
     SMTP_PASSWORD: Optional[str] = None
     EMAIL_FROM: Optional[str] = None
     EMAIL_FROM_NAME: str = "Cukee"
+    ADMIN_EMAIL: str = "playwith404@gmail.com"
+
+    # Admin/Console Tokens
+    ADMIN_TOKEN_TTL_HOURS: int = 72
+    ADMIN_TOKEN_LENGTH: int = 32
+    CONSOLE_TOKEN_LENGTH: int = 16
+    API_KEY_LENGTH: int = 24
+    ADMIN_SESSION_EXPIRE_HOURS: int = 72
+    CONSOLE_SESSION_EXPIRE_HOURS: int = 168
 
     # Verification Code
     VERIFICATION_CODE_EXPIRE_MINUTES: int = 5

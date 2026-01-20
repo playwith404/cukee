@@ -27,6 +27,30 @@ api.interceptors.response.use(
         return Promise.reject(error);
       }
 
+      const requestUrl = originalRequest.url || '';
+      const currentPath = window.location.pathname;
+      const isConsoleOrAdmin = currentPath.startsWith('/console') || currentPath.startsWith('/admin');
+      if (isConsoleOrAdmin && !requestUrl.includes('/console/') && !requestUrl.includes('/admin/')) {
+        return Promise.reject(error);
+      }
+      if (requestUrl.includes('/console/')) {
+        if (currentPath !== '/console/login') {
+          window.location.href = '/console/login';
+        }
+        return Promise.reject(error);
+      }
+
+      if (requestUrl.includes('/admin/')) {
+        if (currentPath !== '/admin') {
+          window.location.href = '/admin';
+        }
+        return Promise.reject(error);
+      }
+
+      if (currentPath.startsWith('/console') || currentPath.startsWith('/admin')) {
+        return Promise.reject(error);
+      }
+
       originalRequest._retry = true;
 
       try {

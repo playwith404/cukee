@@ -239,3 +239,99 @@ class EmailService:
         except Exception as e:
             print(f"이메일 발송 실패: {e}")
             raise
+
+    @staticmethod
+    def send_admin_token_email(to_email: str, token: str, expires_at) -> bool:
+        """관리자 토큰 이메일 발송"""
+        if not settings.SMTP_USER or not settings.SMTP_PASSWORD:
+            raise ValueError("SMTP 설정이 완료되지 않았습니다.")
+
+        subject = "[Cukee] 관리자 콘솔 로그인 토큰"
+        expires_text = expires_at.strftime("%Y-%m-%d %H:%M UTC")
+
+        html_content = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <style>
+                body {{
+                    font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+                    background-color: #f5f5f5;
+                    margin: 0;
+                    padding: 20px;
+                }}
+                .container {{
+                    max-width: 600px;
+                    margin: 0 auto;
+                    background-color: #ffffff;
+                    border-radius: 12px;
+                    padding: 40px;
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+                }}
+                .logo {{
+                    font-size: 28px;
+                    font-weight: bold;
+                    color: #111827;
+                    margin-bottom: 30px;
+                }}
+                .title {{
+                    font-size: 20px;
+                    color: #111827;
+                    margin-bottom: 16px;
+                }}
+                .token-box {{
+                    background-color: #111827;
+                    color: #ffffff;
+                    border-radius: 8px;
+                    padding: 18px;
+                    text-align: center;
+                    margin: 24px 0;
+                    font-size: 20px;
+                    letter-spacing: 3px;
+                    font-weight: 700;
+                }}
+                .notice {{
+                    font-size: 14px;
+                    color: #6b7280;
+                }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="logo">Cukee Admin</div>
+                <div class="title">관리자 로그인 토큰이 갱신되었습니다</div>
+                <div class="token-box">{token}</div>
+                <p class="notice">만료 시간: {expires_text}</p>
+                <p class="notice">본인이 요청하지 않았다면 즉시 보안을 점검해주세요.</p>
+            </div>
+        </body>
+        </html>
+        """
+
+        text_content = f"""
+        [Cukee] 관리자 로그인 토큰
+
+        토큰: {token}
+        만료 시간: {expires_text}
+
+        본인이 요청하지 않았다면 즉시 보안을 점검해주세요.
+        """
+
+        msg = MIMEMultipart("alternative")
+        msg["Subject"] = subject
+        msg["From"] = f"{settings.EMAIL_FROM_NAME} <{settings.EMAIL_FROM}>"
+        msg["To"] = to_email
+
+        msg.attach(MIMEText(text_content, "plain", "utf-8"))
+        msg.attach(MIMEText(html_content, "html", "utf-8"))
+
+        try:
+            with smtplib.SMTP(settings.SMTP_HOST, settings.SMTP_PORT) as server:
+                server.starttls()
+                server.login(settings.SMTP_USER, settings.SMTP_PASSWORD)
+                server.sendmail(settings.EMAIL_FROM, to_email, msg.as_string())
+            return True
+        except Exception as e:
+            print(f"이메일 발송 실패: {e}")
+            raise

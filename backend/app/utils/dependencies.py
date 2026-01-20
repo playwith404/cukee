@@ -2,11 +2,16 @@
 FastAPI 의존성 (Dependency Injection)
 """
 from typing import Optional
+from datetime import datetime
 from fastapi import Cookie, Depends, Header, Request
 from sqlalchemy.orm import Session as DBSession
 from app.core.database import get_db
 from app.core.exceptions import UnauthorizedException
 from app.services.session_service import SessionService
+from app.services.admin_service import AdminTokenService
+from app.services.console_service import ConsoleTokenService
+from app.models.admin import AdminToken
+from app.models.console import ApiAccessToken
 from app.services.auth_service import AuthService
 from app.models import User
 
@@ -89,3 +94,50 @@ def get_session_id(
     """
     return session
 
+
+def get_admin_token(
+    admin_token: Optional[str] = Cookie(None),
+    db: DBSession = Depends(get_db)
+) -> AdminToken:
+    """관리자 토큰 쿠키 검증"""
+    if not admin_token:
+        raise UnauthorizedException(
+            message="관리자 인증이 필요합니다.",
+            details="쿠키에 관리자 토큰이 없습니다."
+        )
+    if not AdminTokenService.verify_token(db, admin_token):
+        raise UnauthorizedException(
+            message="관리자 토큰이 유효하지 않습니다.",
+            details="토큰이 만료되었거나 일치하지 않습니다."
+        )
+    record = AdminTokenService.get_record(db)
+    if not record:
+        raise UnauthorizedException(
+            message="관리자 토큰이 유효하지 않습니다.",
+            details="토큰을 찾을 수 없습니다."
+        )
+    return record
+
+
+def get_console_token(
+    console_token: Optional[str] = Cookie(None),
+    db: DBSession = Depends(get_db)
+) -> ApiAccessToken:
+    """콘솔 토큰 쿠키 검증"""
+    if not console_token:
+        raise UnauthorizedException(
+            message="콘솔 인증이 필요합니다.",
+            details="쿠키에 콘솔 토큰이 없습니다."
+        )
+    record = ConsoleTokenService.get_by_access_token(db, console_token)
+    if not record:
+        raise UnauthorizedException(
+            message="유효하지 않은 콘솔 토큰입니다.",
+            details="토큰이 만료되었거나 존재하지 않습니다."
+        )
+    if record.expires_at and record.expires_at <= datetime.utcnow():
+        raise UnauthorizedException(
+            message="콘솔 토큰이 만료되었습니다.",
+            details="관리자에게 문의해주세요."
+        )
+    return record

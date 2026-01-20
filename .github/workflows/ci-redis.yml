@@ -3,7 +3,7 @@ name: Redis CI/CD
 on:
   workflow_dispatch:
   push:
-    branches: [ "main", "dev" ]
+    branches: [ "main", "dev"]
     paths:
       - 'redis/**' 
       - '.github/workflows/ci-redis.yml' 

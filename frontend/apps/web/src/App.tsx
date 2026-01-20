@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { PrivateRoute } from './components/PrivateRoute';
 import { PublicRoute } from './components/PublicRoute';
+import { AdminRoute } from './components/AdminRoute';
 import Loading from './components/Loading/Loading';
 
 // Lazy Load Pages
@@ -17,6 +18,8 @@ const EmailVerifyPage = lazy(() => import("./pages/auth/EmailVerifyPage"));
 
 const ConsoleLogin = lazy(() => import('./pages/console/ConsoleLogin'));
 const ConsoleDashboard = lazy(() => import('./pages/console/ConsoleDashboard'));
+const AdminLogin = lazy(() => import('./pages/admin/AdminLogin'));
+const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
 
 function App() {
   return (
@@ -27,6 +30,11 @@ function App() {
 
           <Route path="/console/login" element={<ConsoleLogin />} />
           <Route path="/console/dashboard" element={<ConsoleDashboard />} />
+          <Route path="/admin" element={<AdminLogin />} />
+          <Route path="/admind" element={<AdminLogin />} />
+          <Route element={<AdminRoute />}>
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          </Route>
 
           {/* Public Routes (로그인 상태면 /home으로 리다이렉트) */}
           <Route element={<PublicRoute />}>
