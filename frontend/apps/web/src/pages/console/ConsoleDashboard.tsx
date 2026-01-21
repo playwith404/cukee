@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
-import UsageSection from '../../components/UsageSection'; 
+import UsageSection from '../../components/UsageSection';
 import ApiKeySection from '../../components/ApiKeySection';
 import BillingSection from '../../components/BillingSection';
 import AlertSection from '../../components/AlertSection';
@@ -57,10 +57,10 @@ const ConsoleDashboard = () => {
             <h1 className="dashboard-title">Console</h1>
             <p className="dashboard-subtitle">Enterprise API Management System</p>
           </header>
-          
+
           <div className="menu-list">
             {menuItems.map((item) => (
-              <div 
+              <div
                 key={item.id}
                 onClick={() => {
                   setActiveTab(item.id);
@@ -82,7 +82,7 @@ const ConsoleDashboard = () => {
       ) : (
         <div className="detail-view fade-in">
           <nav className="detail-nav">
-            <button 
+            <button
               onClick={() => setActiveTab('main')}
               className="back-button"
             >
@@ -92,7 +92,7 @@ const ConsoleDashboard = () => {
           </nav>
 
           <div className="section-content">
-             {renderSection()}
+            {renderSection()}
           </div>
         </div>
       )}

@@ -173,6 +173,34 @@ export const createExhibition = async (
  * GET /exhibitions?user_id={current_user}
  */
 export const getMyExhibitions = async (page = 1, limit = 20): Promise<ExhibitionListResponse> => {
+  if (import.meta.env.VITE_USE_MOCK === 'true') {
+    return {
+      data: [
+        {
+          id: 111,
+          ticketId: 1,
+          title: '제주도 푸른 밤 (Mock)',
+          curator: '사용자',
+          curatorMsg: '제주도 여행의 기록입니다.',
+          likes: 42,
+          imageUrl: '',
+        },
+        {
+          id: 222,
+          ticketId: 2,
+          title: '나만의 영화관 (Mock)',
+          curator: '사용자',
+          curatorMsg: '내가 좋아하는 영화 모음',
+          likes: 15,
+          imageUrl: '',
+        }
+      ],
+      total: 2,
+      page,
+      limit
+    };
+  }
+
   // user_id는 백엔드에서 인증 토큰으로 자동 판별하므로 따로 전달 안 함
   const response = await api.get<ExhibitionListResponse>('/exhibitions', {
     params: { page, limit },
@@ -199,6 +227,17 @@ export const updateExhibition = async (
   exhibitionId: number,
   data: UpdateExhibitionRequest
 ): Promise<CreateExhibitionResponse> => {
+  if (import.meta.env.VITE_USE_MOCK === 'true') {
+    return {
+      id: exhibitionId,
+      userId: 1,
+      title: data.title || '제목 없음',
+      isPublic: data.isPublic ?? false,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+  }
+
   const response = await api.put<CreateExhibitionResponse>(`/exhibitions/${exhibitionId}`, data);
   return response.data;
 };
@@ -208,6 +247,9 @@ export const updateExhibition = async (
  * DELETE /exhibitions/{id}
  */
 export const deleteExhibition = async (exhibitionId: number): Promise<void> => {
+  if (import.meta.env.VITE_USE_MOCK === 'true') {
+    return;
+  }
   await api.delete(`/exhibitions/${exhibitionId}`);
 };
 
