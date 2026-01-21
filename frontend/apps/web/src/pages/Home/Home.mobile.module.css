@@ -268,7 +268,7 @@
 .viewAllHeader {
     position: fixed;
     top: 100px;
-    left: 16px;
+    left: 40px;
     width: auto;
     display: flex;
     flex-direction: column;
@@ -297,14 +297,14 @@
 
 /* 현재 번호 (큰 숫자) */
 .bigCount {
-    font-size: 32px;
+    font-size: 50px;
     font-weight: 600;
     letter-spacing: -0.05em;
 }
 
 /* 전체 개수 (작은 숫자) */
 .smallCount {
-    font-size: 20px;
+    font-size: 28px;
     color: #6e6e6e;
     margin-left: 5px;
 }
@@ -312,7 +312,6 @@
 /* 구분선 */
 .separatorLine {
     width: 200px;
-    max-width: 200px;
     height: 1px;
     background-color: #373431;
     margin-bottom: 16px;
@@ -336,7 +335,7 @@
 
 /* viewAll 모드 큐레이터 이름 */
 .viewAllCuratorName {
-    font-size: 18px;
+    font-size: 28px;
     font-weight: 600;
     margin: 0 0 8px 0;
     letter-spacing: -0.03em;
@@ -344,12 +343,11 @@
 
 /* viewAll 모드 큐레이터 메시지 */
 .viewAllCuratorMessage {
-    font-size: 13px;
+    font-size: 20px;
     font-weight: 400;
     line-height: 1.5;
     margin: 0;
-    max-width: 180px;
-    word-break: keep-all;
+    white-space: nowrap;
     color: #5a5a5a;
 }
 
