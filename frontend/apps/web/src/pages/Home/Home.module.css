@@ -3,8 +3,9 @@
 
 /* --- 메인 콘텐츠 영역 --- */
 .killcho {
+  overflow-y: hidden;
   width: 100%;
-  min-height: 100vh;
+  height: 100vh;
   min-width: 1500px;
   position: relative;
   display: flex;
