@@ -229,7 +229,6 @@
 
 /* viewAll 모드에서 숨김 */
 .curatorBoxMoved {
-    opacity: 0;
     pointer-events: none;
 }
 
@@ -309,7 +308,7 @@
 .viewAllHeader {
     position: fixed;
     top: 120px;
-    left: 40px;
+    left: 80px;
     width: auto;
     display: flex;
     flex-direction: column;
