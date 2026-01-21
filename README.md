@@ -81,7 +81,7 @@
 
 > **Cukee(큐키)** 는 AI 기반 영화 큐레이션 플랫폼입니다.
 
-사용자의 취향과 감정에 맞춰 **11가지 테마 티켓** 중 하나를 선택하면, AI 큐레이터가 맞춤형 영화를 추천하고 나만의 **전시회**를 만들어줍니다. Llama-3.1 기반의 LoRA 어댑터를 활용해 각 테마별로 특화된 추천을 제공합니다.
+사용자의 취향과 감정에 맞춰 **11가지 테마 티켓** 중 하나를 선택하면, AI 큐레이터가 맞춤형 영화를 추천하고 나만의 **전시회**를 만들어줍니다. Qwen-14B 기반의 동적 시스템 프롬프팅 기술을 활용해 각 테마별로 특화된 페르소나 큐레이션을 제공합니다.
 
 ### 🎯 프로젝트 배경
 - 넘쳐나는 콘텐츠 속에서 **나에게 딱 맞는 영화**를 찾기 어려운 문제를 해결하고자 했습니다
@@ -95,7 +95,7 @@
 | 기능 | 설명 |
 |:---:|:---|
 | 🎫 **11가지 테마 티켓** | 로맨스, 코미디, 호러, 액션, 애니메이션 등 다양한 감성의 테마 중 선택 |
-| 🤖 **AI 영화 큐레이션** | Llama-3.1 + LoRA 기반 AI가 테마에 맞는 영화를 추천하고 큐레이터 코멘트 생성 |
+| 🤖 **AI 영화 큐레이션** | Qwen-14B 기반 동적 페르소나 주입 AI가 테마에 맞는 영화를 추천하고 큐레이터 코멘트 생성 |
 | 🖼️ **3D 전시회 생성** | 추천받은 영화들을 갤러리 형태의 인터랙티브 전시회로 제작 |
 | 🔐 **소셜 로그인** | 이메일 인증, Google, Kakao OAuth를 통한 간편 로그인 지원 |
 | 💾 **전시회 저장/공유** | 나만의 전시회를 저장하고 다른 사용자와 공유 가능 |
@@ -118,7 +118,6 @@
 ### AI
 ![HuggingFace](https://img.shields.io/badge/HuggingFace-FFD21E?style=for-the-badge&logo=huggingface&logoColor=black)
 ![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)
-![Unsloth](https://img.shields.io/badge/Unsloth-7C3AED?style=for-the-badge&logo=lightning&logoColor=white)
 ![bitsandbytes](https://img.shields.io/badge/bitsandbytes-4B0082?style=for-the-badge&logo=python&logoColor=white)
 
 ### DevOps & Tools
@@ -221,10 +220,9 @@ http://localhost         # Production (Docker)
 📦 cukee
 ├── 📂 frontend                 # 프론트엔드 (Turborepo)
 │   ├── 📂 apps
-│   │   ├── 📂 web              # Next.js 웹 애플리케이션
+│   │   ├── 📂 web              # React/Vite 웹 애플리케이션
 │   │   └── 📂 extension        # 브라우저 확장 프로그램
 │   └── 📂 packages
-│       ├── 📂 ui               # 공유 UI 컴포넌트
 │       ├── 📂 eslint-config    # ESLint 설정
 │       └── 📂 typescript-config # TypeScript 설정
 │
@@ -233,7 +231,7 @@ http://localhost         # Production (Docker)
 │   └── 📂 tests                # 테스트 파일
 │
 ├── 📂 ai                       # AI 추천 서버
-│   └── 📂 app                  # Llama + LoRA 모델 서빙
+│   └── 📂 app                  # 동적 시스템 프롬프팅 기반 AI 서빙
 │
 ├── 📂 database                 # 데이터베이스 설정
 ├── 📂 monitor                  # Prometheus & Grafana 모니터링
