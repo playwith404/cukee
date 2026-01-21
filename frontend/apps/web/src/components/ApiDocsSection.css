@@ -1,0 +1,354 @@
+.api-docs-container {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.docs-title {
+  text-align: center;
+  font-size: 2.5rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.docs-meta {
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #666;
+  margin-bottom: 2rem;
+}
+
+/* 섹션 스타일 */
+.docs-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.section-heading {
+  font-size: 1.5rem;
+  font-weight: 900;
+  padding: 0.75rem 1.5rem;
+  background-color: #000;
+  color: #fff;
+  display: inline-block;
+  align-self: flex-start;
+}
+
+/* 카드 스타일 */
+.docs-card {
+  position: relative;
+  background-color: #fff;
+  border: 3px solid #000;
+  padding: 1.5rem;
+  box-shadow: 6px 6px 0px 0px #000;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.docs-card:hover {
+  box-shadow: 4px 4px 0px 0px #000;
+  transform: translate(2px, 2px);
+}
+
+.card-label {
+  font-size: 1.1rem;
+  font-weight: 900;
+  margin-bottom: 1rem;
+  text-decoration: underline;
+  text-decoration-color: #ffee58;
+  text-decoration-thickness: 4px;
+  text-underline-offset: 4px;
+}
+
+/* 코드 블록 */
+.code-block {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #f5f5f5;
+  border: 2px solid #000;
+  padding: 0.75rem 1rem;
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: 700;
+}
+
+.code-block code {
+  font-size: 0.9rem;
+}
+
+.code-block-multi {
+  background-color: #1a1a2e;
+  color: #eee;
+  border: 3px solid #000;
+  padding: 1rem 1.25rem;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  overflow-x: auto;
+  white-space: pre;
+  margin: 0;
+}
+
+.inline-code {
+  background-color: #ffee58;
+  padding: 0.15rem 0.4rem;
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: 700;
+  font-size: 0.85rem;
+  border: 2px solid #000;
+}
+
+/* 복사 버튼 */
+.copy-btn {
+  background-color: #000;
+  color: #fff;
+  border: 2px solid #000;
+  padding: 0.4rem 1rem;
+  font-size: 0.75rem;
+  font-weight: 900;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: background-color 0.2s;
+}
+
+.copy-btn:hover {
+  background-color: #ffee58;
+  color: #000;
+}
+
+.copy-btn.block-copy {
+  margin-top: 1rem;
+  display: block;
+  width: 100%;
+  padding: 0.6rem;
+}
+
+/* 리스트 */
+.docs-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.docs-list li {
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding-left: 1.5rem;
+  position: relative;
+}
+
+.docs-list li::before {
+  content: '▸';
+  position: absolute;
+  left: 0;
+  color: #000;
+  font-weight: 900;
+}
+
+.docs-list.error-codes li {
+  padding-left: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.docs-list.error-codes li::before {
+  display: none;
+}
+
+/* Endpoint 배지 */
+.endpoint-badge {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  background-color: #d1dbed;
+  border: 3px solid #000;
+  box-shadow: 4px 4px 0px 0px #000;
+}
+
+.method-badge {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.8rem;
+  font-weight: 900;
+  border: 2px solid #000;
+}
+
+.method-badge.post {
+  background-color: #4ade80;
+  color: #000;
+}
+
+.method-badge.get {
+  background-color: #60a5fa;
+  color: #000;
+}
+
+.endpoint-badge code {
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+/* 테이블 */
+.docs-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.docs-table th,
+.docs-table td {
+  border: 2px solid #000;
+  padding: 0.75rem;
+  text-align: left;
+}
+
+.docs-table th {
+  background-color: #000;
+  color: #fff;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.docs-table td code {
+  background-color: #f5f5f5;
+  padding: 0.2rem 0.4rem;
+  font-family: 'Courier New', Courier, monospace;
+  border: 1px solid #ccc;
+}
+
+.docs-table .required {
+  background-color: #fecaca;
+  font-weight: 900;
+  color: #991b1b;
+}
+
+.docs-table .optional {
+  background-color: #d1fae5;
+  font-weight: 700;
+  color: #065f46;
+}
+
+.docs-table .unsupported {
+  background-color: #e5e7eb;
+  font-weight: 700;
+  color: #374151;
+}
+
+/* 에러 카드 */
+.error-card {
+  background-color: #fef3c7;
+}
+
+/* 가격 카드 */
+.pricing-card {
+  background-color: #ecfdf5;
+}
+
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.pricing-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+  background-color: #fff;
+  border: 3px solid #000;
+  box-shadow: 4px 4px 0px 0px #000;
+}
+
+.pricing-item.cached {
+  background-color: #ffee58;
+}
+
+.pricing-label {
+  font-size: 0.8rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.pricing-value {
+  font-size: 1.1rem;
+  font-weight: 900;
+}
+
+.pricing-note {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #666;
+  margin-top: 1rem;
+  text-align: center;
+}
+
+/* 제한 그리드 */
+.limits-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.limit-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.5rem 1rem;
+  background-color: #dbeafe;
+  border: 3px solid #000;
+  box-shadow: 4px 4px 0px 0px #000;
+}
+
+.limit-label {
+  font-size: 1rem;
+  font-weight: 900;
+  background-color: #000;
+  color: #fff;
+  padding: 0.25rem 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.limit-value {
+  font-size: 1.75rem;
+  font-weight: 900;
+}
+
+.limit-desc {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #666;
+  margin-top: 0.25rem;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .pricing-grid,
+  .limits-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .docs-table {
+    font-size: 0.75rem;
+  }
+
+  .docs-table th,
+  .docs-table td {
+    padding: 0.5rem;
+  }
+
+  .code-block-multi {
+    font-size: 0.75rem;
+  }
+}

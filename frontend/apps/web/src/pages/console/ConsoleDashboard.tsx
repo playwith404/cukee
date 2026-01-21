@@ -4,11 +4,12 @@ import UsageSection from '../../components/UsageSection';
 import ApiKeySection from '../../components/ApiKeySection';
 import BillingSection from '../../components/BillingSection';
 import AlertSection from '../../components/AlertSection';
+import ApiDocsSection from '../../components/ApiDocsSection';
 import './ConsoleDashboard.css';
 import { checkConsoleAuth } from '../../apis/console';
 
 // 탭 타입 정의
-type TabType = 'main' | 'usage' | 'billing' | 'keys' | 'alerts';
+type TabType = 'main' | 'usage' | 'billing' | 'keys' | 'alerts' | 'docs';
 
 interface MenuItem {
   id: TabType;
@@ -37,6 +38,7 @@ const ConsoleDashboard = () => {
     { id: 'billing', title: "Billing", desc: "사용량 기반 비용 확인 및 청구서 관리를 지원합니다.", icon: "💳" },
     { id: 'keys', title: "API Keys", desc: "환경별 API 키 생성 및 보안 관리를 수행합니다.", icon: "🔑" },
     { id: 'alerts', title: "Alerts", desc: "사용량, 에러율, 빌링 알림을 커스터마이징 하세요.", icon: "🔔" },
+    { id: 'docs', title: "API Docs", desc: "외부 API 명세서 및 사용 가이드를 확인하세요.", icon: "📄" },
   ];
 
   const renderSection = (): ReactNode => {
@@ -45,6 +47,7 @@ const ConsoleDashboard = () => {
       case 'billing': return <BillingSection />;
       case 'keys': return <ApiKeySection />;
       case 'alerts': return <AlertSection />;
+      case 'docs': return <ApiDocsSection />;
       default: return null;
     }
   };
