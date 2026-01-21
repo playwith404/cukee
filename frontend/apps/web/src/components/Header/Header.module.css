@@ -381,20 +381,27 @@
 }
 
 .editInput {
-  flex: 1;
+  flex: 0 1 auto;
+  /* flex-grow를 0으로 줄여서 너무 늘어나지 않게 */
+  min-width: 50px;
+  max-width: 140px;
+  /* 길이 제한 */
   background: transparent;
   border: none;
-  border-bottom: 1px solid #8F8784;
-  padding: 4px 8px;
+  border-bottom: 1px solid rgba(143, 135, 132, 0.4);
+  /* 연하고 얇은 선 */
+  padding: 4px 4px;
   font-size: 16px;
   font-weight: 300;
   color: #373431;
   outline: none;
   text-align: center;
+  transition: border-color 0.2s;
 }
 
 .editInput:focus {
-  border-bottom: 2px solid #373431;
+  border-bottom: 1px solid #373431;
+  /* 포커스 시에도 1px 유지하되 색상 진하게 */
 }
 
 .iconBtn,
@@ -406,10 +413,16 @@
 }
 
 .iconBtn {
-  font-size: 14px;
-  padding: 4px 6px;
+  font-size: 20px;
+  /* 체크 표시 키움 */
+  padding: 4px 8px;
+  /* 터치 영역 살짝 확보 */
   color: #8F8784;
-  opacity: 0.6;
+  opacity: 0.8;
+  /* 기본 가시성 높임 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .iconBtn:hover {
