@@ -188,7 +188,7 @@
     border: none;
     cursor: pointer;
     transition: all 0.2s ease;
-    width: 250px;
+    width: 100px;
     /* 클릭 영역 확장 */
     height: 400px;
     /* 티켓 높이에 맞춰 확장 */

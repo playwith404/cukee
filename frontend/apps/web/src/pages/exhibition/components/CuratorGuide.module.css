@@ -25,7 +25,7 @@
 }
 
 .charImg {
-  width: 250px;
+  width: 200px;
   display: block;
 }
 
@@ -125,13 +125,7 @@
 }
 
 /* 1. 노트북 표준 (1440px 이하) - 약 85% 크기 */
-@media (max-width: 1440px) {
-  .charImg {
-    width: 200px;
-    /* 250px -> 215px */
-  }
-
-}
+@media (max-width: 1440px) {}
 
 /* 2. 작은 노트북/태블릿 (1200px 이하) - 약 80% 크기 */
 @media (max-width: 1200px) {

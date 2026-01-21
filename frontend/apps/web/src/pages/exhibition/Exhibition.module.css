@@ -8,8 +8,8 @@
   display: flex;
   flex-direction: column;
   background-color: transparent;
-  overflow-x: hidden;
-  /* 가로 스크롤 방지 */
+  /* overflow: hidden; */
+  /* 가로/세로 스크롤 방지하여 짤림 효과 구현 */
 }
 
 .topControlSection {
@@ -30,8 +30,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  /* 세로 중앙 정렬 추가 */
-  margin-top: 100px;
+  margin-top: 80px;
   /* 고정된 TopControls 공간 확보 */
   /* 애니메이션 */
   animation: slideDownDrop 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) 0.2s forwards;
@@ -45,12 +44,7 @@
   margin-top: 0px !important;
 }
 
-/* 큰 화면(전체화면 등)에서 꾸미기 모드 시 갤러리를 더 위로 올림 */
-@media (min-width: 1441px) {
-  .moveUp {
-    margin-top: -50px !important;
-  }
-}
+
 
 .moveDown {
   margin-top: 10vh;
@@ -65,20 +59,21 @@
   position: relative;
 }
 
+
+
 /* =========================================
    티켓 영역 (우측 하단)
    ========================================= */
 .ticketWrapper {
   position: absolute;
+  /* 다시 화면 전체 중앙 기준 오른쪽으로 배치 */
+  left: 50%;
+  margin-left: 480px;
   bottom: 0px;
 
-  /* 기본 데스크탑 위치 (중앙 기준 오른쪽으로 500px 이동) */
-  left: 50%;
-  margin-left: 500px;
-  right: auto;
   z-index: 20;
+  pointer-events: none;
   transition: all 0.5s ease;
-  /* 위치 변경 시 부드럽게 */
 }
 
 .ticketImage {
@@ -89,7 +84,12 @@
 }
 
 .curatorWrapper {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  box-sizing: border-box;
   transform-origin: bottom left;
+  z-index: 10;
 }
 
 /* =========================================
@@ -97,14 +97,13 @@
    ========================================= */
 
 /* 1. 노트북 표준 화면 (1440px 이하) */
-@media (max-width: 1440px) {
+@media (max-width: 1440px),
+(max-height: 830px) {
   .ticketWrapper {
     display: none;
   }
 
-  .ticketImage {
-    width: 200px;
-  }
+
 }
 
 /* 2. 작은 노트북 및 태블릿 가로 (1200px 이하) */
@@ -132,6 +131,13 @@
     transform: translateY(-40px);
   }
 
+}
+
+/* 5. 모바일 화면 (768px 이하) 대응 */
+@media (max-width: 768px) {
+  .container {
+    overflow-x: hidden;
+  }
 }
 
 @keyframes slideDownDrop {

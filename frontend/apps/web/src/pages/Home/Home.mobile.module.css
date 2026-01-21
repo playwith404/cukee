@@ -193,11 +193,6 @@
     margin-top: auto;
 }
 
-/* viewAll 모드에서 숨김 */
-.curatorBoxMoved {
-    opacity: 0;
-    pointer-events: none;
-}
 
 /* 큐레이터 컨텐츠 래퍼 */
 .curatorContent {
