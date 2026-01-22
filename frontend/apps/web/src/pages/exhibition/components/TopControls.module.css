@@ -8,12 +8,12 @@
   margin: 0;
   display: flex;
   justify-content: space-between;
-  padding: 100px 50px;
+  padding: 100px 50px 0;
   /* 기존 margin-top(30px)을 패딩으로 전환 */
   box-sizing: border-box;
   z-index: 1000;
-  pointer-events: none;
-  /* 컨테이너 자체는 클릭 무시 (뒤쪽 요소 클릭 가능하도록) */
+  pointer-events: auto;
+  /* 클릭을 막지 않도록 기본 동작 유지 */
 }
 
 /* 버튼은 다시 클릭 가능하게 설정 */
@@ -82,7 +82,7 @@
     top: 0;
     left: 50%;
     transform: translateX(-50%);
-    padding: 90px 15px 20px 15px;
+    padding: 90px 15px 0;
     /* 헤더 높이만큼 띄워줌 (기존 100px에서 조절) */
     margin: 0;
     /* margin 제거 */
