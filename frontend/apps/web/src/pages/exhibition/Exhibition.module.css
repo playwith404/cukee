@@ -57,6 +57,8 @@
   width: 100%;
   flex-shrink: 0;
   position: relative;
+  z-index: 100;
+  /* 꾸미기 창이 큐레이터 등 다른 요소보다 위에 오도록 함 */
 }
 
 
