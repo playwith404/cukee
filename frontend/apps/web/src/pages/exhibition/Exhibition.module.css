@@ -68,12 +68,10 @@
    ========================================= */
 .ticketWrapper {
   position: absolute;
-  /* 다시 화면 전체 중앙 기준 오른쪽으로 배치 */
-  left: 50%;
-  margin-left: 480px;
+  right: 20px;
   bottom: 0px;
 
-  z-index: 20;
+  z-index: 110;
   pointer-events: none;
   transition: all 0.5s ease;
 }
