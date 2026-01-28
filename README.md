@@ -24,7 +24,7 @@
 <!-- 상태 배지들 -->
 <img src="https://img.shields.io/badge/version-1.0.0-blue?style=flat-square"/>
 <img src="https://img.shields.io/badge/status-development-yellow?style=flat-square"/>
-<img src="https://img.shields.io/badge/team-6_members-green?style=flat-square"/>
+<img src="https://img.shields.io/badge/team-5_members-green?style=flat-square"/>
 
 <br/>
 <br/>
@@ -98,7 +98,7 @@
 | 🤖 **AI 영화 큐레이션** | Qwen-14B 기반 동적 페르소나 주입 AI가 테마에 맞는 영화를 추천하고 큐레이터 코멘트 생성 |
 | 🖼️ **3D 전시회 생성** | 추천받은 영화들을 갤러리 형태의 인터랙티브 전시회로 제작 |
 | 🔐 **소셜 로그인** | 이메일 인증, Google, Kakao OAuth를 통한 간편 로그인 지원 |
-| 💾 **전시회 저장/공유** | 나만의 전시회를 저장하고 다른 사용자와 공유 가능 |
+| 💾 **전시회 저장** | 나만의 전시회를 저장 가능 |
 | ❤️ **티켓 좋아요** | 마음에 드는 테마 티켓에 좋아요를 누르고 인기 티켓 확인 |
 
 ---
@@ -196,19 +196,19 @@ http://localhost         # Production (Docker)
 
 <div align="center">
 
-|<img src="https://avatars.githubusercontent.com/u/203737204?v=4" width="150" height="150"/>|<img src="https://avatars.githubusercontent.com/u/101376856?v=4" width="150" height="150"/>|<img src="https://avatars.githubusercontent.com/u/131033715?v=4" width="150" height="150"/>|
-|:---:|:---:|:---:|
-|**조연우**|**황주인**|**이지우**|
-|PM / Frontend|Infra|Backend|
-|[![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/18choyeonwoo)|[![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/juin925)|[![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/527NotFound)|
-|![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat-square&logo=vite&logoColor=white) ![React](https://img.shields.io/badge/React-61DAFB?style=flat-square&logo=react&logoColor=black) ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white) ![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white)|![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white) ![Prometheus](https://img.shields.io/badge/Prometheus-E6522C?style=flat-square&logo=prometheus&logoColor=white) ![Grafana](https://img.shields.io/badge/Grafana-F46800?style=flat-square&logo=grafana&logoColor=white)|![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white) ![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white)|
+|<img src="https://avatars.githubusercontent.com/u/203737204?v=4" width="150" height="150"/>|<img src="https://avatars.githubusercontent.com/u/101376856?v=4" width="150" height="150"/>|
+|:---:|:---:|
+|**조연우**|**황주인**|
+|PM / Frontend|Infra|
+|[![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/18choyeonwoo)|[![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/juin925)|
+|![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat-square&logo=vite&logoColor=white) ![React](https://img.shields.io/badge/React-61DAFB?style=flat-square&logo=react&logoColor=black) ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white) ![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white)|![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white) ![Prometheus](https://img.shields.io/badge/Prometheus-E6522C?style=flat-square&logo=prometheus&logoColor=white) ![Grafana](https://img.shields.io/badge/Grafana-F46800?style=flat-square&logo=grafana&logoColor=white)|
 
-|<img src="https://avatars.githubusercontent.com/u/120772177?v=4" width="150" height="150"/>|<img src="https://avatars.githubusercontent.com/u/167386973?v=4" width="150" height="150"/>|<img src="https://github.com/wnqls2148.png" width="150" height="150"/>|
+|<img src="https://avatars.githubusercontent.com/u/120772177?v=4" width="150" height="150"/>|<img src="https://avatars.githubusercontent.com/u/167386973?v=4" width="150" height="150"/>|<img src="https://avatars.githubusercontent.com/u/131033715?v=4" width="150" height="150"/>|
 |:---:|:---:|:---:|
-|**강민성**|**장서현**|**임주빈**|
-|AI|DB / Frontend|Frontend|
-|[![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/Krminsung)|[![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/nannanyeee)|[![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/wnqls2148)|
-|![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white) ![HuggingFace](https://img.shields.io/badge/HuggingFace-FFD21E?style=flat-square&logo=huggingface&logoColor=black) ![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?style=flat-square&logo=pytorch&logoColor=white)|![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white) ![React](https://img.shields.io/badge/React-61DAFB?style=flat-square&logo=react&logoColor=black) ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white) ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white)|![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat-square&logo=vite&logoColor=white) ![React](https://img.shields.io/badge/React-61DAFB?style=flat-square&logo=react&logoColor=black) ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)|
+|**강민성**|**장서현**|**이지우**|
+|AI|DB / Frontend|Backend|
+|[![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/Krminsung)|[![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/nannanyeee)|[![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/527NotFound)|
+|![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white) ![HuggingFace](https://img.shields.io/badge/HuggingFace-FFD21E?style=flat-square&logo=huggingface&logoColor=black) ![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?style=flat-square&logo=pytorch&logoColor=white)|![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white) ![React](https://img.shields.io/badge/React-61DAFB?style=flat-square&logo=react&logoColor=black) ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white) ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white)|![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white) ![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white)|
 
 </div>
 
@@ -224,7 +224,8 @@ http://localhost         # Production (Docker)
 │   │   └── 📂 extension        # 브라우저 확장 프로그램
 │   └── 📂 packages
 │       ├── 📂 eslint-config    # ESLint 설정
-│       └── 📂 typescript-config # TypeScript 설정
+│       ├── 📂 typescript-config # TypeScript 설정
+│       └── 📂 ui               # 공통 UI 컴포넌트
 │
 ├── 📂 backend                  # FastAPI 백엔드 서버
 │   ├── 📂 app                  # 애플리케이션 코드
@@ -233,6 +234,7 @@ http://localhost         # Production (Docker)
 ├── 📂 ai                       # AI 추천 서버
 │   └── 📂 app                  # 동적 시스템 프롬프팅 기반 AI 서빙
 │
+├── 📂 certbot                  # SSL 인증서 관리
 ├── 📂 database                 # 데이터베이스 설정
 ├── 📂 monitor                  # Prometheus & Grafana 모니터링
 ├── 📂 nginx                    # Nginx 리버스 프록시 설정
